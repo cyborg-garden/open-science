@@ -2345,6 +2345,11 @@ function initSyllables() {
       window['_vocSamples_' + species] = true;
       renderVocSamples(species);
     }
+    // korimako full-corpus canvases: (re)size now the panel is visible —
+    // at page load the panel is display:none so clientWidth=0 and the UMAP drew blank
+    if (species === 'bellbird') {
+      setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 30);
+    }
   };
 
   // === SAMPLE RENDERER ===
