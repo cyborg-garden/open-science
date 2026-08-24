@@ -739,6 +739,37 @@ tr:hover td{background:var(--surface-2)}
         <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcSexCaption"></div>
       </div>
 
+      <div class="section-label">Repertoire by site — what does each island sing?</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Syllable-family composition per site across the full corpus. Computed on model predictions across
+        all <b>454 birds</b> (21,463 syllables); the models saw some of these birds in training — the
+        supplementary tab below repeats every figure on only the 107 birds the models never saw.</p></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:380px"><canvas id="fcRepSiteChart"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcRepSiteCaption"></div>
+      </div>
+
+      <div class="section-label">Sex &amp; repertoire within each site</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Korimako are one of the rare songbirds where <b>both sexes sing complex song</b> — and the sexes
+        share only a fraction of syllable types within a site. Per site: mean repertoire composition for
+        male vs female birds (full corpus, model predictions).</p></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:420px"><canvas id="fcSexSiteChart"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcSexSiteCaption"></div>
+      </div>
+
+      <div class="section-label">Non-binary &amp; sex-atypical individuals</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Each bird scored P(male) from its syllable repertoire (5-fold cross-validation, so no bird is scored
+        by a model that saw it). A bird's position on the axis is a stable individual trait. Two groups of
+        interest: <b>intermediate</b> birds (reliably mid-axis) and <b>sex-atypical</b> birds (song squarely
+        in the opposite sex's range). <span id="fcAtypHeadline"></span></p></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:300px"><canvas id="fcAtypChart"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcAtypCaption"></div>
+      </div>
+
       <div class="section-label">Geographic dialect — repertoire identifies home island</div>
       <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
         A bird's syllable repertoire identifies which of the six study sites it came from at
@@ -772,6 +803,11 @@ tr:hover td{background:var(--surface-2)}
       </div>
 
       <div class="section-label" style="margin-top:2.5rem;color:var(--ink-faint)">Earlier tutorial-subset analysis (kept for comparison)</div>
+
+      <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+        <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
+          ▸ Previous iteration — tutorial-subset figures (94 recordings, hand-labelled; a different pipeline)</summary>
+        <div style="padding:0 1.2rem 1rem">
 
       <!-- ============ LEGACY TUTORIAL-SUBSET CONTENT ============ -->
       <div class="prose" style="margin-bottom:1.5rem">
@@ -1008,6 +1044,27 @@ tr:hover td{background:var(--surface-2)}
 
       <div class="section-label">Representative Samples</div>
       <div id="voc-samples-bellbird"><!-- Populated by JS --></div>
+        </div><!-- /details inner -->
+      </details><!-- /previous iteration -->
+
+      <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+        <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
+          ▸ Supplementary — same figures computed only on birds the models never saw in training (test split, 107 birds)</summary>
+        <div style="padding:0 1.2rem 1rem">
+          <p style="font-size:.85rem;color:var(--ink-soft);margin:.8rem 0">
+            Every figure in the recompute above, recomputed on only the <b>107 test-split birds</b> — individuals
+            held out of all model training. This is the honest-tier check: if a pattern is a memorisation
+            artefact it weakens or vanishes here. Per-site counts are thin (some sites &lt;10 birds), so treat
+            small wobbles as noise, not signal.</p>
+          <div class="section-label">Supplementary: repertoire by site (test-split birds only)</div>
+          <div class="card"><div class="chart-wrap" style="height:380px"><canvas id="fcRepSiteChartSupp"></canvas></div></div>
+          <div class="section-label">Supplementary: sex &amp; repertoire within each site (test-split only)</div>
+          <div class="card"><div class="chart-wrap" style="height:420px"><canvas id="fcSexSiteChartSupp"></canvas></div></div>
+          <div class="section-label">Supplementary: sex-atypical axis (test-split only)</div>
+          <div class="card"><div class="chart-wrap" style="height:300px"><canvas id="fcAtypChartSupp"></canvas></div>
+            <div style="margin-top:.6rem;font-size:.8rem;color:var(--ink-soft)" id="fcAtypCaptionSupp"></div></div>
+        </div>
+      </details>
     </div>
 
     <!-- KĀKĀ sub-panel -->
@@ -3914,6 +3971,79 @@ const GameEngine = {
     $('fcUmapCaption').textContent =
       `${d.n_points} songs · ${d.n_birds_total} banded birds · top 20 by recording count coloured, rest grey · drag to rotate, hover for detail`;
   }).catch(e => { console.warn('fc umap load', e); const el = document.getElementById('fcUmapCaption'); if (el) el.textContent = 'UMAP data failed to load.'; });
+
+  // ---- full-corpus FIGURES (repertoire/sex/atypical), main + supplementary tiers ----
+  const FAM_COLORS = ['#b07d22','#5f7a3a','#bb4a33','#a99e89','#7c5784','#2c6c8c','#8c4a2c','#357a5b','#b04a3a','#4363d8','#e6194b','#469990','#9a6324','#800000','#808000','#000075','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#dcbeff','#ffd8b1','#aaffc3','#a9a9a9'];
+
+  function buildRepSiteChart(canvasId, tier, captionId){
+    const d = tier; if (!d || !window.Chart || !$(canvasId)) return;
+    const sites = Object.keys(d.repertoire_by_site);
+    const fams = d.families;
+    const datasets = fams.map((f, i) => ({
+      label: f,
+      data: sites.map(s => d.repertoire_by_site[s][f] || 0),
+      backgroundColor: FAM_COLORS[i % FAM_COLORS.length]
+    }));
+    new Chart($(canvasId), {type: 'bar',
+      data: {labels: sites, datasets},
+      options: {scales: {x: {stacked: true}, y: {stacked: true, max: 100, title: {display: true, text: '% of syllables'}}},
+        plugins: {legend: {position: 'right', labels: {boxWidth: 10, font: {size: 9}}}}}});
+    if (captionId && $(captionId)) $(captionId).textContent =
+      `Model predictions, ${d.n_birds} birds / ${d.n_syllables.toLocaleString()} syllables.`;
+  }
+
+  function buildSexSiteChart(canvasId, tier, captionId){
+    const d = tier; if (!d || !window.Chart || !$(canvasId)) return;
+    const sites = Object.keys(d.sex_breakdown);
+    const fams = d.families;
+    const labels = [];
+    sites.forEach(s => { labels.push(s + ' ♂'); labels.push(s + ' ♀'); });
+    const datasets = fams.map((f, i) => ({
+      label: f,
+      data: sites.flatMap(s => [d.sex_breakdown[s]['M'][f] || 0, d.sex_breakdown[s]['F'][f] || 0]),
+      backgroundColor: FAM_COLORS[i % FAM_COLORS.length]
+    }));
+    new Chart($(canvasId), {type: 'bar',
+      data: {labels, datasets},
+      options: {scales: {x: {stacked: true}, y: {stacked: true, max: 100, title: {display: true, text: '% of syllables'}}},
+        plugins: {legend: {position: 'right', labels: {boxWidth: 10, font: {size: 9}}}}}});
+    if (captionId && $(captionId)) $(captionId).textContent =
+      'Mean repertoire composition by sex within each site (model predictions).';
+  }
+
+  function buildAtypChart(canvasId, tier, captionId){
+    const d = tier.sex_atypical; if (!d || !window.Chart || !$(canvasId)) return;
+    const birds = d.birds;
+    const xs = birds.map(b => b.p_male);
+    const cols = birds.map(b => {
+      if (b.p_male > 0.35 && b.p_male < 0.65) return '#b07d22';               // intermediate
+      if ((b.p_male > 0.8 && b.sex === 'F') || (b.p_male < 0.2 && b.sex === 'M')) return '#bb4a33'; // atypical
+      return b.sex === 'M' ? '#2c6c8c' : '#b04a3a';
+    });
+    new Chart($(canvasId), {type: 'scatter',
+      data: {datasets: [{label: 'birds',
+        data: birds.map((b, i) => ({x: i, y: b.p_male})),
+        pointBackgroundColor: cols, pointRadius: 3}]},
+      options: {scales: {x: {display: false}, y: {min: 0, max: 1, title: {display: true, text: 'P(male)'}}},
+        plugins: {legend: {display: false},
+          tooltip: {callbacks: {label: c => { const b = birds[c.dataIndex];
+            return `${b.individual} (${b.site}, ${b.sex}) P(male)=${b.p_male}, ${b.n_songs} songs`; }}}}}});
+    if (captionId && $(captionId)) $(captionId).textContent =
+      `${d.n_birds} birds, repertoire-based P(male), 5-fold CV (no bird scored by a model that saw it). ` +
+      `CV accuracy ${(d.cv_acc*100).toFixed(1)}%. Amber = intermediate (${d.n_intermediate}), red = sex-atypical (${d.n_atypical}).`;
+  }
+
+  fetch(FC + 'fullcorpus_figures.json').then(r => r.json()).then(d => {
+    buildRepSiteChart('fcRepSiteChart', d.main, 'fcRepSiteCaption');
+    buildSexSiteChart('fcSexSiteChart', d.main, 'fcSexSiteCaption');
+    buildAtypChart('fcAtypChart', d.main, 'fcAtypCaption');
+    buildRepSiteChart('fcRepSiteChartSupp', d.supplementary, null);
+    buildSexSiteChart('fcSexSiteChartSupp', d.supplementary, null);
+    buildAtypChart('fcAtypChartSupp', d.supplementary, 'fcAtypCaptionSupp');
+    const at = d.main.sex_atypical;
+    const atH = $('fcAtypHeadline');
+    if (atH) atH.textContent = ` ${at.n_intermediate} birds sit intermediate; ${at.n_atypical} are sex-atypical (CV accuracy ${(at.cv_acc*100).toFixed(1)}%).`;
+  }).catch(e => { console.warn('fc figures load', e); });
 })();
 </script>
 </body>
