@@ -100,11 +100,16 @@ a:hover{color:var(--accent-2)}
   transition:all .18s ease;white-space:nowrap}
 .tab:hover{color:var(--ink);background:var(--surface-2)}
 .tab.active{color:var(--surface);background:var(--ink);border-color:var(--ink)}
-.voc-tab{font-family:var(--mono);font-size:.72rem;padding:.4rem .9rem;border-radius:999px;
-  border:1px solid var(--rule);background:var(--surface);color:var(--ink-soft);cursor:pointer;
-  transition:all .18s ease;white-space:nowrap}
+.voc-tab{font-family:var(--mono);font-size:.82rem;padding:.6rem 1.2rem;border-radius:999px;
+  border:2px solid var(--rule);background:var(--surface);color:var(--ink-soft);cursor:pointer;
+  transition:all .18s ease;white-space:nowrap;font-weight:500}
 .voc-tab:hover{color:var(--ink);background:var(--surface-2)}
 .voc-tab.active{color:var(--surface);background:var(--ink);border-color:var(--ink)}
+/* colour-code by vocalisation type: songbirds (tūī, korimako, toutouwai) vs call species (kākā) */
+.voc-tab[data-voctype="songbird"]{border-color:var(--tui)}
+.voc-tab[data-voctype="songbird"].active{background:var(--tui);border-color:var(--tui)}
+.voc-tab[data-voctype="call"]{border-color:var(--kaka)}
+.voc-tab[data-voctype="call"].active{background:var(--kaka);border-color:var(--kaka)}
 .panel{display:none;animation:fade .5s ease both}
 .panel.active{display:block}
 @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
@@ -585,6 +590,115 @@ tr:hover td{background:var(--surface-2)}
   </div>
   <!-- ==================== VOCALISATION ANALYSIS (combined) ==================== -->
   <div class="panel" id="panel-vocalisation">
+    <div class="section-label">The Pipeline — field recording to individual bird</div>
+    <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+      Every number on this page comes out of one sequential pipeline. Raw field audio goes in;
+      named individuals come out. Each stage is validated on held-out birds before the next stage
+      consumes its output, so errors do not silently propagate. This is the songbird pipeline
+      (korimako, tūī); call-producing species like kākā follow a related but distinct path
+      (placeholder below — sequence grammar carries individual identity in songbirds but not in calls).</p></div>
+    <div class="card" style="overflow-x:auto">
+      <svg viewBox="0 0 1060 300" style="width:100%;min-width:900px;font-family:inherit" role="img" aria-label="Songbird analysis pipeline schematic">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#675e4f"/>
+          </marker>
+        </defs>
+        <!-- stage boxes -->
+        <g font-size="12" fill="#211c16">
+          <!-- 1 -->
+          <rect x="10" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#cfc3aa"/>
+          <text x="85" y="85" text-anchor="middle" font-weight="600">1 · Field audio</text>
+          <text x="85" y="103" text-anchor="middle" font-size="10" fill="#675e4f">48 kHz WAV</text>
+          <text x="85" y="118" text-anchor="middle" font-size="10" fill="#675e4f">2,137 songs</text>
+          <text x="85" y="133" text-anchor="middle" font-size="10" fill="#675e4f">1,066 birds</text>
+          <!-- 2 -->
+          <rect x="190" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#2c6c8c" stroke-width="2"/>
+          <text x="265" y="85" text-anchor="middle" font-weight="600">2 · Segmentation</text>
+          <text x="265" y="103" text-anchor="middle" font-size="10" fill="#675e4f">TweetyNet v2 (CNN)</text>
+          <text x="265" y="118" text-anchor="middle" font-size="10" fill="#675e4f">F1 0.902 @ 50 ms</text>
+          <text x="265" y="133" text-anchor="middle" font-size="10" fill="#675e4f">165-song held-out test</text>
+          <!-- 3 -->
+          <rect x="370" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#2c6c8c" stroke-width="2"/>
+          <text x="445" y="85" text-anchor="middle" font-weight="600">3 · Syllable typing</text>
+          <text x="445" y="103" text-anchor="middle" font-size="10" fill="#675e4f">Family classifier</text>
+          <text x="445" y="118" text-anchor="middle" font-size="10" fill="#675e4f">24 families + UNKNOWN</text>
+          <text x="445" y="133" text-anchor="middle" font-size="10" fill="#675e4f">0.893 test accuracy</text>
+          <!-- 4 -->
+          <rect x="550" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#2c6c8c" stroke-width="2"/>
+          <text x="625" y="85" text-anchor="middle" font-weight="600">4 · Sequence features</text>
+          <text x="625" y="103" text-anchor="middle" font-size="10" fill="#675e4f">repertoire · bigram</text>
+          <text x="625" y="118" text-anchor="middle" font-size="10" fill="#675e4f">grammar · timing</text>
+          <text x="625" y="133" text-anchor="middle" font-size="10" fill="#675e4f">21,463 syllables</text>
+          <!-- 5 -->
+          <rect x="730" y="20" width="150" height="70" rx="8" fill="#faf6ed" stroke="#5f7a3a" stroke-width="2"/>
+          <text x="805" y="43" text-anchor="middle" font-weight="600">5a · Sex</text>
+          <text x="805" y="60" text-anchor="middle" font-size="10" fill="#675e4f">0.94 within-corpus</text>
+          <text x="805" y="74" text-anchor="middle" font-size="10" fill="#675e4f">0.84 held-out island</text>
+          <!-- 6 -->
+          <rect x="730" y="110" width="150" height="70" rx="8" fill="#faf6ed" stroke="#5f7a3a" stroke-width="2"/>
+          <text x="805" y="133" text-anchor="middle" font-weight="600">5b · Site / dialect</text>
+          <text x="805" y="150" text-anchor="middle" font-size="10" fill="#675e4f">repertoire → island</text>
+          <text x="805" y="164" text-anchor="middle" font-size="10" fill="#675e4f">0.81 accuracy</text>
+          <!-- 7 -->
+          <rect x="730" y="200" width="150" height="80" rx="8" fill="#faf6ed" stroke="#b07d22" stroke-width="2"/>
+          <text x="805" y="223" text-anchor="middle" font-weight="600">6 · Individual ID</text>
+          <text x="805" y="240" text-anchor="middle" font-size="10" fill="#675e4f">top-1 55% · top-5 80%</text>
+          <text x="805" y="254" text-anchor="middle" font-size="10" fill="#675e4f">77 birds (closed-set)</text>
+          <text x="805" y="268" text-anchor="middle" font-size="10" fill="#675e4f">~6–8 songs for reliable ID</text>
+          <!-- arrows -->
+          <line x1="160" y1="105" x2="188" y2="105" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
+          <line x1="340" y1="105" x2="368" y2="105" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
+          <line x1="520" y1="105" x2="548" y2="105" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
+          <line x1="700" y1="105" x2="728" y2="55" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
+          <line x1="700" y1="105" x2="728" y2="145" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
+          <line x1="700" y1="105" x2="728" y2="240" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
+        </g>
+      </svg>
+      <div style="margin-top:.5rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)">
+        Blue = validated learned stages · green = inference tasks · amber = newest stage (first validation Aug 2026).
+      </div>
+    </div>
+
+    <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+      <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
+        ▸ Proposed call-species pipeline (kākā) — placeholder, pending more Shaw-lab data</summary>
+      <div style="padding:0 1.2rem 1rem">
+        <svg viewBox="0 0 1060 200" style="width:100%;min-width:900px;font-family:inherit" role="img" aria-label="Proposed call-species pipeline schematic">
+          <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#675e4f"/></marker></defs>
+          <g font-size="12" fill="#211c16">
+            <rect x="10" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#cfc3aa" stroke-dasharray="5,4"/>
+            <text x="90" y="80" text-anchor="middle" font-weight="600">1 · Field audio</text>
+            <text x="90" y="98" text-anchor="middle" font-size="10" fill="#675e4f">calls, not songs</text>
+            <rect x="200" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
+            <text x="280" y="80" text-anchor="middle" font-weight="600">2 · Call detection</text>
+            <text x="280" y="98" text-anchor="middle" font-size="10" fill="#675e4f">energy / detector</text>
+            <text x="280" y="113" text-anchor="middle" font-size="10" fill="#675e4f">(data-limited today)</text>
+            <rect x="390" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
+            <text x="470" y="80" text-anchor="middle" font-weight="600">3 · Call typing</text>
+            <text x="470" y="98" text-anchor="middle" font-size="10" fill="#675e4f">Van Horik 2007 scheme</text>
+            <text x="470" y="113" text-anchor="middle" font-size="10" fill="#675e4f">RF 96.2% LOO</text>
+            <rect x="580" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
+            <text x="660" y="80" text-anchor="middle" font-weight="600">4 · Acoustic features</text>
+            <text x="660" y="98" text-anchor="middle" font-size="10" fill="#675e4f">spectral shape, duration</text>
+            <text x="660" y="113" text-anchor="middle" font-size="10" fill="#675e4f">(sequence grammar n/a —</text>
+            <text x="660" y="126" text-anchor="middle" font-size="10" fill="#675e4f">calls lack song syntax)</text>
+            <rect x="770" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
+            <text x="850" y="80" text-anchor="middle" font-weight="600">5 · Sex / individual</text>
+            <text x="850" y="98" text-anchor="middle" font-size="10" fill="#675e4f">proposed — untested</text>
+            <text x="850" y="113" text-anchor="middle" font-size="10" fill="#675e4f">needs Shaw-lab corpus</text>
+            <line x1="170" y1="100" x2="198" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
+            <line x1="360" y1="100" x2="388" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
+            <line x1="550" y1="100" x2="578" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
+            <line x1="740" y1="100" x2="768" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
+          </g>
+        </svg>
+        <div style="margin-top:.5rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)">
+          Dashed = proposed / not yet validated. Call-species pipeline drops sequence grammar (no song syntax); individual ID would rest on acoustic call features instead.
+        </div>
+      </div>
+    </details>
+
     <div class="section-label">Vocalisation Analysis — Species-Specific Classification</div>
 
     <!-- INTRO: why vocalisation analysis matters -->
@@ -653,10 +767,10 @@ tr:hover td{background:var(--surface-2)}
 
     <!-- Species sub-tabs -->
     <div style="display:flex;gap:.3rem;margin-bottom:2rem;flex-wrap:wrap" id="voc-species-tabs">
-      <button class="voc-tab" onclick="showVocSpecies('tui',this)" style="cursor:pointer">Tūī</button>
-      <button class="voc-tab" onclick="showVocSpecies('bellbird',this)" style="cursor:pointer">Korimako</button>
-      <button class="voc-tab" onclick="showVocSpecies('kaka',this)" style="cursor:pointer">Kākā</button>
-      <button class="voc-tab" onclick="showVocSpecies('toutouwai',this)" style="cursor:pointer">Toutouwai</button>
+      <button class="voc-tab" data-voctype="songbird" onclick="showVocSpecies('tui',this)" style="cursor:pointer">Tūī</button>
+      <button class="voc-tab" data-voctype="songbird" onclick="showVocSpecies('bellbird',this)" style="cursor:pointer">Korimako</button>
+      <button class="voc-tab" data-voctype="call" onclick="showVocSpecies('kaka',this)" style="cursor:pointer">Kākā</button>
+      <button class="voc-tab" data-voctype="songbird" onclick="showVocSpecies('toutouwai',this)" style="cursor:pointer">Toutouwai</button>
     </div>
 
     <!-- TŪĪ sub-panel -->
