@@ -43,7 +43,9 @@
   <div id="side">
     <h1>ACOUSTIC MANIFOLD</h1>
     <div class="sub">Each point is one syllable, placed by acoustic similarity (UMAP of
-      spectral descriptors). Islands = the bird's syllabic textures. Click a point to hear it.</div>
+      spectral descriptors). Islands = the bird's syllabic textures. Click a point to hear it.
+      Default view: a korimako song segmented and typed by the current pipeline (TweetyNet v2 +
+      stage-4 family classifier); the earlier tūī examples (legacy rule-based typing) are in the dropdown.</div>
     <select id="recSel"></select>
     <label class="toggle"><input type="checkbox" id="traj"> show song trajectory</label>
     <label class="toggle"><input type="checkbox" id="spin"> auto-rotate</label>
@@ -67,7 +69,15 @@ const TYPE_COLORS = {low_frequency:0x5f7a3a, harmonic:0x2c6c8c, high_frequency:0
                      rmnr:0xb07d22, trill:0x7c5784};
 const TYPE_LABELS = {low_frequency:'Low-freq', harmonic:'Harmonic', high_frequency:'High-freq',
                      rmnr:'RMNR', trill:'Trill'};
-const RECS = ['XC1090728','XC1104055','XC975461'];
+// korimako stage-4 families get a generated palette (24 classes); tui legacy types keep the above
+const FAM_PALETTE = [0xb07d22,0x5f7a3a,0xbb4a33,0xa99e89,0x7c5784,0x2c6c8c,0x8c4a2c,0x357a5b,
+                     0xb04a3a,0x4363d8,0xe6194b,0x469990,0x9a6324,0x800000,0x808000,0x000075,
+                     0xf58231,0x911eb4,0x42d4f4,0xf032e6,0xbfef45,0xdcbeff,0xffd8b1,0xaaffc3];
+const RECS = ['KOE_208169', 'XC1090728','XC1104055','XC975461'];
+const REC_LABELS = {KOE_208169:'Korimako — Koe 208169 (TN v2 + stage-4)',
+                    XC1090728:'Tūī — XC1090728 (legacy rule-based)',
+                    XC1104055:'Tūī — XC1104055 (legacy rule-based)',
+                    XC975461:'Tūī — XC975461 (legacy rule-based)'};
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x1a1712);
@@ -111,8 +121,18 @@ async function load(rec){
   const r = await fetch(`${rec}_manifold3d.json`);
   const data = await r.json();
   activeRec = data; pointsData = data.points;
+  // dynamic type palette: korimako families (many) or tui legacy types (fixed)
+  const types = [...new Set(pointsData.map(p=>p.type))].sort();
+  const isKoe = rec.startsWith('KOE_');
+  ACTIVE_COLORS = {}; ACTIVE_LABELS = {};
+  types.forEach((t,i)=>{
+    ACTIVE_COLORS[t] = isKoe ? FAM_PALETTE[i % FAM_PALETTE.length]
+                             : (TYPE_COLORS[t] || 0x888888);
+    ACTIVE_LABELS[t] = isKoe ? t : (TYPE_LABELS[t] || t);
+  });
   buildCloud(); buildLegend(); buildStats();
 }
+let ACTIVE_COLORS = {}, ACTIVE_LABELS = {};
 
 function buildCloud(){
   while(cloudGroup.children.length) cloudGroup.remove(cloudGroup.children[0]);
@@ -124,7 +144,7 @@ function buildCloud(){
     const pos = new Float32Array(pts.length*3);
     pts.forEach((p,i)=>{ pos[i*3]=p.x; pos[i*3+1]=p.y; pos[i*3+2]=p.z; });
     g.setAttribute('position', new THREE.BufferAttribute(pos,3));
-    const m = new THREE.PointsMaterial({color:TYPE_COLORS[type]||0x888888, size:0.045,
+    const m = new THREE.PointsMaterial({color:ACTIVE_COLORS[type]||0x888888, size:0.045,
         map:SPRITE, alphaTest:0.15, sizeAttenuation:true, transparent:true, opacity:0.95,
         depthWrite:false});
     const cloud = new THREE.Points(g, m);
@@ -153,11 +173,11 @@ function buildLegend(){
   const el = document.getElementById('legend'); el.innerHTML='';
   const counts = {};
   pointsData.forEach(p=>counts[p.type]=(counts[p.type]||0)+1);
-  for(const [t,c] of Object.entries(TYPE_COLORS)){
+  for(const [t,c] of Object.entries(Object.entries(ACTIVE_COLORS)){
     if(!counts[t]) continue;
     const row = document.createElement('div');
     row.innerHTML = `<span class="dot" style="background:#${c.toString(16).padStart(6,'0')}"></span>
-                     ${TYPE_LABELS[t]} <span style="color:var(--muted)">(${counts[t]})</span>`;
+                     ${ACTIVE_LABELS[t]} <span style="color:var(--muted)">(${counts[t]})</span>`;
     row.onclick = ()=>{
       hiddenTypes.has(t) ? hiddenTypes.delete(t) : hiddenTypes.add(t);
       row.classList.toggle('off');
@@ -172,8 +192,10 @@ function buildStats(){
   document.getElementById('stats').innerHTML =
     `<b>${activeRec.recording_id}</b> · ${activeRec.n_syllables} syllables · ${activeRec.duration_s.toFixed(0)}s<br>`+
     `embedding trustworthiness <b>${d.trustworthiness.toFixed(3)}</b><br>`+
-    `neighbour type-agreement <b>${d.knn_type_agreement.toFixed(2)}</b><br>`+
-    `<span style="opacity:.75">tūī · Aotearoa NZ · xeno-canto</span>`;
+    (d.knn_type_agreement !== undefined ? `neighbour type-agreement <b>${d.knn_type_agreement.toFixed(2)}</b><br>` : '')+
+    (d.silhouette_by_type !== undefined ? `silhouette by family <b>${d.silhouette_by_type.toFixed(2)}</b> <span style="opacity:.7">(families are perceptual categories, not acoustic clusters — low/negative is expected)</span><br>` : '')+
+    (d.segmenter ? `<span style="opacity:.75">segmenter: ${d.segmenter}<br>typer: ${d.typer}</span><br>` : '')+
+    `<span style="opacity:.75">${d.species || 'tūī'} · Aotearoa NZ · ${d.source || 'xeno-canto'}</span>`;
 }
 
 // picking
@@ -195,7 +217,7 @@ renderer.domElement.addEventListener('pointermove', e=>{
     const p = pointsData[hoverIdx];
     tip.style.display='block';
     tip.style.left=(e.clientX+12)+'px'; tip.style.top=(e.clientY+12)+'px';
-    tip.textContent = `${TYPE_LABELS[p.type]||p.type} · ${(p.start_ms/1000).toFixed(2)}s · ${(p.end_ms-p.start_ms).toFixed(0)}ms`;
+    tip.textContent = `${ACTIVE_LABELS[p.type]||p.type} · ${(p.start_ms/1000).toFixed(2)}s · ${(p.end_ms-p.start_ms).toFixed(0)}ms`;
     renderer.domElement.style.cursor='pointer';
   } else { tip.style.display='none'; renderer.domElement.style.cursor='grab'; }
 });
@@ -206,7 +228,7 @@ renderer.domElement.addEventListener('click', e=>{
   audio.src = p.audio; audio.play();
   flash(p);
   document.getElementById('nowPlaying').innerHTML =
-    `▶ <b>${TYPE_LABELS[p.type]||p.type}</b> @ ${(p.start_ms/1000).toFixed(2)}s (${(p.end_ms-p.start_ms).toFixed(0)} ms)`;
+    `▶ <b>${ACTIVE_LABELS[p.type]||p.type}</b> @ ${(p.start_ms/1000).toFixed(2)}s (${(p.end_ms-p.start_ms).toFixed(0)} ms)`;
 });
 
 document.getElementById('traj').onchange = e=>{ if(trajLine) trajLine.visible = e.target.checked; };
@@ -245,7 +267,7 @@ document.getElementById('playSong').onclick = ()=>{
       const p = sortedCache[nextIdx];
       flash(p);
       document.getElementById('nowPlaying').innerHTML =
-        `▶ <b>${TYPE_LABELS[p.type]||p.type}</b> @ ${(p.start_ms/1000).toFixed(2)}s / ${(activeRec.duration_s).toFixed(0)}s`;
+        `▶ <b>${ACTIVE_LABELS[p.type]||p.type}</b> @ ${(p.start_ms/1000).toFixed(2)}s / ${(activeRec.duration_s).toFixed(0)}s`;
       nextIdx++;
     }
     if(audio.ended || tMs >= activeRec.duration_s*1000){
@@ -258,7 +280,7 @@ document.getElementById('playSong').onclick = ()=>{
   tick();
 };
 const sel = document.getElementById('recSel');
-RECS.forEach(r=>{ const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o); });
+RECS.forEach(r=>{ const o=document.createElement('option'); o.value=r; o.textContent=REC_LABELS[r]||r; sel.appendChild(o); });
 sel.onchange = ()=>load(sel.value);
 
 (function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene, cam); })();
