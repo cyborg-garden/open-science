@@ -1,0 +1,79 @@
+{
+  "total_songs": 1496,
+  "total_birds": 753,
+  "songs_per_bird_dist": {
+    "count": 753.0,
+    "mean": 1.99,
+    "std": 2.9,
+    "min": 1.0,
+    "25%": 1.0,
+    "50%": 1.0,
+    "75%": 2.0,
+    "max": 34.0
+  },
+  "timestamp": "2026-08-24 12:20",
+  "learning_curve": [
+    {
+      "n_train_songs": 2,
+      "n_birds": 77,
+      "top1_mean": 0.3453,
+      "top1_sd": 0.0132,
+      "top5_mean": 0.676,
+      "chance": 0.013
+    },
+    {
+      "n_train_songs": 3,
+      "n_birds": 55,
+      "top1_mean": 0.4472,
+      "top1_sd": 0.0163,
+      "top5_mean": 0.7722,
+      "chance": 0.0182
+    },
+    {
+      "n_train_songs": 4,
+      "n_birds": 45,
+      "top1_mean": 0.4762,
+      "top1_sd": 0.0199,
+      "top5_mean": 0.8135,
+      "chance": 0.0222
+    },
+    {
+      "n_train_songs": 6,
+      "n_birds": 33,
+      "top1_mean": 0.5496,
+      "top1_sd": 0.0263,
+      "top5_mean": 0.8691,
+      "chance": 0.0303
+    },
+    {
+      "n_train_songs": 8,
+      "n_birds": 24,
+      "top1_mean": 0.5926,
+      "top1_sd": 0.0055,
+      "top5_mean": 0.9025,
+      "chance": 0.0417
+    },
+    {
+      "n_train_songs": 12,
+      "n_birds": 10,
+      "top1_mean": 0.7897,
+      "top1_sd": 0.0368,
+      "top5_mean": 0.9722,
+      "chance": 0.1
+    }
+  ],
+  "accuracy_by_sampling_bucket": {
+    "10+": {
+      "n_birds": 24,
+      "mean_top1": 0.361
+    },
+    "6-9": {
+      "n_birds": 21,
+      "mean_top1": 0.389
+    },
+    "4-5": {
+      "n_birds": 32,
+      "mean_top1": 0.385
+    }
+  }
+}
