@@ -1,0 +1,48 @@
+{
+  "n_songs": 654,
+  "n_birds": 77,
+  "n_train_songs": 441,
+  "n_test_songs": 213,
+  "chance_top1": 0.01299,
+  "min_songs_per_bird": 4,
+  "note": "held-out-songs-per-bird (closed-set ID); NOT held-out-individual (impossible for closed set)",
+  "timestamp": "2026-08-24 11:43",
+  "S1_repertoire_hist": {
+    "lr_top1": 0.3944,
+    "lr_top5": 0.7934
+  },
+  "S2_sequence_bigram": {
+    "lr_top1": 0.5211,
+    "lr_top5": 0.7746
+  },
+  "S3_timing_stats": {
+    "lr_top1": 0.1925,
+    "lr_top5": 0.493
+  },
+  "S4_combined": {
+    "lr_top1": 0.554,
+    "lr_top5": 0.8028
+  },
+  "S4_centroid": {
+    "top1": 0.446,
+    "top5": 0.7981
+  },
+  "per_bird_top1": {
+    "median": 0.5,
+    "p25": 0.0,
+    "p75": 1.0,
+    "frac_birds_ge_0.8": 0.312
+  },
+  "S4_sex_M": {
+    "top1": 0.512,
+    "top5": 0.8373,
+    "n_birds": 55,
+    "chance": 0.0182
+  },
+  "S4_sex_F": {
+    "top1": 0.4043,
+    "top5": 0.8511,
+    "n_birds": 22,
+    "chance": 0.0455
+  }
+}

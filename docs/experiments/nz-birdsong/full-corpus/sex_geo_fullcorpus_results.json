@@ -1,0 +1,120 @@
+{
+  "n_segments": 21463,
+  "n_birds": 454,
+  "n_male": 234,
+  "n_female": 220,
+  "sites": [
+    "CUV",
+    "LAI",
+    "LBI",
+    "PKI",
+    "TAW",
+    "TMI"
+  ],
+  "timestamp": "2026-08-24 11:41",
+  "sex_full_corpus": {
+    "global_acc": 0.9384,
+    "routed_acc": 0.9384,
+    "router_acc": 0.8128,
+    "per_site_routed": {
+      "CUV": 1.0,
+      "LAI": 0.763,
+      "LBI": 0.847,
+      "PKI": 0.927,
+      "TAW": 0.922,
+      "TMI": 0.981
+    }
+  },
+  "loso_full_corpus": [
+    {
+      "held_out_site": "CUV",
+      "n": 141,
+      "acc_fallback_mix": 0.936,
+      "acc_hierarchy_alone": 0.936,
+      "acc_global_alone": 0.936
+    },
+    {
+      "held_out_site": "LAI",
+      "n": 18,
+      "acc_fallback_mix": 0.778,
+      "acc_hierarchy_alone": 0.778,
+      "acc_global_alone": 0.778
+    },
+    {
+      "held_out_site": "LBI",
+      "n": 67,
+      "acc_fallback_mix": 0.881,
+      "acc_hierarchy_alone": 0.881,
+      "acc_global_alone": 0.881
+    },
+    {
+      "held_out_site": "PKI",
+      "n": 60,
+      "acc_fallback_mix": 0.767,
+      "acc_hierarchy_alone": 0.767,
+      "acc_global_alone": 0.767
+    },
+    {
+      "held_out_site": "TAW",
+      "n": 59,
+      "acc_fallback_mix": 0.78,
+      "acc_hierarchy_alone": 0.78,
+      "acc_global_alone": 0.78
+    },
+    {
+      "held_out_site": "TMI",
+      "n": 109,
+      "acc_fallback_mix": 0.881,
+      "acc_hierarchy_alone": 0.881,
+      "acc_global_alone": 0.881
+    }
+  ],
+  "loso_mean_full_corpus": 0.8372,
+  "site_router_full_corpus": 0.8105,
+  "sex_test_only": {
+    "global_acc": 0.9714,
+    "routed_acc": 0.9714,
+    "router_acc": 0.6679,
+    "per_site_routed": {
+      "CUV": 1.0,
+      "LBI": 1.0,
+      "PKI": 0.933,
+      "TMI": 1.0,
+      "TAW": 1.0,
+      "LAI": 1.0
+    }
+  },
+  "n_test_birds": 37,
+  "loso_test_only": [
+    {
+      "held_out_site": "CUV",
+      "n": 10,
+      "acc_fallback_mix": 1.0,
+      "acc_hierarchy_alone": 1.0,
+      "acc_global_alone": 1.0
+    },
+    {
+      "held_out_site": "LBI",
+      "n": 6,
+      "acc_fallback_mix": 0.667,
+      "acc_hierarchy_alone": 0.667,
+      "acc_global_alone": 0.667
+    },
+    {
+      "held_out_site": "PKI",
+      "n": 10,
+      "acc_fallback_mix": 0.6,
+      "acc_hierarchy_alone": 0.6,
+      "acc_global_alone": 0.6
+    },
+    {
+      "held_out_site": "TAW",
+      "n": 5,
+      "acc_fallback_mix": 0.8,
+      "acc_hierarchy_alone": 0.8,
+      "acc_global_alone": 0.8
+    }
+  ],
+  "loso_mean_test_only": 0.7668,
+  "site_router_test_only": 0.7071
+}
