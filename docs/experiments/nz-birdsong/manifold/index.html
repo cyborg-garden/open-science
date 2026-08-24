@@ -221,30 +221,41 @@ function flash(p){
   hl.scale.set(1,1,1);
 }
 
-// play the whole song: walk syllables in time order, play audio + pulse marker
-let playing = false, playTimers = [];
+// play the whole song: full recording, highlight marker synced to real syllable onsets.
+// (Previously: walked per-syllable snippet clips with imposed timing — sounded unnatural.)
+let playing = false, playRAF = null, sortedCache = [], activeFull = null;
 document.getElementById('playSong').onclick = ()=>{
-  if(playing){ playing=false; playTimers.forEach(clearTimeout); playTimers=[]; audio.pause();
+  if(playing){ playing=false; if(playRAF) cancelAnimationFrame(playRAF); playRAF=null; audio.pause();
     document.getElementById('playSong').textContent='▶ play song through the manifold';
     hl.visible=false; return; }
+  if(!activeRec) return;
   playing = true;
   document.getElementById('playSong').textContent='■ stop';
-  const sorted = [...pointsData].sort((a,b)=>a.start_ms-b.start_ms);
-  const t0 = sorted[0].start_ms;
-  const SPEED = 1.0; // realtime
-  sorted.forEach(p=>{
-    const dt = (p.start_ms - t0)/SPEED;
-    playTimers.push(setTimeout(()=>{
-      if(!playing) return;
+  sortedCache = [...pointsData].sort((a,b)=>a.start_ms-b.start_ms);
+  audio.src = `${activeRec.recording_id}_full.mp3`;
+  audio.currentTime = 0;
+  audio.play().catch(()=>{});
+  activeFull = activeRec.recording_id;
+  let nextIdx = 0;
+  const tick = ()=>{
+    if(!playing) return;
+    const tMs = audio.currentTime * 1000;
+    // advance highlight to the syllable sounding now (real onsets, not imposed ISI)
+    while(nextIdx < sortedCache.length && sortedCache[nextIdx].start_ms <= tMs){
+      const p = sortedCache[nextIdx];
       flash(p);
-      audio.src = p.audio; audio.play().catch(()=>{});
       document.getElementById('nowPlaying').innerHTML =
-        `▶ <b>${TYPE_LABELS[p.type]||p.type}</b> @ ${(p.start_ms/1000).toFixed(2)}s`;
-    }, dt));
-  });
-  playTimers.push(setTimeout(()=>{ playing=false; hl.visible=false;
-    document.getElementById('playSong').textContent='▶ play song through the manifold'; },
-    (sorted[sorted.length-1].start_ms - t0)/SPEED + 600));
+        `▶ <b>${TYPE_LABELS[p.type]||p.type}</b> @ ${(p.start_ms/1000).toFixed(2)}s / ${(activeRec.duration_s).toFixed(0)}s`;
+      nextIdx++;
+    }
+    if(audio.ended || tMs >= activeRec.duration_s*1000){
+      playing=false; hl.visible=false;
+      document.getElementById('playSong').textContent='▶ play song through the manifold';
+      return;
+    }
+    playRAF = requestAnimationFrame(tick);
+  };
+  tick();
 };
 const sel = document.getElementById('recSel');
 RECS.forEach(r=>{ const o=document.createElement('option'); o.value=r; o.textContent=r; sel.appendChild(o); });
