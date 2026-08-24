@@ -1,0 +1,51 @@
+{
+  "n_songs_attempted": 2137,
+  "n_songs_with_segments": 2136,
+  "n_segments": 21463,
+  "n_seg_failures": 0,
+  "failures": [],
+  "per_split_songs": {
+    "test": 165,
+    "train": 1774,
+    "val": 198
+  },
+  "per_split_segments": {
+    "test": 1205,
+    "train": 18389,
+    "val": 1869
+  },
+  "per_site_segments": {
+    "CUV": 5698,
+    "LAI": 1321,
+    "LBI": 1594,
+    "PKI": 2803,
+    "TAW": 2360,
+    "TMI": 7687
+  },
+  "sex_counts_songs": {
+    "M": 1481,
+    "F": 656
+  },
+  "gap_ms": {
+    "n": 19327,
+    "median": 139.3,
+    "p5": 23.2,
+    "p95": 1091.3,
+    "frac_negative": 0.0,
+    "frac_gt_5s": 0.003880581569824598
+  },
+  "dur_ms": {
+    "median": 185.8,
+    "p5": 46.4,
+    "p95": 388.9,
+    "frac_lt_20ms": 0.0,
+    "frac_gt_2s": 0.0
+  },
+  "family_labelable_frac": 0.8273307552532265,
+  "family_confident_frac_p80": 0.919442761962447,
+  "too_short_frac": 0.0,
+  "bouts_per_song": {
+    "median": 1.0,
+    "p95": 4.0
+  }
+}
