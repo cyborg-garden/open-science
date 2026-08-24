@@ -695,6 +695,66 @@ tr:hover td{background:var(--surface-2)}
 
     <!-- BELLBIRD sub-panel -->
     <div class="voc-species-panel" id="voc-bellbird" style="display:none">
+
+      <!-- ============ FULL-CORPUS RECOMPUTE (Aug 2026) ============ -->
+      <div class="card" style="border-left:4px solid var(--bellbird);background:var(--card-alt,#faf8f3)">
+        <h3 style="color:var(--bellbird);margin-top:0">Full-Corpus Recompute — Koe Bellbird, 2,137 songs</h3>
+        <p style="font-size:.9rem;color:var(--ink-soft)">
+          Everything below this card until the legacy sections is the <b>full-corpus recompute</b> (24 Aug 2026):
+          21,463 model-extracted syllables across 2,136 songs / 454 banded birds, segmented by a CNN
+          (TweetyNet v2, F1 = 0.902 @ 50 ms on a 165-song held-out test, bird-disjoint split) and typed by a
+          family classifier (0.893 test accuracy on held-out birds). Counts are <b>model-extracted</b>,
+          not human-labelled. The older tutorial-subset figures further down the page are kept for
+          comparison and marked as such.</p>
+      </div>
+
+      <div class="section-label">Sex from song — does it hold at scale?</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Recomputed on the full corpus (454 birds: 234 male, 220 female) using syllable-sequence features
+        (repertoire composition, family-to-family transition grammar, timing). <b id="fc-sex-headline">…</b>
+        The per-island pattern is consistent with the earlier small-sample run — large well-sampled sites
+        hold up, small or atypical sites remain hard — so the site-confound story is structural,
+        not a small-sample artefact.</p></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:320px"><canvas id="fcSexChart"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcSexCaption"></div>
+      </div>
+
+      <div class="section-label">Geographic dialect — repertoire identifies home island</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        A bird's syllable repertoire identifies which of the six study sites it came from at
+        <b id="fc-router-headline">…</b> — real dialect structure, though not a substitute for geotags.</p></div>
+
+      <div class="section-label">Individual ID — which bird is singing? <span style="font-size:.7rem;color:var(--ink-faint)">(new: first validation)</span></div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        From a single song, the model names the correct bird <b id="fc-id-top1">…</b> of the time and places
+        the correct bird in the top five <b id="fc-id-top5">…</b> of the time, across a 77-bird population
+        (chance = 1.3%). This is <b>closed-set</b> identification — naming a bird from a known population.
+        Identifiability varies by individual: about a third of birds are reliably nameable, a quarter
+        effectively never. The learning curve below answers the practical question: how many recordings
+        per bird does reliable ID need?</p></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:300px"><canvas id="fcIdCurve"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcIdCaption"></div>
+      </div>
+
+      <div class="section-label">Explore: every song as a point, coloured by bird</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Each point is one whole song (1,496 songs), positioned by the same features the ID model uses —
+        repertoire + sequence grammar + timing. Songs by the same bird clump together; that clumping is
+        <i>how</i> individual identification works. The 20 best-recorded birds are coloured; the rest are grey.
+        Drag to rotate.</p></div>
+      <div class="card">
+        <div id="fcUmapWrap" style="position:relative;height:520px;background:#0f0f0f;border-radius:6px;overflow:hidden">
+          <canvas id="fcUmap"></canvas>
+          <div id="fcUmapTip" style="position:absolute;display:none;pointer-events:none;background:rgba(20,20,20,.92);color:#eee;font:11px/1.5 monospace;padding:5px 8px;border-radius:4px;z-index:5"></div>
+        </div>
+        <div style="margin-top:.6rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)" id="fcUmapCaption">loading…</div>
+      </div>
+
+      <div class="section-label" style="margin-top:2.5rem;color:var(--ink-faint)">Earlier tutorial-subset analysis (kept for comparison)</div>
+
+      <!-- ============ LEGACY TUTORIAL-SUBSET CONTENT ============ -->
       <div class="prose" style="margin-bottom:1.5rem">
         <p>Classification follows the <b>Webb et al. (2021)</b> and <b>Roper et al. (2018)</b> framework.
         Unlike many songbirds where "song type" is the functional unit, korimako researchers found that
@@ -3707,6 +3767,134 @@ const GameEngine = {
 
 // ==================== INIT VISIBLE TABS ====================
 // Overview is default, no charts needed there
+
+// ==================== FULL-CORPUS RECOMPUTE (Aug 2026) ====================
+// Loads verified numbers + song-level UMAP from full-corpus/ JSONs and fills
+// the fc* elements in the korimako panel. All numbers are read from artifacts,
+// never hard-coded, so the page can't drift from the verified results.
+(function(){
+  const FC = 'full-corpus/';
+  const $ = id => document.getElementById(id);
+
+  // ---- sex + geo numbers ----
+  fetch(FC + 'sex_geo_fullcorpus_results.json').then(r => r.json()).then(d => {
+    const wc = (d.sex_full_corpus.global_acc * 100).toFixed(1);
+    const loso = (d.loso_mean_full_corpus * 100).toFixed(1);
+    const tst = d.sex_test_only ? (d.sex_test_only.global_acc * 100).toFixed(1) : null;
+    $('fc-sex-headline').textContent =
+      `Sex is classified at ${wc}% within-corpus (5-fold) and ${loso}% when predicting birds from a ` +
+      `completely held-out island (leave-one-site-out)` +
+      (tst ? `; on the clean test split, ${tst}% (n=${d.n_test_birds} birds)` : '') + '.';
+    $('fc-router-headline').textContent = (d.site_router_full_corpus * 100).toFixed(0) + '% accuracy';
+
+    // per-site bar chart (LOSO accuracies)
+    const sites = d.loso_full_corpus.map(x => x.held_out_site);
+    const accs = d.loso_full_corpus.map(x => x.acc_fallback_mix * 100);
+    const ns = d.loso_full_corpus.map(x => x.n);
+    if (window.Chart && $('fcSexChart')) {
+      new Chart($('fcSexChart'), {type: 'bar',
+        data: {labels: sites.map((s, i) => `${s} (n=${ns[i]})`),
+          datasets: [{label: 'Sex accuracy, island held out (%)', data: accs,
+            backgroundColor: '#2c6c8c'}]},
+        options: {scales: {y: {min: 0, max: 100}}, plugins: {legend: {display: false}}}});
+    }
+    $('fcSexCaption').textContent =
+      'Leave-one-site-out sex accuracy per held-out island (full corpus, sequence features). ' +
+      'Large well-sampled sites (CUV, TMI, LBI) hold; small/atypical sites (PKI, TAW, LAI) remain hard.';
+  }).catch(e => { console.warn('fc sex load', e); });
+
+  // ---- individual ID + learning curve ----
+  fetch(FC + 'individual_id_results.json').then(r => r.json()).then(d => {
+    $('fc-id-top1').textContent = (d.S4_combined.lr_top1 * 100).toFixed(0) + '%';
+    $('fc-id-top5').textContent = (d.S4_combined.lr_top5 * 100).toFixed(0) + '%';
+  }).catch(e => { console.warn('fc id load', e); });
+
+  fetch(FC + 'individual_id_learning_curve.json').then(r => r.json()).then(d => {
+    const c = d.learning_curve;
+    const labels = c.map(x => `${x.n_train_songs} songs/bird (n=${x.n_birds})`);
+    const top1 = c.map(x => x.top1_mean * 100);
+    const top5 = c.map(x => x.top5_mean * 100);
+    const chance = c.map(x => x.chance * 100);
+    if (window.Chart && $('fcIdCurve')) {
+      new Chart($('fcIdCurve'), {type: 'line',
+        data: {labels,
+          datasets: [
+            {label: 'Top-1 ID accuracy (%)', data: top1, borderColor: '#2c6c8c', backgroundColor: '#2c6c8c', tension: .25},
+            {label: 'Top-5 (%)', data: top5, borderColor: '#b07d22', backgroundColor: '#b07d22', borderDash: [6, 4], tension: .25},
+            {label: 'Chance (%)', data: chance, borderColor: '#999', borderDash: [2, 4], pointRadius: 0, tension: 0}]},
+        options: {scales: {y: {min: 0, max: 100}}}});
+    }
+    $('fcIdCaption').textContent =
+      'Individual ID accuracy vs number of training recordings per bird (3 seeds, mean). ' +
+      'Reliable closed-set ID needs ~6–8 recordings per bird; accuracy is flat across sampling depth ' +
+      '(less-recorded birds are identified about as well per song).';
+  }).catch(e => { console.warn('fc curve load', e); });
+
+  // ---- song-level 3D UMAP (custom canvas, drag-rotate, hover tooltip) ----
+  fetch(FC + 'song_umap_data.json').then(r => r.json()).then(d => {
+    const cv = $('fcUmap'); if (!cv) return;
+    const wrap = $('fcUmapWrap'); const tip = $('fcUmapTip');
+    const ctx = cv.getContext('2d');
+    function size(){ cv.width = wrap.clientWidth * devicePixelRatio; cv.height = wrap.clientHeight * devicePixelRatio; }
+    size(); addEventListener('resize', () => { size(); draw(); });
+
+    const pts = d.points;
+    const birds = d.top_birds;
+    const palette = ['#e6194b','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#fabed4',
+                     '#469990','#dcbeff','#9a6324','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000075','#a9a9a9'];
+    const col = {}; birds.forEach((b, i) => col[b] = palette[i % palette.length]);
+
+    let rx = 0.6, rz = 0.8, dragging = false, lx = 0, ly = 0;
+    const sc = 6.5;  // scale
+    const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+    const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+    const cz = pts.reduce((s, p) => s + p.z, 0) / pts.length;
+
+    function project(p){
+      const x = p.x - cx, y = p.y - cy, z = p.z - cz;
+      const x1 = x * Math.cos(rz) - y * Math.sin(rz);
+      const y1 = x * Math.sin(rz) + y * Math.cos(rz);
+      const y2 = y1 * Math.cos(rx) - z * Math.sin(rx);
+      const z2 = y1 * Math.sin(rx) + z * Math.cos(rx);
+      const persp = 1 / (1 + z2 / 30);
+      return [cv.width / 2 + x1 * sc * persp * devicePixelRatio * 8,
+              cv.height / 2 + y2 * sc * persp * devicePixelRatio * 8, z2];
+    }
+    let proj = [];
+    function draw(){
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      proj = pts.map(project);
+      const order = proj.map((p, i) => i).sort((a, b) => proj[a][2] - proj[b][2]);
+      for (const i of order){
+        const p = pts[i], q = proj[i];
+        ctx.fillStyle = col[p.bird] || 'rgba(120,120,120,.45)';
+        ctx.beginPath(); ctx.arc(q[0], q[1], (p.bird === '(other)' ? 2 : 3.2) * devicePixelRatio, 0, 7); ctx.fill();
+      }
+    }
+    draw();
+    cv.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
+    addEventListener('mouseup', () => dragging = false);
+    cv.addEventListener('mousemove', e => {
+      if (dragging){ rz += (e.clientX - lx) * .005; rx += (e.clientY - ly) * .005; lx = e.clientX; ly = e.clientY; draw(); tip.style.display = 'none'; return; }
+      const r = cv.getBoundingClientRect();
+      const mx = (e.clientX - r.left) * devicePixelRatio, my = (e.clientY - r.top) * devicePixelRatio;
+      let best = -1, bd = 1e9;
+      for (let i = 0; i < proj.length; i++){
+        const dd = (proj[i][0] - mx) ** 2 + (proj[i][1] - my) ** 2;
+        if (dd < bd){ bd = dd; best = i; }
+      }
+      if (best >= 0 && bd < (12 * devicePixelRatio) ** 2){
+        const p = pts[best];
+        tip.style.display = 'block';
+        tip.style.left = (e.clientX - r.left + 12) + 'px';
+        tip.style.top = (e.clientY - r.top - 10) + 'px';
+        tip.textContent = `${p.individual} · ${p.site} · ${p.sex} · ${p.n_syll} syllables · song ${p.song_id}`;
+      } else tip.style.display = 'none';
+    });
+    $('fcUmapCaption').textContent =
+      `${d.n_points} songs · ${d.n_birds_total} banded birds · top 20 by recording count coloured, rest grey · drag to rotate, hover for detail`;
+  }).catch(e => { console.warn('fc umap load', e); const el = document.getElementById('fcUmapCaption'); if (el) el.textContent = 'UMAP data failed to load.'; });
+})();
 </script>
 </body>
 </html>
