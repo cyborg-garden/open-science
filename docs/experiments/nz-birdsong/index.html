@@ -1820,6 +1820,41 @@ tr:hover td{background:var(--surface-2)}
         </div>
       </div>
 
+      <div class="note" style="margin:1rem 0">
+        <div class="mark">Addendum (25 August 2026) &mdash; the SNR proxy also failed on a single example, and here is the fix</div>
+        <div>
+        <p style="margin:0 0 .7rem">Separately from the population-level analysis above, we picked one
+        SNR-proxy-scored "high quality" recording (Akaroa foreshore, a populated harbour town) to show as an
+        illustrative example. The pipeline confidently (mean confidence 0.89) segmented and labelled ~32
+        loud, regular transients as bellbird syllable types. On inspection this recording could not be
+        confirmed as clean, unambiguous bellbird song &mdash; the SNR proxy measures loudness and regularity
+        in a frequency band, not <em>is this actually a bird</em>, and a loud non-vocal or ambiguous sound in
+        a populated area can score "high quality" under that metric just as easily as a clean bird call can.
+        We could not resolve from the spectrogram or spectral statistics alone whether those transients were
+        real bellbird calls; a listen suggested "maybe a weird, cicada-like call" &mdash; genuinely
+        ambiguous, not resolved either way, and we are not asserting a verdict on that specific recording.</p>
+
+        <p style="margin:0 0 .7rem"><b>The fix: use independent human verification, not an acoustic proxy, to
+        select the illustrative example.</b> Macaulay Library records a community rating (0&ndash;5, from
+        independent listeners), a background-species field, and playback/captive flags &mdash; a real
+        provenance signal our SNR proxy never had access to. Filtering the 980 Macaulay korimako recordings to
+        rating &ge;4.0 from &ge;3 raters, no listed background species, not captive, playback not used, left
+        46 candidates. The current illustrative example on this page (ML 364073421, Lady Alice Island,
+        Northland, January 2020; rated 4.67/5 by 6 independent raters) is drawn from that filtered set:
+        <a href="full-corpus/model-extrapolation/macaulay_364073421_verified_annotated.png">annotated
+        spectrogram</a> and <a href="full-corpus/model-extrapolation/macaulay_364073421_full.wav">source
+        audio</a> are both published so a reader can check the labels against the sound directly rather than
+        take our word for it.</p>
+
+        <p style="margin:0"><b>What this changes and what it doesn't:</b> the population-level result (n=607,
+        confidence rising with SNR, Spearman r=0.508) is unaffected &mdash; it never depended on any single
+        recording's identity being correct. Only the single illustrative example changed. We are keeping this
+        addendum rather than quietly swapping the figure, because "our first quality metric let an ambiguous
+        recording through as a headline example" is itself informative about the limits of acoustic-only
+        quality proxies for field data with no ground truth.</p>
+        </div>
+      </div>
+
       <p>Beyond the rule-based pipeline, we trained a <b>TweetyNet-style convolutional neural network</b> for
       syllable <em>segmentation</em> &mdash; finding the boundaries of vocal units. <b>It does not categorise
       syllables; see the 29 July correction below.</b>
