@@ -889,6 +889,34 @@ tr:hover td{background:var(--surface-2)}
         <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcAtypCaption"></div>
       </div>
 
+      <div class="section-label">Distribution — where do all birds fall on the P(male) axis?</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Stacked histogram of every bird's P(male), split by the bird's <b>hand-labelled sex</b>.
+        A well-calibrated model piles males at the right and females at the left; the middle band is
+        where intermediate and atypical birds live.</p></div>
+      <div class="card">
+        <div class="chart-wrap" style="height:260px"><canvas id="fcPmaleHist"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcPmaleHistCaption"></div>
+      </div>
+
+      <div class="section-label">Distribution — the atypical &amp; intermediate birds specifically</div>
+      <div class="card">
+        <div class="chart-wrap" style="height:220px"><canvas id="fcAtypHist"></canvas></div>
+        <div style="margin-top:.8rem;font-size:.82rem;color:var(--ink-soft)" id="fcAtypHistCaption"></div>
+      </div>
+
+      <div class="section-label">Named examples — intermediate &amp; sex-atypical, well-recorded birds only</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Restricted to birds with <b>≥4 songs</b>, because a bird with 1–2 songs can land anywhere on the
+        axis by chance. The gold standard is ≥8 songs (the learning-curve threshold for a reliable
+        per-bird estimate) — and the honest headline is that the corpus is thin here: most
+        intermediate/atypical birds have 1–2 songs, so few make the cut. CI = Wilson half-width on
+        P(male); wide intervals mean trust the position less.</p></div>
+      <div class="card">
+        <div style="overflow-x:auto"><table id="fcAtypExamples" style="width:100%;font-size:.8rem;border-collapse:collapse"></table></div>
+        <div style="margin-top:.6rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)" id="fcAtypExCaption"></div>
+      </div>
+
       <div class="section-label">Geographic dialect — repertoire identifies home island</div>
       <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
         A bird's syllable repertoire identifies which of the six study sites it came from at
@@ -914,6 +942,14 @@ tr:hover td{background:var(--surface-2)}
         <i>how</i> individual identification works. The 20 best-recorded birds are coloured; the rest are grey.
         Drag to rotate.</p></div>
       <div class="card">
+        <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:center;margin-bottom:.6rem;font-size:.8rem;font-family:var(--mono);color:var(--ink-soft)">
+          <span>colour by:</span>
+          <label style="cursor:pointer"><input type="radio" name="fcColBy" value="bird" checked> bird</label>
+          <label style="cursor:pointer"><input type="radio" name="fcColBy" value="site"> site</label>
+          <label style="cursor:pointer"><input type="radio" name="fcColBy" value="sex"> sex</label>
+          <label style="cursor:pointer;margin-left:auto"><input type="checkbox" id="fcSpin"> auto-rotate</label>
+          <span style="color:var(--ink-faint)">click a point to play its song</span>
+        </div>
         <div id="fcUmapWrap" style="position:relative;height:520px;background:#0f0f0f;border-radius:6px;overflow:hidden">
           <canvas id="fcUmap"></canvas>
           <div id="fcUmapTip" style="position:absolute;display:none;pointer-events:none;background:rgba(20,20,20,.92);color:#eee;font:11px/1.5 monospace;padding:5px 8px;border-radius:4px;z-index:5"></div>
@@ -4032,7 +4068,7 @@ const GameEngine = {
       '(less-recorded birds are identified about as well per song).';
   }).catch(e => { console.warn('fc curve load', e); });
 
-  // ---- song-level 3D UMAP (custom canvas, drag-rotate, hover tooltip) ----
+  // ---- song-level 3D UMAP (custom canvas, drag-rotate, hover tooltip, colour modes, click-to-play) ----
   fetch(FC + 'song_umap_data.json').then(r => r.json()).then(d => {
     const cv = $('fcUmap'); if (!cv) return;
     const wrap = $('fcUmapWrap'); const tip = $('fcUmapTip');
@@ -4042,12 +4078,22 @@ const GameEngine = {
 
     const pts = d.points;
     const birds = d.top_birds;
-    const palette = ['#e6194b','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#fabed4',
+    const birdPal = ['#e6194b','#3cb44b','#ffe119','#4363d8','#f58231','#911eb4','#42d4f4','#f032e6','#bfef45','#fabed4',
                      '#469990','#dcbeff','#9a6324','#fffac8','#800000','#aaffc3','#808000','#ffd8b1','#000075','#a9a9a9'];
-    const col = {}; birds.forEach((b, i) => col[b] = palette[i % palette.length]);
+    const birdCol = {}; birds.forEach((b, i) => birdCol[b] = birdPal[i % birdPal.length]);
+    const sites = [...new Set(pts.map(p => p.site))].sort();
+    const sitePal = ['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#42d4f4'];
+    const siteCol = {}; sites.forEach((s, i) => siteCol[s] = sitePal[i % sitePal.length]);
+    const sexCol = {M: '#4363d8', F: '#e6194b'};
+    let colBy = 'bird';
+    function colOf(p){
+      if (colBy === 'site') return siteCol[p.site] || 'rgba(120,120,120,.45)';
+      if (colBy === 'sex') return sexCol[p.sex] || 'rgba(120,120,120,.45)';
+      return birdCol[p.bird] || 'rgba(120,120,120,.45)';
+    }
 
-    let rx = 0.6, rz = 0.8, dragging = false, lx = 0, ly = 0;
-    const sc = 6.5;  // scale
+    let rx = 0.6, rz = 0.8, dragging = false, lx = 0, ly = 0, moved = 0, spin = false;
+    const sc = 6.5;
     const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
     const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
     const cz = pts.reduce((s, p) => s + p.z, 0) / pts.length;
@@ -4069,15 +4115,26 @@ const GameEngine = {
       const order = proj.map((p, i) => i).sort((a, b) => proj[a][2] - proj[b][2]);
       for (const i of order){
         const p = pts[i], q = proj[i];
-        ctx.fillStyle = col[p.bird] || 'rgba(120,120,120,.45)';
+        ctx.fillStyle = colOf(p);
         ctx.beginPath(); ctx.arc(q[0], q[1], (p.bird === '(other)' ? 2 : 3.2) * devicePixelRatio, 0, 7); ctx.fill();
       }
     }
     draw();
-    cv.addEventListener('mousedown', e => { dragging = true; lx = e.clientX; ly = e.clientY; });
+    // auto-rotate
+    setInterval(() => { if (spin && !dragging){ rz += 0.004; draw(); } }, 33);
+    const spinEl = $('fcSpin'); if (spinEl) spinEl.onchange = e => spin = e.target.checked;
+    document.querySelectorAll('input[name="fcColBy"]').forEach(r => r.onchange = e => { colBy = e.target.value; draw(); });
+
+    // click-to-play (lazy: one MP3 fetched per click)
+    const player = new Audio();
+    cv.addEventListener('mousedown', e => { dragging = true; moved = 0; lx = e.clientX; ly = e.clientY; });
     addEventListener('mouseup', () => dragging = false);
     cv.addEventListener('mousemove', e => {
-      if (dragging){ rz += (e.clientX - lx) * .005; rx += (e.clientY - ly) * .005; lx = e.clientX; ly = e.clientY; draw(); tip.style.display = 'none'; return; }
+      if (dragging){
+        const dx = e.clientX - lx, dy = e.clientY - ly;
+        moved += Math.abs(dx) + Math.abs(dy);
+        rz += dx * .005; rx += dy * .005; lx = e.clientX; ly = e.clientY; draw(); tip.style.display = 'none'; return;
+      }
       const r = cv.getBoundingClientRect();
       const mx = (e.clientX - r.left) * devicePixelRatio, my = (e.clientY - r.top) * devicePixelRatio;
       let best = -1, bd = 1e9;
@@ -4091,10 +4148,28 @@ const GameEngine = {
         tip.style.left = (e.clientX - r.left + 12) + 'px';
         tip.style.top = (e.clientY - r.top - 10) + 'px';
         tip.textContent = `${p.individual} · ${p.site} · ${p.sex} · ${p.n_syll} syllables · song ${p.song_id}`;
-      } else tip.style.display = 'none';
+        cv.style.cursor = 'pointer';
+      } else { tip.style.display = 'none'; cv.style.cursor = 'grab'; }
+    });
+    cv.addEventListener('click', e => {
+      if (moved > 6) return;  // was a drag, not a click
+      const r = cv.getBoundingClientRect();
+      const mx = (e.clientX - r.left) * devicePixelRatio, my = (e.clientY - r.top) * devicePixelRatio;
+      let best = -1, bd = 1e9;
+      for (let i = 0; i < proj.length; i++){
+        const dd = (proj[i][0] - mx) ** 2 + (proj[i][1] - my) ** 2;
+        if (dd < bd){ bd = dd; best = i; }
+      }
+      if (best >= 0 && bd < (12 * devicePixelRatio) ** 2){
+        const p = pts[best];
+        player.src = FC + 'audio/' + p.song_id + '.mp3';
+        player.play().catch(() => {});
+        $('fcUmapCaption').textContent =
+          `▶ playing song ${p.song_id} — ${p.individual} (${p.site}, ${p.sex}) · ${p.n_syll} syllables`;
+      }
     });
     $('fcUmapCaption').textContent =
-      `${d.n_points} songs · ${d.n_birds_total} banded birds · top 20 by recording count coloured, rest grey · drag to rotate, hover for detail`;
+      `${d.n_points} songs · ${d.n_birds_total} banded birds · drag to rotate, click to play · colour: bird / site / sex`;
   }).catch(e => { console.warn('fc umap load', e); const el = document.getElementById('fcUmapCaption'); if (el) el.textContent = 'UMAP data failed to load.'; });
 
   // ---- full-corpus FIGURES (repertoire/sex/atypical), main + supplementary tiers ----
@@ -4168,7 +4243,64 @@ const GameEngine = {
     const at = d.main.sex_atypical;
     const atH = $('fcAtypHeadline');
     if (atH) atH.textContent = ` ${at.n_intermediate} birds sit intermediate; ${at.n_atypical} are sex-atypical (CV accuracy ${(at.cv_acc*100).toFixed(1)}%).`;
+
+    // ---- stacked histogram: all birds on the P(male) axis, split by true sex ----
+    const birds = at.birds;
+    const BINS = 20, edges = Array.from({length: BINS+1}, (_,i) => i/BINS);
+    const mC = new Array(BINS).fill(0), fC = new Array(BINS).fill(0);
+    birds.forEach(b => { const i = Math.min(BINS-1, Math.floor(b.p_male*BINS)); (b.sex==='M'?mC:fC)[i]++; });
+    if (window.Chart && $('fcPmaleHist')) {
+      new Chart($('fcPmaleHist'), {type: 'bar',
+        data: {labels: edges.slice(0,-1).map(e => e.toFixed(2)),
+          datasets: [
+            {label: 'male (hand-labelled)', data: mC, backgroundColor: '#2c6c8c'},
+            {label: 'female (hand-labelled)', data: fC, backgroundColor: '#b04a3a'}]},
+        options: {scales: {x: {stacked: true, title: {display: true, text: 'P(male)'}}, y: {stacked: true, title: {display: true, text: 'birds'}}},
+          plugins: {legend: {position: 'top', labels: {boxWidth: 10, font: {size: 9}}}}}});
+      $('fcPmaleHistCaption').textContent =
+        `${birds.length} birds, stacked by hand-labelled sex. Males pile right, females left; overlap band is where intermediate and atypical birds live.`;
+    }
+
+    // ---- histogram of atypical + intermediate only ----
+    const sel = birds.filter(b => (b.p_male > 0.35 && b.p_male < 0.65) ||
+      (b.p_male > 0.8 && b.sex === 'F') || (b.p_male < 0.2 && b.sex === 'M'));
+    const aC = new Array(BINS).fill(0), iC = new Array(BINS).fill(0);
+    birds.forEach(b => { const i = Math.min(BINS-1, Math.floor(b.p_male*BINS));
+      if (b.p_male > 0.35 && b.p_male < 0.65) iC[i]++;
+      else if ((b.p_male > 0.8 && b.sex === 'F') || (b.p_male < 0.2 && b.sex === 'M')) aC[i]++; });
+    if (window.Chart && $('fcAtypHist')) {
+      new Chart($('fcAtypHist'), {type: 'bar',
+        data: {labels: edges.slice(0,-1).map(e => e.toFixed(2)),
+          datasets: [
+            {label: 'sex-atypical', data: aC, backgroundColor: '#bb4a33'},
+            {label: 'intermediate', data: iC, backgroundColor: '#b07d22'}]},
+        options: {scales: {x: {stacked: true, title: {display: true, text: 'P(male)'}}, y: {stacked: true, title: {display: true, text: 'birds'}}},
+          plugins: {legend: {position: 'top', labels: {boxWidth: 10, font: {size: 9}}}}}});
+      $('fcAtypHistCaption').textContent =
+        `${sel.length} birds of interest: sex-atypical (red, song opposite to hand-labelled sex) and intermediate (amber, mid-axis).`;
+    }
   }).catch(e => { console.warn('fc figures load', e); });
+
+  // ---- named examples, >=8-song birds only ----
+  fetch(FC + 'atypical_examples.json').then(r => r.json()).then(d => {
+    const el = $('fcAtypExamples'); if (!el) return;
+    let html = '<thead><tr><th style="text-align:left">group</th><th style="text-align:left">bird</th>' +
+               '<th>site</th><th>hand-labelled sex</th><th>P(male)</th><th>±CI</th><th>songs</th></tr></thead><tbody>';
+    const rows = [];
+    d.intermediate.slice(0, 8).forEach(b => rows.push(['intermediate', b]));
+    d.atypical.slice(0, 8).forEach(b => rows.push(['sex-atypical', b]));
+    rows.forEach(([g, b]) => {
+      const col = g === 'intermediate' ? '#b07d22' : '#bb4a33';
+      html += `<tr><td style="color:${col};font-weight:600">${g}</td>` +
+              `<td style="font-family:var(--mono)">${b.individual}</td><td>${b.site}</td><td>${b.sex}</td>` +
+              `<td class="num">${b.p_male.toFixed(2)}</td><td class="num">${b.ci_hw.toFixed(2)}</td><td class="num">${b.n_songs}</td></tr>`;
+    });
+    el.innerHTML = html + '</tbody>';
+    $('fcAtypExCaption').textContent =
+      `${d.intermediate.length} intermediate + ${d.atypical.length} sex-atypical birds with ≥${d.min_songs} songs shown ` +
+      `(gold ≥${d.gold_songs}: ${d.n_intermediate_gold} + ${d.n_atypical_gold}; ${d.n_intermediate_all + d.n_atypical_all} birds of interest exist at any n). ` +
+      'Wide CIs mean few songs — trust those axis positions less.';
+  }).catch(e => { console.warn('fc examples load', e); });
 })();
 </script>
 </body>
