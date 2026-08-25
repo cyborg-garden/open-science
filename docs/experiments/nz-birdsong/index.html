@@ -1772,6 +1772,54 @@ tr:hover td{background:var(--surface-2)}
         </div>
       </div>
 
+      <h4>Model Extrapolation — running trained models on unannotated field recordings</h4>
+      <div class="note" style="margin:1rem 0">
+        <div class="mark">25 August 2026 — what happens when the pipeline meets real, unlabelled audio</div>
+        <div>
+        <p style="margin:0 0 .7rem">Every number above comes from the Koe corpus — recordings collected under
+        a consistent protocol and hand-annotated by the original researchers. That is not the same question
+        as <em>does this pipeline work on an arbitrary field recording with no ground truth</em>, which is
+        the situation anyone actually deploying this would face. We ran TN v2 + the stage-4 classifier, cold,
+        on Macaulay Library korimako recordings never touched by training or evaluation, to find out.</p>
+
+        <p style="margin:0 0 .7rem"><b>It runs, and produces plausible output.</b> On a clean 25s field
+        recording (Nelson Lakes NP, Feb 2023), the pipeline found 48 syllables across 13 stage-4 families with
+        sensible temporal boundaries and no degeneration to noise or a single repeated label. There is no
+        ground truth for this recording, so this cannot be scored as accurate — it demonstrates the pipeline
+        <em>runs end-to-end on real audio</em>, not that its output is <em>correct</em>. That distinction
+        matters and we are not blurring it.</p>
+
+        <p style="margin:0 0 .7rem"><b>Detection confidence measurably degrades with recording quality — but
+        only visible at scale, not from single examples.</b> We scored 836 Macaulay bellbird recordings by an
+        SNR proxy (20th-vs-95th percentile energy ratio in the vocal band; the same idea as Xeno-Canto's A–E
+        quality field, computed directly since Macaulay has no such rating), then ran the segmentation model's
+        raw frame-level detection probability on the 607 usable recordings (excluding near-silent and
+        near-continuous-noise clips). Result: mean confident-frame fraction (p≥0.6, the validation-tuned
+        threshold) rises <b>0.089 → 0.151 → 0.188</b> from the low to medium to high SNR tertile
+        (Spearman r=0.508, p&lt;0.0001, n=607). Lower-quality recordings genuinely produce less confident
+        segmentation.</p>
+
+        <p style="margin:0 0 .7rem"><b>A single-example comparison across quality tiers was actively
+        misleading, and we are keeping the record of that rather than quietly fixing it.</b> Our first attempt
+        picked one representative recording per SNR tertile and found the <em>opposite</em> pattern — the
+        low-SNR example produced 8&times; more segments than the high-SNR one, which we initially (wrongly)
+        read as the model hallucinating on noise. Checking the actual frame-level detection probabilities
+        showed that recording was simply more vocally active, and a separate medium-quality example had a
+        genuine, undetected 7-second song passage that the single-example view made easy to miss entirely.
+        The population-level result above (n=607) is what actually holds; the anecdote did not generalise,
+        and would have been wrong to publish as the finding. This is the reason we do not report
+        few-example demonstrations as evidence of a trend on this page without also running the trend at
+        scale.</p>
+
+        <p style="margin:0"><b>Practical implication:</b> an SNR floor before running the pipeline on new
+        field recordings would reduce, but not eliminate, low-confidence output — near-miss frames
+        (probability 0.3&ndash;0.6, likely real vocalisation the model is unsure about) do not show a strong
+        quality trend on their own, so some genuine misses will occur even in clean recordings. We have not
+        yet checked whether any Koe corpus recordings are similarly noisy in a way that could affect the
+        full-corpus figures above; that is open follow-up work, not yet done.</p>
+        </div>
+      </div>
+
       <p>Beyond the rule-based pipeline, we trained a <b>TweetyNet-style convolutional neural network</b> for
       syllable <em>segmentation</em> &mdash; finding the boundaries of vocal units. <b>It does not categorise
       syllables; see the 29 July correction below.</b>
