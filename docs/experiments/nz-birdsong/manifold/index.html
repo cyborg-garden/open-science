@@ -173,7 +173,7 @@ function buildLegend(){
   const el = document.getElementById('legend'); el.innerHTML='';
   const counts = {};
   pointsData.forEach(p=>counts[p.type]=(counts[p.type]||0)+1);
-  for(const [t,c] of Object.entries(Object.entries(ACTIVE_COLORS)){
+  for(const [t,c] of Object.entries(ACTIVE_COLORS)){
     if(!counts[t]) continue;
     const row = document.createElement('div');
     row.innerHTML = `<span class="dot" style="background:#${c.toString(16).padStart(6,'0')}"></span>
