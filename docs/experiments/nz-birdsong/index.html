@@ -1729,6 +1729,49 @@ tr:hover td{background:var(--surface-2)}
       </ul>
 
       <h4>Deep Learning: CNN Segmentation</h4>
+
+      <div class="note" style="margin:1rem 0;border-left-color:#5f7a3a">
+        <div class="mark">Current pipeline (24 August 2026) — read this one first</div>
+        <div>
+        <p style="margin:0 0 .7rem">Everything below this box is the record of how we got here, kept
+        unedited per the kaupapa of this project. But it is now <b>history, not the live pipeline</b>. If you
+        read one section on this page, read this one — it names what actually generated tonight's korimako
+        figures and manifold.</p>
+
+        <p style="margin:0 0 .7rem"><b>The current korimako pipeline, end to end:</b></p>
+        <ol style="margin:0 0 .7rem">
+          <li><b>Segmentation:</b> TweetyNet v2 (CNN), <b>F1 = 0.902</b> on a held-out test split — this
+          supersedes the 0.8577 result below, which was measured on a split with bird-level leakage between
+          train/val/test (see the 5 August correction). The new number is not directly comparable to the old
+          one; treat 0.902 as the current best estimate, not confirmation the old number was "wrong by
+          exactly this much."</li>
+          <li><b>Syllable typing:</b> a stage-4 family classifier trained on the Koe hand-labelled corpus
+          (Fukuzawa et al. 2020), <b>0.893 test accuracy</b> across 24 families plus UNKNOWN — this replaces
+          the rule-based 5-category Hill &amp; Ji scheme for korimako specifically (that scheme was built for
+          tūī and is retained for tūī, see below).</li>
+          <li><b>Sex from repertoire:</b> 5-fold cross-validated, <b>0.940 CV accuracy</b> on 454 birds
+          (≥10-syllable subset), <b>0.892</b> on the 107 birds held out of all training.</li>
+          <li><b>Site / dialect from repertoire:</b> repertoire composition identifies home site.</li>
+          <li><b>Individual identification:</b> closed-set, 77 birds, top-1 55% / top-5 80%; reliable per-bird
+          estimates need ≈6–8 songs, and the corpus is thin there (median 2 songs/bird) — stated plainly on
+          the korimako panel rather than hidden.</li>
+        </ol>
+
+        <p style="margin:0 0 .7rem">The tūī analysis below (rule-based Hill &amp; Ji categories, CNN
+        segmentation only, no typing model) is <b>not superseded</b> — it is a separate species with its own
+        pipeline, which is why the acoustic manifold now shows a korimako example (TN v2 + stage-4) front and
+        centre and keeps the tūī recordings as a labelled "legacy rule-based" option in the dropdown, not
+        because the tūī work is wrong, but because it is a different, older method applied to a different
+        bird. Kākā uses a third, call-based framework (Van Horik 2007 / Vaishnav 2026) that has no sequence
+        grammar and is out of scope for the sequence-based methods below.</p>
+
+        <p style="margin:0">Full-corpus figures (repertoire, sex, site, atypical individuals) recompute on
+        1,065 birds / 21,463 syllables for the main tier, and separately on the 107-bird test split never
+        seen in training, for the honest-tier check. Both are on the live korimako panel with per-figure
+        n stated.</p>
+        </div>
+      </div>
+
       <p>Beyond the rule-based pipeline, we trained a <b>TweetyNet-style convolutional neural network</b> for
       syllable <em>segmentation</em> &mdash; finding the boundaries of vocal units. <b>It does not categorise
       syllables; see the 29 July correction below.</b>
@@ -2098,6 +2141,19 @@ tr:hover td{background:var(--surface-2)}
       All citations below have been verified against Crossref.</p>
     </div>
 
+    <div class="note" style="margin:0 0 2rem;border-left-color:#5f7a3a">
+      <div class="mark">Which framework is live, per species (24 August 2026)</div>
+      <div>
+        <p style="margin:0 0 .7rem">All citations below remain valid — they are the ground-truth sources and
+        conceptual frameworks this project draws on. What has changed is <b>which one drives the current
+        korimako figures</b>: Hill &amp; Ji's five/six-category rule-based scheme is the live method for
+        <b>tūī</b>, but for <b>korimako</b> it has been superseded by a stage-4 classifier trained directly on
+        the Fukuzawa et al. (2020) Koe hand-labelled corpus (24 families, 0.893 test accuracy) — see the
+        Methodology tab's "Current pipeline" note. Kākā uses the Van Horik (2007) / Vaishnav (2026) call-type
+        frameworks, unchanged.</p>
+      </div>
+    </div>
+
     <div class="lit-card match">
       <h4>Syllable Categorisation <span class="lit-tag tag-match">Replicated</span></h4>
       <p>Hill &amp; Ji (2014) established six syllable categories for tūī song at Tawharanui: low-frequency, high-frequency, harmonic, 
@@ -2160,10 +2216,12 @@ tr:hover td{background:var(--surface-2)}
     </div>
 
     <div class="lit-card match">
-      <h4>Koe Classification Software <span class="lit-tag tag-match">Tool + dataset</span></h4>
+      <h4>Koe Classification Software <span class="lit-tag tag-match">Tool + dataset + current korimako typing scheme</span></h4>
       <p>Fukuzawa et al. (2020) introduced Koe, web-based software for classifying acoustic units, demonstrated
       on 21,500 korimako syllables. Our data-driven song-structure analysis uses the Koe tutorial dataset
-      (2,278 songs, 21,427 hand-labelled segments) as its ground-truth source.</p>
+      (2,278 songs, 21,427 hand-labelled segments) as its ground-truth source — and, as of the 24 August 2026
+      pipeline update, the 24-family label scheme from this dataset is what our stage-4 classifier predicts
+      for every korimako syllable on the live dashboard (0.893 test accuracy).</p>
       <a class="lit-ref" href="https://doi.org/10.1111/2041-210X.13336">Fukuzawa, Y. et al. (2020). Methods in Ecology and Evolution, 11(3), 431-441. DOI: 10.1111/2041-210X.13336 ✓</a>
     </div>
 
