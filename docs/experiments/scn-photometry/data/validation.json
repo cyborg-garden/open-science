@@ -1,0 +1,13 @@
+{
+  "cross_session_221128_7390": {
+    "session": "221128_concat",
+    "animal": "7390",
+    "fiber": 1,
+    "n_python": 621055,
+    "n_matlab": 621057,
+    "corr": 0.996966,
+    "maxabsdiff": 0.186936,
+    "rmse": 0.01097148,
+    "runtime_s": 35.5
+  }
+}

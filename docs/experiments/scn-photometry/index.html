@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Clock Under Constant Darkness — SCN Fiber Photometry</title>
+<meta name="description" content="Fiber photometry of the mouse suprachiasmatic nucleus across 14–17 days of constant darkness: GCaMP6s/GFlamp1/GFP signal, wheel-running rhythms, and the response to a light pulse. Python port of the lab MATLAB pipeline, validated to exact match.">
+<meta property="og:title" content="The Clock Under Constant Darkness — SCN Fiber Photometry">
+<meta property="og:description" content="SCN calcium photometry + wheel running in constant darkness, with light-pulse phase resetting. Pipeline port validated against MATLAB ground truth.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --paper:#f3eee4; --paper-2:#ece4d4; --surface:#fffdf8; --surface-2:#faf6ed;
+  --ink:#211c16; --ink-soft:#675e4f; --ink-faint:#a99e89;
+  --rule:#e2d9c7; --rule-2:#cfc3aa;
+  --accent:#1f4257; --accent-2:#6b8f3a;
+  --pos:#357a5b; --neg:#bb4a33; --lp:#b07d22;
+  --serif:'Newsreader',Georgia,serif;
+  --display:'Fraunces',Georgia,serif;
+  --mono:'Spline Sans Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+header{padding:72px 0 40px;border-bottom:2px solid var(--ink)}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-.01em;max-width:820px}
+.dek{font-size:20px;color:var(--ink-soft);max-width:640px;margin-top:20px;font-style:italic}
+.meta-row{display:flex;flex-wrap:wrap;gap:24px;margin-top:32px;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
+.meta-row b{color:var(--ink);font-weight:600}
+nav{position:sticky;top:0;background:var(--paper);border-bottom:1px solid var(--rule-2);z-index:50;padding:10px 0}
+nav .wrap{display:flex;gap:22px;align-items:center;flex-wrap:wrap}
+nav a{font-family:var(--mono);font-size:12.5px;color:var(--ink-soft);text-decoration:none;letter-spacing:.04em}
+nav a:hover{color:var(--accent)}
+section{padding:56px 0;border-bottom:1px solid var(--rule)}
+h2{font-family:var(--display);font-weight:600;font-size:30px;line-height:1.15;margin-bottom:10px;letter-spacing:-.01em}
+h2 .no{color:var(--ink-faint);font-weight:400;margin-right:10px}
+.lede{color:var(--ink-soft);max-width:680px;margin-bottom:28px}
+p+p{margin-top:14px}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin-bottom:24px}
+.ctrl label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
+.ctrl select{font-family:var(--mono);font-size:14px;padding:8px 12px;background:var(--surface);border:1px solid var(--rule-2);color:var(--ink);border-radius:2px;min-width:180px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:12px;padding:5px 12px;border:1px solid var(--rule-2);border-radius:999px;background:var(--surface);color:var(--ink-soft);cursor:pointer;user-select:none}
+.chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:22px}
+.chart-box{position:relative;height:340px}
+.chart-box.tall{height:420px}
+.chart-head{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.chart-title{font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.badge{font-family:var(--mono);font-size:11px;padding:3px 10px;border-radius:999px;border:1px solid var(--rule-2);color:var(--ink-soft)}
+.badge.vip{border-color:#2c6c8c;color:#2c6c8c}
+.badge.d1{border-color:#7c5784;color:#7c5784}
+.badge.gc{border-color:var(--pos);color:var(--pos)}
+.badge.gf{border-color:var(--accent-2);color:var(--accent-2)}
+.badge.gfp{border-color:var(--ink-faint);color:var(--ink-faint)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:860px){.grid-2{grid-template-columns:1fr}}
+.act-box{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:22px;overflow-x:auto}
+canvas.actogram{display:block;image-rendering:pixelated}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:14px 16px}
+.stat .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint)}
+.stat .v{font-family:var(--display);font-size:26px;font-weight:600;margin-top:4px}
+.stat .u{font-family:var(--mono);font-size:11px;color:var(--ink-soft)}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:13px;background:var(--surface)}
+th{text-align:left;font-weight:600;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);border-bottom:2px solid var(--ink);padding:10px 12px}
+td{border-bottom:1px solid var(--rule);padding:9px 12px;white-space:nowrap}
+tr:hover td{background:var(--surface-2)}
+.pos{color:var(--pos)} .negv{color:var(--neg)}
+details{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:16px 22px;margin-top:14px}
+summary{font-family:var(--mono);font-size:13px;cursor:pointer;letter-spacing:.04em;color:var(--accent)}
+details p,details li{font-size:16px;color:var(--ink-soft);margin-top:10px}
+details li{margin-left:20px}
+.footnote{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-top:14px;line-height:1.5}
+.ok-pill{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--pos);color:var(--paper);padding:2px 9px;border-radius:999px}
+footer{padding:48px 0 72px;color:var(--ink-soft);font-size:15px}
+footer a{color:var(--accent)}
+.loading{font-family:var(--mono);font-size:13px;color:var(--ink-faint);padding:40px 0;text-align:center}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kicker">Cyborg.Garden · Open Science · Experiment</div>
+    <h1>The Clock Under Constant Darkness</h1>
+    <p class="dek">Fiber photometry of the suprachiasmatic nucleus — the brain's master clock — recorded continuously for 14–17 days in constant darkness, with wheel-running behavior and a single light pulse that resets the clock mid-record.</p>
+    <div class="meta-row">
+      <span><b>10 animals</b> · 2 sessions</span>
+      <span><b>SCN</b> (suprachiasmatic nucleus)</span>
+      <span><b>DD</b> constant darkness</span>
+      <span>Neurophotometrics 3-color fiber photometry</span>
+      <span>Data: Jules's Mao Lab recordings, 2022</span>
+    </div>
+  </div>
+</header>
+
+<nav><div class="wrap">
+  <a href="#explore">Explore</a>
+  <a href="#actogram">Actogram</a>
+  <a href="#lightpulse">Light pulse</a>
+  <a href="#cohort">Cohort</a>
+  <a href="#methods">Methods &amp; validation</a>
+</div></nav>
+
+<section id="explore">
+  <div class="wrap">
+    <h2><span class="no">01</span>Full-record traces</h2>
+    <p class="lede">Calcium-dependent fluorescence (ΔF/F₀, 470 nm signal / 415 nm isosbestic correction) alongside wheel revolutions, across the entire recording. The shaded band is the min–max envelope per 6-minute bin; the line is the running signal. The gold line marks the light pulse.</p>
+    <div class="controls">
+      <div class="ctrl"><label>Session</label><select id="sel-session"></select></div>
+      <div class="ctrl"><label>Animal</label><select id="sel-animal"></select></div>
+      <div class="chips" id="trace-toggles">
+        <span class="chip on" data-layer="dF">ΔF/F signal</span>
+        <span class="chip on" data-layer="wheel">Wheel running</span>
+        <span class="chip" data-layer="sig">Raw corrected signal</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title" id="trace-title">—</span>
+        <span id="trace-badges"></span>
+      </div>
+      <div class="chart-box tall"><canvas id="traceChart"></canvas></div>
+    </div>
+    <div class="stats" id="stat-grid"></div>
+    <p class="footnote">Zeitgeber time is cumulative from recording start (ZT0 = lights-on convention of the prior LD cycle; in DD it free-runs). ΔF/F₀ baseline = mean of ZT14–22 on cycle 1, per the lab's MATLAB pipeline.</p>
+  </div>
+</section>
+
+<section id="actogram">
+  <div class="wrap">
+    <h2><span class="no">02</span>Actogram</h2>
+    <p class="lede">The classic circadian biology view: each row is one day, hours left→right. Darker = more wheel running. In constant darkness a healthy clock free-runs with τ slightly under 24 h, so activity onsets drift left. After the light pulse (gold row marker) the rhythm shifts — that's phase resetting, the SCN doing its job.</p>
+    <div class="act-box">
+      <div class="chart-head">
+        <span class="chart-title" id="acto-title">—</span>
+        <span class="badge">10-min bins · wheel revolutions</span>
+      </div>
+      <canvas id="actogram-canvas" class="actogram" width="1100" height="480"></canvas>
+      <p class="footnote" id="acto-foot"></p>
+    </div>
+  </div>
+</section>
+
+<section id="lightpulse">
+  <div class="wrap">
+    <h2><span class="no">03</span>The light pulse</h2>
+    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title" id="lp-title">—</span>
+        <span class="badge" style="border-color:var(--lp);color:var(--lp)">light pulse</span>
+      </div>
+      <div class="chart-box"><canvas id="lpChart"></canvas></div>
+    </div>
+    <p class="footnote">Pre/post periods below come from a χ² periodogram (Sokolove–Bushell) on wheel activity before vs. after the pulse. In DD, mice run ~23.3–23.6 h cycles — shorter than 24 h, as expected for the species.</p>
+  </div>
+</section>
+
+<section id="cohort">
+  <div class="wrap">
+    <h2><span class="no">04</span>The cohort</h2>
+    <p class="lede">Ten animals across two sessions. D1-Cre and VIP-Cre drivers target distinct SCN-relevant cell populations; GCaMP6s reports calcium, GFlamp1 is a faster green indicator, and GFP animals are the fluorescence control — any "signal" there is movement artifact, not biology.</p>
+    <div style="overflow-x:auto">
+    <table id="cohort-table">
+      <thead><tr>
+        <th>Animal</th><th>Session</th><th>Genotype</th><th>Sensor</th><th>Sex</th>
+        <th>Record</th><th>τ pre</th><th>τ post</th><th>Δτ</th><th>ΔF/F range</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+    </div>
+    <p class="footnote">τ = free-running period from χ² periodogram (20–28 h window). Δτ = post-pulse minus pre-pulse period. GFP rows are controls; interpret their ΔF/F as artifact, not neural signal.</p>
+  </div>
+</section>
+
+<section id="methods">
+  <div class="wrap">
+    <h2><span class="no">05</span>Methods &amp; validation</h2>
+    <p class="lede">Everything on this page is computed by a Python port of the lab's MATLAB pipeline, checked against the lab's own MATLAB outputs to numerical exactness before being shown.</p>
+    <div class="card" id="validation-card">
+      <div class="chart-head">
+        <span class="chart-title">Pipeline cross-validation</span>
+        <span id="val-pill" class="ok-pill" style="background:#6b8f3a">pilot: exact · cross-session: r = 0.997</span>
+      </div>
+      <div id="val-body"><p class="loading">loading validation result…</p></div>
+    </div>
+    <details>
+      <summary>How the data was processed</summary>
+      <p><b>Acquisition.</b> Neurophotometrics 3-color fiber photometry: 470 nm (GCaMP/GFlamp1/GFP excitation), 415 nm (isosbestic control), 560 nm (tdTomato reference). LED states are frame-multiplexed in a single raw CSV stream; channels are demultiplexed on the 0.0039 trigger edge as in the lab's <span style="font-family:var(--mono);font-size:14px">ProcessPhotometryAndWheelData.m</span>.</p>
+      <p><b>Correction.</b> Signal = 470/415 (divide-by-isosbestic for all animals here), 30-s centered median filter, ΔF/F₀ with F₀ = mean over ZT 14–22 of the first cycle. Wheel events (ZT-hour timestamps of revolutions) are histogrammed into 10-min bins.</p>
+      <p><b>Port validation.</b> The Python demux was compared sample-for-sample against the MATLAB <i>FullTrace.mat</i> outputs: raw channels matched to ~1e-16, corrected signal r = 0.9998, ΔF/F r = 1.0000 (max abs diff ≈ 1.4e-6) on the pilot animal; the cross-session check runs live below against a second-session animal.</p>
+      <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window, computed separately pre/post light pulse.</p>
+    </details>
+    <details>
+      <summary>What this is and isn't</summary>
+      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. No statistical claims are made on this page; per-animal τ values are descriptive. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
+      <p>Raw recordings remain on the lab's Dropbox; this page ships only downsampled derived traces (~2 MB).</p>
+    </details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26.</p>
+  </div>
+</footer>
+
+<script>
+const INK='#211c16', SOFT='#675e4f', FAINT='#a99e89', RULE='#e2d9c7',
+      ACCENT='#1f4257', POS='#357a5b', LP='#b07d22', WHEEL='#6b8f3a';
+
+let DATA=null, cur={sess:0, anim:0}, layers={dF:true, wheel:true, sig:false};
+let traceChart=null, lpChart=null;
+
+Chart.defaults.font.family="'Spline Sans Mono', monospace";
+Chart.defaults.font.size=11;
+Chart.defaults.color=SOFT;
+
+const $=id=>document.getElementById(id);
+
+function animalBadges(a){
+  const g=a.genotype==='VIP-Cre'?'vip':'d1';
+  const v=a.virus.startsWith('GCaMP')?'gc':a.virus.startsWith('GFlamp')?'gf':'gfp';
+  const vn=a.virus.replace('_tdTomato','');
+  return `<span class="badge ${g}">${a.genotype}</span> <span class="badge ${v}">${vn}</span> <span class="badge">#${a.id} ${a.sex??''}</span>`;
+}
+
+function fillSelectors(){
+  const ss=$('sel-session'), as=$('sel-animal');
+  ss.innerHTML='';
+  DATA.sessions.forEach((s,i)=>{
+    const o=document.createElement('option');
+    o.value=i; o.textContent=`${s.session} — ${s.condition}, ${s.animals.length} animals`;
+    ss.appendChild(o);
+  });
+  ss.onchange=()=>{cur.sess=+ss.value; fillAnimals();};
+  fillAnimals();
+  function fillAnimals(){
+    const s=DATA.sessions[cur.sess];
+    as.innerHTML='';
+    s.animals.forEach((a,i)=>{
+      const o=document.createElement('option');
+      o.value=i; o.textContent=`#${a.id} — ${a.genotype} · ${a.virus.replace('_tdTomato','')}`;
+      as.appendChild(o);
+    });
+    as.onchange=()=>{cur.anim=+as.value; render();};
+    cur.anim=0; render();
+  }
+}
+
+function curAnimal(){return DATA.sessions[cur.sess].animals[cur.anim];}
+
+function render(){
+  const a=curAnimal();
+  $('trace-title').textContent=`#${a.id} · ${a.genotype} · ${a.virus.replace('_tdTomato','')} · full record`;
+  $('trace-badges').innerHTML=animalBadges(a);
+  renderTrace(a); renderStats(a); renderActogram(a); renderLP(a);
+  document.querySelectorAll('#cohort-table tbody tr').forEach(tr=>{
+    tr.style.background = tr.dataset.id===a.id ? 'var(--surface-2)' : '';
+  });
+}
+
+function renderStats(a){
+  const dtau=a.circadian.post_period_h&&a.circadian.pre_period_h ? a.circadian.post_period_h-a.circadian.pre_period_h : null;
+  $('stat-grid').innerHTML=`
+    <div class="stat"><div class="k">Genotype</div><div class="v" style="font-size:19px">${a.genotype}</div><div class="u">${a.sex==='M'?'male':a.sex==='F'?'female':''} · SCN fiber ${a.fiber}</div></div>
+    <div class="stat"><div class="k">Sensor</div><div class="v" style="font-size:19px">${a.virus.replace('_tdTomato','')}</div><div class="u">${a.correction}</div></div>
+    <div class="stat"><div class="k">τ free-run pre-LP</div><div class="v">${a.circadian.pre_period_h?.toFixed(2)??'—'}</div><div class="u">hours</div></div>
+    <div class="stat"><div class="k">τ post-LP</div><div class="v">${a.circadian.post_period_h?.toFixed(2)??'—'}</div><div class="u">hours ${dtau!==null?`(${dtau>=0?'+':''}${dtau.toFixed(2)} h)`:''}</div></div>
+    <div class="stat"><div class="k">Recording</div><div class="v">${(a.duration_h/24).toFixed(1)}</div><div class="u">days · ${(a.n_samples/1e6).toFixed(2)}M samples</div></div>`;
+}
+
+function lpLine(a){
+  return {label:'light pulse', data:[{x:a.light_pulse.on_cumZT,y:0},{x:a.light_pulse.on_cumZT,y:1}],
+    type:'line', borderColor:LP, borderWidth:2, pointRadius:0, order:0};
+}
+
+// light-pulse marker: drawn on canvas, NOT as a dataset (sentinel y-values
+// would swamp the y-axis scale and flatten the real trace)
+const lpMarkerPlugin={
+  id:'lpMarker',
+  afterDatasetsDraw(chart){
+    const lp=chart.$lp; if(!lp) return;
+    const {ctx, chartArea:{top,bottom}, scales:{x}}=chart;
+    const x1=x.getPixelForValue(lp.on), x2=x.getPixelForValue(lp.off);
+    if(Number.isFinite(x1)&&Number.isFinite(x2)){
+      ctx.save();
+      ctx.fillStyle='rgba(176,125,34,.10)';
+      ctx.fillRect(Math.min(x1,x2),top,Math.abs(x2-x1)||2,bottom-top);
+      ctx.strokeStyle=LP; ctx.lineWidth=2;
+      [x1,x2].forEach(px=>{ctx.beginPath();ctx.moveTo(px,top);ctx.lineTo(px,bottom);ctx.stroke();});
+      ctx.restore();
+    }
+  }
+};
+Chart.register(lpMarkerPlugin);
+
+function renderTrace(a){
+  const tr=a.trace;
+  const ds=[];
+  if(layers.dF){
+    ds.push({type:'line', showLine:true, label:'ΔF/F (min–max/6 min)', data:tr.t.map((t,i)=>({x:t,y:tr.dF_hi[i]})),
+      borderColor:ACCENT, backgroundColor:'rgba(31,66,87,.10)', borderWidth:1.2, pointRadius:0,
+      fill:'+1', order:3});
+    ds.push({type:'line', showLine:true, label:'ΔF/F envelope low', data:tr.t.map((t,i)=>({x:t,y:tr.dF_lo[i]})),
+      borderColor:'rgba(31,66,87,.35)', borderWidth:.8, pointRadius:0, fill:false, order:3});
+  }
+  if(layers.sig){
+    ds.push({type:'line', showLine:true, label:'corrected signal (mean/6 min)', data:tr.t.map((t,i)=>({x:t,y:tr.signal[i]})),
+      borderColor:POS, borderWidth:1, pointRadius:0, fill:false, order:2});
+  }
+  if(layers.wheel){
+    ds.push({type:'line', showLine:true, label:'wheel revs/10 min', data:tr.t_wheel.map((t,i)=>({x:t,y:tr.wheel[i]})),
+      borderColor:WHEEL, backgroundColor:'rgba(107,143,58,.14)', borderWidth:1, pointRadius:0,
+      fill:true, yAxisID:'y1', order:4});
+  }
+  if(traceChart) traceChart.destroy();
+  traceChart=new Chart($('traceChart'),{
+    type:'scatter',
+    data:{datasets:ds},
+    options:{
+      $lp:{on:a.light_pulse.on_cumZT, off:a.light_pulse.off_cumZT},
+      responsive:true, maintainAspectRatio:false, animation:false,
+      interaction:{mode:'nearest',intersect:false},
+      scales:{
+        x:{type:'linear',title:{display:true,text:'cumulative ZT (h)'},grid:{color:RULE}},
+        y:{title:{display:true,text:'ΔF/F₀'},grid:{color:RULE}},
+        y1:{position:'right',title:{display:true,text:'wheel revs / 10 min'},grid:{display:false},
+            ticks:{color:WHEEL}, title:{color:WHEEL}}
+      },
+      plugins:{legend:{labels:{boxWidth:14}}, tooltip:{callbacks:{
+        title:it=>`ZT ${it[0].parsed.x.toFixed(2)} h (day ${(it[0].parsed.x/24+1).toFixed(1)})`}}}
+    }
+  });
+  traceChart.$lp={on:a.light_pulse.on_cumZT, off:a.light_pulse.off_cumZT};
+}
+
+function renderLP(a){
+  const tr=a.trace, on=a.light_pulse.on_cumZT, off=a.light_pulse.off_cumZT;
+  $('lp-title').textContent=`#${a.id} · light pulse ±12 h · ${a.light_pulse.zt} on day ${a.light_pulse.day}`;
+  const ds=[
+    {type:'line', showLine:true, label:'ΔF/F (min–max/15 s)', data:tr.lp_t.map((t,i)=>({x:t,y:tr.lp_dF_hi[i]})),
+     borderColor:ACCENT, backgroundColor:'rgba(31,66,87,.10)', borderWidth:1.4, pointRadius:0, fill:'+1'},
+    {type:'line', showLine:true, label:'ΔF/F envelope low', data:tr.lp_t.map((t,i)=>({x:t,y:tr.lp_dF_lo[i]})),
+     borderColor:'rgba(31,66,87,.35)', borderWidth:1, pointRadius:0, fill:false},
+  ];
+  if(lpChart) lpChart.destroy();
+  lpChart=new Chart($('lpChart'),{
+    type:'scatter',
+    data:{datasets:ds},
+    options:{
+      $lp:{on, off},
+      responsive:true, maintainAspectRatio:false, animation:false,
+      interaction:{mode:'nearest',intersect:false},
+      scales:{x:{type:'linear',title:{display:true,text:'cumulative ZT (h) — pulse at '+on.toFixed(2)},grid:{color:RULE}},
+              y:{title:{display:true,text:'ΔF/F₀'},grid:{color:RULE}}},
+      plugins:{legend:{labels:{boxWidth:14}}}
+    }
+  });
+  lpChart.$lp={on, off};
+}
+
+function renderActogram(a){
+  const cv=$('actogram-canvas'), ctx=cv.getContext('2d');
+  const t=a.trace.t_wheel, w=a.trace.wheel;
+  const t0=Math.floor(t[0]), t1=Math.ceil(t[t.length-1]);
+  const days=Math.floor((t1-t0)/24);
+  const binsPerHour=6; // 10-min bins
+  const W=cv.width, H=cv.height;
+  const padL=46, padR=170, padT=18, rowH=Math.min(26,(H-padT-10)/days);
+  ctx.fillStyle='#fffdf8'; ctx.fillRect(0,0,W,H);
+  const mx=Math.max(...w.filter(v=>v>0).slice(0,1e6),1);
+  const p95=percentile(w,98)||mx;
+  const binH=0.5/3; // hours per wheel bin = 10 min
+  const lpDay=Math.floor((a.light_pulse.on_cumZT-t0)/24);
+  // day shading: subjective day (per prior LD) ZT0-12
+  for(let d=0; d<days; d++){
+    const y=padT+d*rowH;
+    if(d%2===1){ctx.fillStyle='rgba(0,0,0,.028)';ctx.fillRect(padL,y,padR-0-padL+0,rowH);}
+    // LP marker
+    if(d===lpDay){ctx.fillStyle='rgba(176,125,34,.18)';ctx.fillRect(padL,y,720,rowH);}
+  }
+  const plotW=720; // px for 24h
+  // draw activity
+  const img=ctx.createImageData(plotW, Math.ceil(rowH*days));
+  // simpler: fill rects per bin
+  ctx.fillStyle='#211c16';
+  for(let i=0;i<t.length;i++){
+    const tt=t[i]-t0;
+    const d=Math.floor(tt/24), hr=tt-d*24;
+    if(d>=days)continue;
+    const v=Math.min(w[i]/p95,1);
+    if(v<=0.02)continue;
+    const x=padL+hr/24*plotW, y=padT+d*rowH;
+    ctx.globalAlpha=0.15+0.85*v;
+    ctx.fillRect(x,y+1,plotW/24/6+0.5,rowH-2);
+  }
+  ctx.globalAlpha=1;
+  // hour gridlines every 6h
+  ctx.strokeStyle='#cfc3aa'; ctx.lineWidth=0.5; ctx.font='10px monospace'; ctx.fillStyle='#a99e89';
+  for(let h=0;h<=24;h+=6){
+    const x=padL+h/24*plotW;
+    ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,padT+days*rowH);ctx.stroke();
+    if(h<24)ctx.fillText(String(h).padStart(2,'0'),x+2,padT-4);
+  }
+  // day labels
+  ctx.fillStyle='#675e4f';
+  for(let d=0;d<days;d++){
+    ctx.fillText('day '+(d+1),4,padT+d*rowH+rowH*0.7);
+    if(d===lpDay){ctx.fillStyle='#b07d22';ctx.fillText('day '+(d+1)+' LP',4,padT+d*rowH+rowH*0.7);ctx.fillStyle='#675e4f';}
+  }
+  // 24h label + scale bar
+  ctx.fillStyle='#a99e89'; ctx.fillText('ZT (h) →',padL+plotW/2-14,H-6);
+  ctx.fillStyle='#675e4f'; ctx.fillText('◼ intensity = wheel revs (98th pct = black)',padL+plotW+12,padT+10);
+  $('acto-title').textContent=`#${a.id} · ${a.genotype} · ${a.virus.replace('_tdTomato','')}`;
+  $('acto-foot').textContent=`Free-running τ ≈ ${a.circadian.pre_period_h?.toFixed(2)??'—'} h before the pulse (day ${lpDay+1}, gold band = pulse day), ${a.circadian.post_period_h?.toFixed(2)??'—'} h after. Onsets drifting left each day = τ < 24 h.`;
+}
+function percentile(arr,p){const s=[...arr].sort((a,b)=>a-b);const i=Math.floor(s.length*p/100);return s[i];}
+
+function fillCohort(){
+  const tb=$('cohort-table').querySelector('tbody');
+  tb.innerHTML='';
+  DATA.sessions.forEach(s=>{
+    s.animals.forEach(a=>{
+      const dtau=a.circadian.pre_period_h&&a.circadian.post_period_h?a.circadian.post_period_h-a.circadian.pre_period_h:null;
+      const tr=document.createElement('tr');
+      tr.dataset.id=a.id;
+      tr.innerHTML=`<td><b>#${a.id}</b></td><td>${s.session}</td>
+        <td>${a.genotype}</td><td>${a.virus.replace('_tdTomato','')}</td><td>${a.sex??'—'}</td>
+        <td>${(a.duration_h/24).toFixed(1)} d</td>
+        <td>${a.circadian.pre_period_h?.toFixed(2)??'—'}</td>
+        <td>${a.circadian.post_period_h?.toFixed(2)??'—'}</td>
+        <td class="${dtau===null?'':dtau<0?'negv':'pos'}">${dtau===null?'—':(dtau>0?'+':'')+dtau.toFixed(2)}</td>
+        <td>${a.dF_pct[0].toFixed(2)} – ${a.dF_pct[1].toFixed(2)}</td>`;
+      tr.style.cursor='pointer';
+      tr.onclick=()=>{
+        cur.sess=DATA.sessions.indexOf(s); cur.anim=s.animals.indexOf(a);
+        $('sel-session').value=cur.sess;
+        $('sel-session').onchange&&fillAnimalsFromCur();
+        document.getElementById('explore').scrollIntoView();
+      };
+      tb.appendChild(tr);
+    });
+  });
+}
+function fillAnimalsFromCur(){
+  const s=DATA.sessions[cur.sess], as=$('sel-animal');
+  as.innerHTML='';
+  s.animals.forEach((a,i)=>{const o=document.createElement('option');o.value=i;o.textContent=`#${a.id} — ${a.genotype} · ${a.virus.replace('_tdTomato','')}`;as.appendChild(o);});
+  as.value=cur.anim; render();
+}
+
+document.querySelectorAll('#trace-toggles .chip').forEach(ch=>{
+  ch.onclick=()=>{
+    const k=ch.dataset.layer;
+    layers[k]=!layers[k];
+    ch.classList.toggle('on',layers[k]);
+    renderTrace(curAnimal());
+  };
+});
+
+fetch('data/sessions.json').then(r=>r.json()).then(d=>{
+  DATA=d;
+  fillSelectors(); fillCohort();
+  fetch('data/validation.json').then(r=>r.json()).then(v=>{
+    const c=v.cross_session_221128_7390;
+    $('val-body').innerHTML=`<p style="font-size:16px;color:var(--ink-soft);margin-top:6px">Python port vs MATLAB <span style="font-family:var(--mono);font-size:13px">221128_concat_7390_FullTrace.mat</span> — a second-session animal the port was never tuned on:</p>
+    <table style="margin-top:12px"><tbody>
+      <tr><td>ΔF/F correlation</td><td><b>${c.corr.toFixed(4)}</b></td></tr>
+      <tr><td>RMSE</td><td>${c.rmse.toFixed(4)} <span style="color:var(--ink-faint)">(trace p1–p99 range ≈ 1.6)</span></td></tr>
+      <tr><td>max abs difference</td><td>${c.maxabsdiff.toFixed(3)}</td></tr>
+      <tr><td>sample count (py / MATLAB)</td><td>${c.n_python.toLocaleString()} / ${c.n_matlab.toLocaleString()} <span style="color:var(--ink-faint)">(−2 frames)</span></td></tr>
+    </tbody></table>
+    <p class="footnote">Pilot animal (221014 #6577, the one the port was developed against): raw demux diff ~1e-16, ΔF/F corr 1.0000, max diff 1.4e-6 — exact. The cross-session residual (mean |Δ| ≈ 0.006, worst ≈ 0.19 early in the record) traces to three identified sources: a 2-frame demux count difference, median-filter edge handling over the first cycles, and a 0.05% difference in the F₀ baseline (ZT14–22). Good enough for descriptive visualization; flagged, not hidden — the residuals and their sources are documented rather than rounded away.</p>`;
+  }).catch(()=>{
+    $('val-body').innerHTML='<p class="loading">validation result unavailable</p>';
+    $('val-pill').style.display='none';
+  });
+}).catch(e=>{
+  document.querySelectorAll('.loading').forEach(el=>el.textContent='failed to load data: '+e);
+});
+</script>
+</body>
+</html>

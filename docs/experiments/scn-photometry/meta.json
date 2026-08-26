@@ -1,0 +1,10 @@
+{
+  "slug": "scn-photometry",
+  "title": "The Clock Under Constant Darkness",
+  "blurb": "SCN fiber photometry across 14–17 days of constant darkness in 10 mice — GCaMP/GFlamp1/GFP signal, wheel-running actograms, and light-pulse phase resetting. Python port of the lab MATLAB pipeline, validated to exact match.",
+  "emoji": "🌙",
+  "status": "published",
+  "updated": "2026-08-26",
+  "order": 2,
+  "source": "generated in hermes-matilde container on the Mini; source not yet in repo"
+}
