@@ -105,6 +105,10 @@ footer a{color:var(--accent)}
   <a href="#explore">Explore</a>
   <a href="#actogram">Actogram</a>
   <a href="#lightpulse">Light pulse</a>
+  <a href="#clocks">Two clocks</a>
+  <a href="#qc">Quality control</a>
+  <a href="#feedback">Running &amp; clock</a>
+  <a href="#boutca">Bout calcium</a>
   <a href="#cohort">Cohort</a>
   <a href="#methods">Methods &amp; validation</a>
 </div></nav>
@@ -164,9 +168,116 @@ footer a{color:var(--accent)}
   </div>
 </section>
 
+<section id="clocks">
+<div class="wrap">
+  <h2><span class="no">04</span>Two clocks, one pulse</h2>
+  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the wheel clock) and when SCN calcium reaches its daily minimum (the calcium clock). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Phase shift: wheel clock vs calcium clock</span>
+        <span class="badge">ΔCT hours</span>
+      </div>
+      <div class="chart-box"><canvas id="clockShiftChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Leave-one-out stability (wheel shifts)</span>
+        <span class="badge">ΔCT h</span>
+      </div>
+      <div style="overflow-x:auto">
+      <table id="stability-table">
+        <thead><tr><th>Animal</th><th>Full shift</th><th>LOO range</th><th>Read</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the daily ΔF/F minimum (CT18, night trough).</p>
+    </div>
+  </div>
+  <p class="footnote">Correlation between the two clocks' shifts: <b id="clock-r">—</b> — no reliable coupling at this sample size; a lead, not a conclusion. An earlier calcium-shift estimator (ΔF-weighted circular mean) produced r = −0.93; the corrected daily-minimum anchor flips two animals' calcium signs and gives the value shown. 6978's advance is confirmed by its calcium clock (+3.4 CT) — its noisy wheel data had <i>under</i>estimated it — while 7390's wheel-clock advance (+4.3 CT) vanishes in the calcium frame (−0.8): its wheel onsets drove that outlier. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29% for the others), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
+</div>
+</section>
+
+<section id="qc">
+<div class="wrap">
+  <h2><span class="no">05</span>Which animals count</h2>
+  <p class="lede">Two independent noise models — a 24-h sine fit and a circadian signal-to-noise ratio — screened all ten recordings before any physiology was interpreted. Five animals survived; the keep/exclude calls were then reviewed by the researcher who collected the data.</p>
+  <div style="overflow-x:auto">
+  <table id="qc-table">
+    <thead><tr><th>Animal</th><th>Genotype</th><th>Sensor</th><th>Circadian SNR</th><th>Sine amplitude (z)</th><th>R²</th><th>Model verdict</th><th>Final</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  </div>
+  <p class="footnote">GFP animals are fluorescence controls — their ΔF/F is movement artifact, not biology. 6577 is statistically borderline (SNR 0.65) but was kept after review: it shows a clear rhythm. 7121/7122 (GFlamp1) carry no detectable signal; 7381's fiber was likely off-target.</p>
+</div>
+</section>
+
+<section id="feedback">
+<div class="wrap">
+  <h2><span class="no">06</span>Running and the clock</h2>
+  <p class="lede">Three questions asked of the wheel data: does a heavy night buy a quieter following day (the mice could be sleeping more soundly)? Does more running change the next cycle's length? And do the light shifts at recording start contaminate the first days?</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Night revolutions vs next subjective day</span>
+        <span class="badge" id="comp-badge">—</span>
+      </div>
+      <div class="chart-box"><canvas id="compChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">Per circadian cycle, wheel clock. No compensation: heavy nights do not buy detectably quieter days in this cohort.</p>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">The rate-normalization artifact</span>
+        <span class="badge">r with next cycle length</span>
+      </div>
+      <div class="chart-box"><canvas id="artifactChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">Dividing revolutions by window length suggests a strong negative activity→period effect (pooled r = −0.41, p = 0.001) — but the window <i>is</i> the outcome variable. Permuting counts while keeping windows (structural null) reproduces most of it. Honest verdict: no per-cycle activity feedback detectable here.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="chart-head">
+      <span class="chart-title">Phase shift vs leading-days exclusion</span>
+      <span class="badge">wheel clock</span>
+    </div>
+    <div class="chart-box"><canvas id="firstDaysChart"></canvas></div>
+    <p class="footnote" style="margin-top:10px">Dropping the first 1–3 days (light-shift transient at recording start) does not shrink the two large advances — if anything it grows them. But the pre-pulse onset count shrinks with each skip (7390: 6 → 3), so the growing values increasingly rest on thin fits. The <i>sign</i> of every animal's conclusion is stable; magnitudes beyond skip-1 are fragile.</p>
+  </div>
+</div>
+</section>
+
+<section id="boutca">
+<div class="wrap">
+  <h2><span class="no">07</span>Calcium at the start of a run</h2>
+  <p class="lede">When a mouse breaks a ≥10-min stillness and starts running, SCN calcium rises. The size of that rise depends on circadian time — and the pattern differs between animals.</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Bout-onset ΔCa across the cycle</span>
+        <span class="badge">base→peak, z</span>
+      </div>
+      <div class="chart-box"><canvas id="boutCaChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">CT frame from wheel onsets (onset = CT12); bins 12–18 and 18–24 are the subjective night. 6977 and 6978 show the early-night &gt; late-night gradient; 7390 doesn't; VIP 6976 runs flat — the odd one out.</p>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Quiescence → running, group means</span>
+        <span class="badge" id="onset-badge">—</span>
+      </div>
+      <div class="chart-box"><canvas id="onsetTrigChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">Baseline-normalized (mean of −60…−10 s → 0). Shading = SEM across animals.</p>
+    </div>
+  </div>
+  <details>
+    <summary>Early vs late night, and why VIP and D1 look alike here</summary>
+    <p>Splitting bout onsets by early (CT12–18) vs late (CT18–24) night gives the curves below. In bulk ΔF/F, VIP-Cre and D1-Cre animals share the same day-high profile: full-record day/night calcium ratio 1.04–1.14 in the wheel-CT frame, and a cycle-1 LD orientation test of 1.13–1.86 (day-high) in all five animals. The night-firing VIP⁺ subgroup reported in single-unit work is not resolvable in bulk fiber signal — that needs single-cell resolution.</p>
+    <div class="chart-box" style="height:300px;margin-top:12px"><canvas id="earlyLateChart"></canvas></div>
+  </details>
+</div>
+</section>
+
 <section id="cohort">
   <div class="wrap">
-    <h2><span class="no">04</span>The cohort</h2>
+    <h2><span class="no">08</span>The cohort</h2>
     <p class="lede">Ten animals across two sessions. D1-Cre and VIP-Cre drivers target distinct SCN-relevant cell populations; GCaMP6s reports calcium, GFlamp1 is a faster green indicator, and GFP animals are the fluorescence control — any "signal" there is movement artifact, not biology.</p>
     <div style="overflow-x:auto">
     <table id="cohort-table">
@@ -183,7 +294,7 @@ footer a{color:var(--accent)}
 
 <section id="methods">
   <div class="wrap">
-    <h2><span class="no">05</span>Methods &amp; validation</h2>
+    <h2><span class="no">09</span>Methods &amp; validation</h2>
     <p class="lede">Everything on this page is computed by a Python port of the lab's MATLAB pipeline, checked against the lab's own MATLAB outputs to numerical exactness before being shown.</p>
     <div class="card" id="validation-card">
       <div class="chart-head">
@@ -201,7 +312,7 @@ footer a{color:var(--accent)}
     </details>
     <details>
       <summary>What this is and isn't</summary>
-      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. No statistical claims are made on this page; per-animal τ values are descriptive. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
+      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. Trace sections are descriptive; the analysis sections (04–07) report small-sample statistics with permutation tests and explicit fragility flags — n is 5 animals, so treat every correlation as a lead, not a conclusion. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
       <p>Raw recordings remain on the lab's Dropbox; this page ships only downsampled derived traces (~2 MB).</p>
     </details>
   </div>
@@ -209,7 +320,7 @@ footer a{color:var(--accent)}
 
 <footer>
   <div class="wrap">
-    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26.</p>
+    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day.</p>
   </div>
 </footer>
 
@@ -465,6 +576,208 @@ document.querySelectorAll('#trace-toggles .chip').forEach(ch=>{
     ch.classList.toggle('on',layers[k]);
     renderTrace(curAnimal());
   };
+});
+
+// ---- analysis suite (sections 04–07) ----------------------------------
+const C_VIPC='#2c6c8c', C_D1C='#7c5784';
+let ANA=null;
+function col(g){return g==='VIP'?C_VIPC:C_D1C;}
+
+function renderClockShift(){
+  const sc=ANA.shift_correlation, pts=sc.points;
+  $('clock-r').textContent=`r = ${sc.r>=0?'+':''}${sc.r.toFixed(2)}, permutation p = ${sc.p.toFixed(2)}, n = ${sc.n}`;
+  const ds=[];
+  const labels=[];
+  for(const [a,p] of Object.entries(pts)){
+    const g=ANA.dual_clock[a].group;
+    ds.push({type:'scatter', label:`#${a} ${g}`, data:[{x:p.wheel,y:p.ca}],
+      backgroundColor:col(g), pointRadius:7, pointHoverRadius:9});
+    labels.push(a);
+  }
+  const wv=Object.values(pts).map(p=>p.wheel), cv=Object.values(pts).map(p=>p.ca);
+  const xs=[Math.min(...wv,...cv)-1, Math.max(...wv,...cv)+1];
+  const b=np_polyfit(wv,cv);
+  ds.push({type:'line', data:[{x:xs[0],y:np_polyval(b,xs[0])},{x:xs[1],y:np_polyval(b,xs[1])}],
+    borderColor:'#a99e89', borderWidth:1, borderDash:[5,4], pointRadius:0, order:0, label:'fit'});
+  new Chart($('clockShiftChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      scales:{x:{title:{display:true,text:'wheel-clock shift (ΔCT h)'},grid:{color:RULE}},
+              y:{title:{display:true,text:'calcium-clock shift (ΔCT h)'},grid:{color:RULE}}},
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:it=>{const a=labels[it.datasetIndex];return a?`#${a}: wheel ${pts[a].wheel.toFixed(2)}, calcium ${pts[a].ca.toFixed(2)} CT`:'';}}}}}});
+}
+function np_polyfit(x,y){const n=x.length;const sx=x.reduce((a,b)=>a+b),sy=y.reduce((a,b)=>a+b);
+  const sxy=x.reduce((a,b,i)=>a+b*y[i],0),sxx=x.reduce((a,b)=>a+b*b,0);
+  const m=(n*sxy-sx*sy)/(n*sxx-sx*sx);return [m,(sy-m*sx)/n];}
+function np_polyval(b,x){return b[0]*x+b[1];}
+
+function renderStability(){
+  const tb=$('stability-table').querySelector('tbody');
+  tb.innerHTML='';
+  const reads={'6577':'fragile','6976':'fragile','6977':'outlier-driven','6978':'robust','7390':'robust'};
+  for(const [a,s] of Object.entries(ANA.stability)){
+    const g=ANA.dual_clock[a].group;
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span></td>
+      <td class="${s.full<0?'negv':'pos'}">${s.full>=0?'+':''}${s.full.toFixed(2)}</td>
+      <td>${s.loo_min.toFixed(1)} … ${s.loo_max.toFixed(1)}</td>
+      <td>${reads[a]??''}</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+function renderQC(){
+  const tb=$('qc-table').querySelector('tbody');
+  tb.innerHTML='';
+  for(const r of ANA.exclusions){
+    const tr=document.createElement('tr');
+    const v=r.kept?'<span class="ok-pill" style="background:#357a5b">kept</span>':'<span style="color:#bb4a33">excluded</span>';
+    tr.innerHTML=`<td><b>#${r.animal}</b></td><td>${r.geno.replace('-Cre','')}</td>
+      <td>${r.virus.replace('_tdTomato','')}</td>
+      <td>${r.snr.toFixed(2)}</td><td>${r.sinA.toFixed(2)}</td><td>${r.r2.toFixed(2)}</td>
+      <td style="font-size:11px">${r.verdict_model}</td><td>${v}</td>`;
+    tb.appendChild(tr);
+  }
+}
+
+function renderComp(){
+  const p=ANA.compensation.pooled;
+  $('comp-badge').textContent=`pooled r = ${p.r>=0?'+':''}${p.r.toFixed(2)}, p = ${p.p.toFixed(2)}, n = ${p.n} cycles`;
+  const groups={};
+  ANA.compensation.points.animal.forEach((a,i)=>{
+    const g=ANA.compensation.points.group[i];
+    (groups[g]=groups[g]||[]).push({x:ANA.compensation.points.night[i],y:ANA.compensation.points.day[i]});
+  });
+  const ds=Object.entries(groups).map(([g,pts])=>({type:'scatter',label:`${g}-Cre`,
+    data:pts, backgroundColor:col(g), pointRadius:3.5, pointHoverRadius:5, opacity:.8}));
+  const opts={
+    responsive:true, maintainAspectRatio:false, animation:false,
+    scales:{
+      x:{title:{display:true,text:'revolutions, subjective night (CT12–24)'},grid:{color:RULE}},
+      y:{title:{display:true,text:'revolutions, subjective day (CT0–12)'},grid:{color:RULE}}
+    },
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:it=>`${it.parsed.x.toFixed(0)} → ${it.parsed.y.toFixed(0)} revs`}}
+    }
+  };
+  new Chart($('compChart'),{type:'scatter',data:{datasets:ds},options:opts});
+}
+
+function renderArtifact(){
+  const sc=ANA.night_feedback.structural_control;
+  const animals=Object.keys(sc);
+  const ds=[
+    {label:'observed (rate = revs ÷ window)', data:animals.map(a=>sc[a].obs),
+      backgroundColor:'rgba(176,74,51,.75)', borderRadius:2},
+    {label:'structural null (permuted counts, windows kept)', data:animals.map(a=>sc[a].null_mean),
+      backgroundColor:'rgba(107,143,58,.65)', borderRadius:2},
+  ];
+  new Chart($('artifactChart'),{type:'bar',data:{labels:animals.map(a=>'#'+a),datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      scales:{x:{grid:{display:false}},y:{title:{display:true,text:'r with next cycle length'},grid:{color:RULE},min:-1,max:0.5}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
+}
+
+function renderFirstDays(){
+  const ds=[];
+  for(const row of ANA.first_days){
+    const pts=[];
+    for(let i=0;i<4;i++){const v=row[`shift_CT_skip${i}`];if(v!==null)pts.push({x:i,y:v});}
+    ds.push({type:'line',label:`#${row.animal}`,data:pts,borderColor:col(row.group),
+      borderWidth:1.5,pointRadius:4,pointBackgroundColor:col(row.group),tension:0});
+  }
+  new Chart($('firstDaysChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      showLine:true,
+      scales:{x:{type:'linear',ticks:{stepSize:1,callback:v=>['full','skip 1','skip 2','skip 3'][v]??''},grid:{color:RULE}},
+              y:{title:{display:true,text:'phase shift (ΔCT h)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
+}
+
+function renderBoutCa(){
+  const ds=[];
+  for(const [a,bins] of Object.entries(ANA.bout_by_ct)){
+    const g=ANA.dual_clock[a].group;
+    const xs=Object.keys(bins).map(k=>+k*6+3), ys=Object.values(bins);
+    ds.push({type:'line',label:`#${a}`,data:xs.map((x,i)=>({x,y:ys[i]})),
+      borderColor:col(g),borderWidth:1.5,pointRadius:4,pointBackgroundColor:col(g),
+      borderDash:a==='6577'?[4,3]:undefined});
+  }
+  new Chart($('boutCaChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
+      scales:{x:{type:'linear',min:0,max:24,ticks:{stepSize:6,callback:v=>['CT0','CT6','CT12','CT18','CT24'][v/6]},
+              title:{display:true,text:'circadian time of bout onset'}},
+              y:{title:{display:true,text:'bout-onset ΔCa (z)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
+}
+
+function renderOnsetTrig(){
+  const groups={};
+  for(const [a,d] of Object.entries(ANA.onset_triggered)){
+    const g=ANA.dual_clock[a].group;
+    (groups[g]=groups[g]||[]).push(d);
+  }
+  const ds=[];
+  const t0=Object.values(ANA.onset_triggered)[0].t;
+  let tot=0; for(const g of ['VIP','D1']) tot+=groups[g].length;
+  $('onset-badge').textContent=`${tot} animals · 52–91 onsets each`;
+  for(const [g,arr] of Object.entries(groups)){
+    const M=arr.map(d=>d.z);
+    const mean=M[0].map((_,i)=>M.reduce((s,m)=>s+m[i],0)/M.length);
+    const se=mean.map((m,i)=>Math.sqrt(M.reduce((s,m2)=>s+(m2[i]-m)**2,0)/(M.length-1)/M.length));
+    ds.push({type:'line',label:`${g}-Cre (n=${M.length})`,data:t0.map((t,i)=>({x:t,y:mean[i]})),
+      borderColor:col(g),borderWidth:2,pointRadius:0});
+    ds.push({type:'line',data:t0.map((t,i)=>({x:t,y:mean[i]+se[i]})),borderColor:'transparent',
+      backgroundColor:col(g)+'22',fill:'+1',pointRadius:0});
+    ds.push({type:'line',data:t0.map((t,i)=>({x:t,y:mean[i]-se[i]})),borderColor:'transparent',pointRadius:0,fill:false});
+  }
+  const opts={
+    responsive:true, maintainAspectRatio:false, animation:false, showLine:true,
+    scales:{
+      x:{type:'linear',title:{display:true,text:'time from first rev after ≥5 min stillness (s)'}},
+      y:{title:{display:true,text:'ΔF/F change (z)'},grid:{color:RULE}}
+    },
+    plugins:{
+      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}
+    }
+  };
+  new Chart($('onsetTrigChart'),{type:'scatter',data:{datasets:ds},options:opts});
+}
+
+function renderEarlyLate(){
+  const groups={};
+  for(const [a,d] of Object.entries(ANA.earlylate)){
+    const g=ANA.dual_clock[a].group;
+    for(const tag of ['early','late']){
+      if(d[tag]){(groups[`${g}-${tag}`]=groups[`${g}-${tag}`]||[]).push(d[tag]);}
+    }
+  }
+  const ds=[];
+  const t0=Object.values(ANA.earlylate)[0].early.t;
+  for(const [k,arr] of Object.entries(groups)){
+    const [g,tag]=k.split('-');
+    const M=arr.map(d=>d.z);
+    const mean=M[0].map((_,i)=>M.reduce((s,m)=>s+m[i],0)/M.length);
+    const style=tag==='early'?{borderWidth:2}:{borderWidth:1.5,borderDash:[5,3]};
+    ds.push({type:'line',label:`${g} ${tag} night (n=${M.length})`,
+      data:t0.map((t,i)=>({x:t,y:mean[i]})),borderColor:col(g),pointRadius:0,...style});
+  }
+  new Chart($('earlyLateChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
+      scales:{x:{type:'linear',title:{display:true,text:'time from bout onset (s)'}},
+              y:{title:{display:true,text:'Δ from baseline (z)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
+}
+
+fetch('data/analyses.json').then(r=>r.json()).then(a=>{
+  ANA=a;
+  renderClockShift(); renderStability(); renderQC(); renderComp();
+  renderArtifact(); renderFirstDays(); renderBoutCa(); renderOnsetTrig(); renderEarlyLate();
+}).catch(e=>{
+  document.querySelectorAll('#clocks .card, #qc, #feedback, #boutca').forEach(el=>{
+    el.insertAdjacentHTML('afterbegin',`<p class="loading">analysis data unavailable: ${e}</p>`);
+  });
 });
 
 fetch('data/sessions.json').then(r=>r.json()).then(d=>{
