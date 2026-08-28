@@ -106,6 +106,7 @@ footer a{color:var(--accent)}
   <a href="#actogram">Actogram</a>
   <a href="#lightpulse">Light pulse</a>
   <a href="#clocks">Two clocks</a>
+  <a href="#within">Same recording</a>
   <a href="#qc">Quality control</a>
   <a href="#feedback">Running &amp; clock</a>
   <a href="#boutca">Bout calcium</a>
@@ -198,9 +199,74 @@ footer a{color:var(--accent)}
 </div>
 </section>
 
+<section id="within">
+<div class="wrap">
+  <h2><span class="no">05</span>The same recording, found twice</h2>
+  <p class="lede">Searching the full 1.5-year archive for animals with repeat recordings surfaced an uncomfortable finding before any result: the "new" span the within-animal analysis scored is the pilot recording itself, re-stitched three days longer — and it contains a second light pulse the lab's records never logged.</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Session identity</span>
+        <span class="badge" id="within-id-badge">—</span>
+      </div>
+      <div id="within-identity"><p class="loading">loading…</p></div>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Two pulses, one logged</span>
+        <span class="badge" style="border-color:var(--lp);color:var(--lp)">photodiode-verified</span>
+      </div>
+      <div id="within-pulses"><p class="loading">loading…</p></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="chart-head">
+      <span class="chart-title">The pilot span, re-derived three ways</span>
+      <span class="badge">ΔCT h</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="recon-table">
+        <thead><tr><th>Animal</th><th>Stream</th><th>checkpoint</th><th>cut at pulse 2</th><th>pilot window</th><th>pilot dashboard</th><th>n pre/post</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the section-04 numbers above. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is the exception that isn't a windowing story: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h), matching the pilot's outlier-driven stability flag — neither calcium estimate for that animal is quotable.</p>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="chart-head">
+      <span class="chart-title">Where the within-animal design stands</span>
+      <span class="badge" id="within-status-badge">—</span>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="within-status-table">
+        <thead><tr><th>Animal</th><th>Genotype</th><th>Span start</th><th>Days</th><th>Condition</th><th>Behavior source</th><th>Outcome</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <p class="footnote" style="margin-top:12px" id="within-status-foot"></p>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="chart-head">
+      <span class="chart-title">Explore the repeat recordings</span>
+      <span class="badge" id="repeat-badge">—</span>
+    </div>
+    <div class="controls">
+      <div class="ctrl"><label>Animal</label><select id="sel-rp-animal"></select></div>
+      <div class="ctrl"><label>Span</label><select id="sel-rp-span"></select></div>
+      <div class="chips" id="rp-toggles">
+        <span class="chip on" data-layer="dF">ΔF/F signal</span>
+        <span class="chip on" data-layer="beh">Behavior</span>
+      </div>
+    </div>
+    <div class="chart-box tall"><canvas id="rpChart"></canvas></div>
+    <p class="footnote" id="rp-foot" style="margin-top:10px"></p>
+  </div>
+</div>
+</section>
+
 <section id="qc">
 <div class="wrap">
-  <h2><span class="no">05</span>Which animals count</h2>
+  <h2><span class="no">06</span>Which animals count</h2>
   <p class="lede">Two independent noise models — a 24-h sine fit and a circadian signal-to-noise ratio — screened all ten recordings before any physiology was interpreted. Five animals survived; the keep/exclude calls were then reviewed by the researcher who collected the data.</p>
   <div style="overflow-x:auto">
   <table id="qc-table">
@@ -214,7 +280,7 @@ footer a{color:var(--accent)}
 
 <section id="feedback">
 <div class="wrap">
-  <h2><span class="no">06</span>Running and the clock</h2>
+  <h2><span class="no">07</span>Running and the clock</h2>
   <p class="lede">Three questions asked of the wheel data: does a heavy night buy a quieter following day (the mice could be sleeping more soundly)? Does more running change the next cycle's length? And do the light shifts at recording start contaminate the first days?</p>
   <div class="grid-2">
     <div class="card">
@@ -247,7 +313,7 @@ footer a{color:var(--accent)}
 
 <section id="boutca">
 <div class="wrap">
-  <h2><span class="no">07</span>Calcium at the start of a run</h2>
+  <h2><span class="no">08</span>Calcium at the start of a run</h2>
   <p class="lede">When a mouse breaks a ≥10-min stillness and starts running, SCN calcium rises. The size of that rise depends on circadian time — and the pattern differs between animals.</p>
   <div class="grid-2">
     <div class="card">
@@ -277,7 +343,7 @@ footer a{color:var(--accent)}
 
 <section id="cohort">
   <div class="wrap">
-    <h2><span class="no">08</span>The cohort</h2>
+    <h2><span class="no">09</span>The cohort</h2>
     <p class="lede">Ten animals across two sessions. D1-Cre and VIP-Cre drivers target distinct SCN-relevant cell populations; GCaMP6s reports calcium, GFlamp1 is a faster green indicator, and GFP animals are the fluorescence control — any "signal" there is movement artifact, not biology.</p>
     <div style="overflow-x:auto">
     <table id="cohort-table">
@@ -294,7 +360,7 @@ footer a{color:var(--accent)}
 
 <section id="methods">
   <div class="wrap">
-    <h2><span class="no">09</span>Methods &amp; validation</h2>
+    <h2><span class="no">10</span>Methods &amp; validation</h2>
     <p class="lede">Everything on this page is computed by a Python port of the lab's MATLAB pipeline, checked against the lab's own MATLAB outputs to numerical exactness before being shown.</p>
     <div class="card" id="validation-card">
       <div class="chart-head">
@@ -312,7 +378,7 @@ footer a{color:var(--accent)}
     </details>
     <details>
       <summary>What this is and isn't</summary>
-      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. Trace sections are descriptive; the analysis sections (04–07) report small-sample statistics with permutation tests and explicit fragility flags — n is 5 animals, so treat every correlation as a lead, not a conclusion. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
+      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. Trace sections are descriptive; the analysis sections (04–08) report small-sample statistics with permutation tests and explicit fragility flags — n is 5 animals, so treat every correlation as a lead, not a conclusion. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
       <p>Raw recordings remain on the lab's Dropbox; this page ships only downsampled derived traces (~2 MB).</p>
     </details>
   </div>
@@ -578,7 +644,182 @@ document.querySelectorAll('#trace-toggles .chip').forEach(ch=>{
   };
 });
 
-// ---- analysis suite (sections 04–07) ----------------------------------
+
+// ---- within-animal panel (section 05) ----------------------------------
+function renderWithin(){
+  fetch('data/within_animal.json').then(r=>r.json()).then(W=>{
+    const id=W.session_identity;
+    $('within-id-badge').textContent = `DOY ${id.start_doy}–${id.b_end_doy}`;
+    $('within-identity').innerHTML = `
+      <p style="font-size:16px;color:var(--ink-soft)"><span style="font-family:var(--mono);font-size:13px">221014_concat</span> and <span style="font-family:var(--mono);font-size:13px">221017_concat</span> are one recording, not two: both start day-of-year ${id.start_doy} in the same cages, and session names key on the <i>end</i> date. The later cut adds days ${id.b_end_doy - 2}–${id.b_end_doy} (${(id.b_end_doy-id.a_end_doy)} days) in the lab's newer file format, which drops the processed behavior block — the wheel stream there was rebuilt from raw CSVs, bit-exact against the lab's ground truth.</p>
+      <p class="footnote">Consequence: any analysis that treats the two as independent spans double-counts the same animal-days.</p>`;
+
+    const P=W.pulses;
+    $('within-pulses').innerHTML = `
+      <p style="font-size:16px;color:var(--ink-soft)">The photodiode log records <b>two</b> 30-min light pulses, a week apart:</p>
+      <table style="margin-top:8px"><tbody>
+        ${P.map(x=>`<tr><td>DOY ${x.doy}, ${x.local_hour.toFixed(3)} h local</td><td>${x.logged_in_params?'<span class="ok-pill" style="background:#357a5b">in lab records</span>':'<span style="color:#bb4a33">not in lab records</span>'}</td></tr>`).join('')}
+      </tbody></table>
+      <p class="footnote">${W.contamination.wheel}. ${W.contamination.ca}.</p>`;
+
+    // reconciliation table — join pilot dashboard numbers from analyses.json
+    const tb=$('recon-table').querySelector('tbody');
+    tb.innerHTML='';
+    const pilotPts = ANA ? ANA.shift_correlation.points : {};
+    for(const [a,d] of Object.entries(W.reconciliation)){
+      const g = a==='6577'?'VIP':'D1';
+      for(const [stream,lab] of [['wheel','wheel'],['ca','calcium']]){
+        const tr=document.createElement('tr');
+        const v=d[stream];
+        const pil=pilotPts[a] ? (stream==='wheel'?pilotPts[a].wheel:pilotPts[a].ca) : null;
+        tr.innerHTML=`<td>${stream==='wheel'?`<b>#${a}</b> <span style="color:${col(g)}">${g}</span>`:''}</td>
+          <td>${lab}</td>
+          <td class="${v.contaminated<0?'negv':'pos'}">${v.contaminated>=0?'+':''}${v.contaminated.toFixed(2)}</td>
+          <td class="${v.truncated<0?'negv':'pos'}">${v.truncated>=0?'+':''}${v.truncated.toFixed(2)}</td>
+          <td class="${v['pilot-window']<0?'negv':'pos'}">${v['pilot-window']>=0?'+':''}${v['pilot-window'].toFixed(2)}</td>
+          <td>${pil!==null?`<b>${pil>=0?'+':''}${pil.toFixed(2)}</b>`:'—'}</td>
+          <td>${stream==='wheel'?`${d.n.wheel_pre}/${d.n.wheel_post}`:`${d.trough_gaps_bad}/${d.n_troughs} gaps out`}</td>`;
+        tb.appendChild(tr);
+      }
+    }
+
+    // status table
+    const st=$('within-status-table').querySelector('tbody');
+    st.innerHTML='';
+    let completed=0, total=0;
+    for(const row of W.status){
+      for(const sp of row.spans){
+        total++;
+        if(sp.outcome==='shift pair') completed++;
+        const tr=document.createElement('tr');
+        const g=row.genotype==='VIP-Cre'?'VIP':'D1';
+        tr.innerHTML=`<td><b>#${row.animal}</b> <span style="color:${col(g)}">${g}</span></td>
+          <td>${row.genotype||''}</td>
+          <td style="font-family:var(--mono);font-size:12px">${sp.date}</td>
+          <td>${sp.dur_d?sp.dur_d.toFixed(1):'—'}</td>
+          <td style="font-size:11px">${sp.cond||''}</td>
+          <td>${sp.beh||'—'}</td>
+          <td style="font-size:12px">${sp.outcome==='shift pair'?'<b>shift pair</b>':sp.outcome}</td>`;
+        st.appendChild(tr);
+      }
+    }
+    $('within-status-badge').textContent = `${completed} of ${total} candidate spans produce a shift pair`;
+    $('within-status-foot').textContent = `The within-animal question — does one animal's wheel shift track its calcium shift across independent recordings? — needs ≥2 completed spans per animal. Current count: 0 animals. The blockers are concrete: motion-era sessions (Mar–Aug) record total-cage motion rather than wheel revolutions, and their light-pulse photodiode logs lack day-of-year, so pulses cannot yet be anchored to the recording timeline. Both are solvable; neither is done. This section ships the finding that the first "new span" was not one — the honest status is that the repeated-measures design has produced zero results so far, and the infrastructure (validated wheel loader, photodiode decoding for two file families, format-drift handling) is what got built instead.`;
+  }).catch(e=>{
+    document.querySelectorAll('#within .card').forEach(el=>{
+      el.insertAdjacentHTML('afterbegin',`<p class="loading">within-animal data unavailable: ${e}</p>`);
+    });
+  });
+}
+
+
+// ---- repeat-recordings explorer (section 05) ---------------------------
+let RP=null, rpChart=null, rpCur={a:0,s:0}, rpLayers={dF:true,beh:true};
+function rpAnimals(){ return RP?Object.keys(RP):[] }
+function rpSpans(a){ return RP&&RP[a]?RP[a]:[] }
+function renderRpChart(){
+  if(!RP) return;
+  const spans=rpSpans(rpAnimals()[rpCur.a]);
+  if(!spans.length) return;
+  const rec=spans[rpCur.s];
+  const tr=rec.trace;
+  const ds=[];
+  if(rpLayers.dF && tr.t){
+    ds.push({type:'line',label:'ΔF/F (min–max envelope, 6-min bins)',data:tr.t.map((t,i)=>({x:t,y:tr.dF_lo[i]})),
+      borderColor:'#1f4257',borderWidth:1.2,pointRadius:0,fill:'+1',
+      backgroundColor:'rgba(31,66,87,0.10)'});
+    ds.push({type:'line',data:tr.t.map((t,i)=>({x:t,y:tr.dF_hi[i]})),
+      borderColor:'#1f4257',borderWidth:1.2,pointRadius:0,fill:false});
+  }
+  if(rpLayers.beh){
+    if(tr.t_wheel){
+      ds.push({type:'line',label:'wheel (10-min revs)',data:tr.t_wheel.map((t,i)=>({x:t,y:tr.wheel[i]})),
+        borderColor:'#6b8f3a',borderWidth:0.8,pointRadius:0,yAxisID:'y2'});
+    }
+    if(tr.t_motion){
+      ds.push({type:'line',label:'total motion (1-min mean, arbitrary units)',data:tr.t_motion.map((t,i)=>({x:t,y:tr.motion[i]})),
+        borderColor:'#6b8f3a',borderWidth:0.8,pointRadius:0,borderDash:[3,2],yAxisID:'y2'});
+    }
+  }
+  const lp=rec.lp||[];
+  const opts={
+    responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
+    scales:{
+      x:{type:'linear',title:{display:true,text:'cumulative ZT hours from recording start'},grid:{color:RULE}},
+      y:{title:{display:true,text:'ΔF/F'},grid:{color:RULE}},
+      y2:{position:'right',title:{display:true,text:'wheel revs / motion (a.u.)'},grid:{display:false},
+          ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}
+    },
+    plugins:{
+      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
+      tooltip:{mode:'index',intersect:false}
+    }
+  };
+  // light-pulse markers drawn as a plugin so they never scale the axis
+  if(lp.length){
+    opts.plugins.annotationlessLP = false;
+    const lpDraw={
+      id:'lpLines',
+      afterDatasetsDraw(chart){
+        const {ctx,chartArea:{left,right,top,bottom},scales:{x}}=chart;
+        for(const ev of lp){
+          const px=x.getPixelForValue(ev.cumZT);
+          if(px<left-2||px>right+2) continue;
+          ctx.save();
+          ctx.strokeStyle='#b07d22'; ctx.lineWidth=1.5; ctx.setLineDash([4,3]);
+          ctx.beginPath(); ctx.moveTo(px,top); ctx.lineTo(px,bottom); ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle='#b07d22'; ctx.font='10px monospace';
+          const lbl=ev.source.includes('photodiode')?'LP (photodiode)':'LP';
+          ctx.fillText(lbl, Math.min(px+4,right-70), top+12);
+          ctx.restore();
+        }
+      }
+    };
+    opts.plugins.lpLines=lpDraw;
+  }
+  if(rpChart) rpChart.destroy();
+  rpChart=new Chart($('rpChart'),{type:'scatter',data:{datasets:ds},options:opts});
+  // footer
+  const behTxt=rec.beh==='wheel'?'wheel revolutions (rebuilt from raw CSVs, bit-exact vs lab ground truth)':
+    rec.beh==='motion'?'total-cage motion — a different modality from wheel; no onset analysis claimed':
+    'no behavior stream in this span';
+  $('rp-foot').innerHTML=`${rec.date} · ${rec.dur_d} d · ${rec.cond} · ${rec.genotype} (${rec.sex||'?'}) · calcium SNR ${rec.ca_snr??'—'}. Behavior: ${behTxt}. ${lp.length?lp.map(e=>`Light pulse at ${e.cumZT} h — ${e.source}.`).join(' '):'No verified light pulse in this span.'}`;
+}
+function fillRpAnimal(){
+  const as=$('sel-rp-animal'); as.innerHTML='';
+  rpAnimals().forEach((a,i)=>{const o=document.createElement('option');o.value=i;
+    o.textContent=`#${a} — ${rpSpans(a)[0].genotype}`;as.appendChild(o);});
+  as.value=rpCur.a; fillRpSpan();
+}
+function fillRpSpan(){
+  const a=rpAnimals()[rpCur.a]; const ss=$('sel-rp-span'); ss.innerHTML='';
+  rpSpans(a).forEach((r,i)=>{const o=document.createElement('option');o.value=i;
+    o.textContent=`${r.date} · ${r.dur_d} d · ${r.cond.split(',')[0]}`;ss.appendChild(o);});
+  ss.value=Math.min(rpCur.s,rpSpans(a).length-1); rpCur.s=parseInt(ss.value);
+  renderRpChart();
+}
+function loadRepeatRecordings(){
+  fetch('data/repeat_recordings.json').then(r=>r.json()).then(list=>{
+    // group by animal
+    RP={};
+    for(const r of list){ (RP[r.animal]=RP[r.animal]||[]).push(r); }
+    for(const a of Object.keys(RP)) RP[a].sort((x,y)=>x.date<y.date?-1:1);
+    const nRec=list.length, nAnim=Object.keys(RP).length;
+    $('repeat-badge').textContent=`${nRec} spans · ${nAnim} animals`;
+    $('sel-rp-animal').onchange=e=>{rpCur.a=parseInt(e.target.value);rpCur.s=0;fillRpSpan();};
+    $('sel-rp-span').onchange=e=>{rpCur.s=parseInt(e.target.value);renderRpChart();};
+    document.querySelectorAll('#rp-toggles .chip').forEach(ch=>{
+      ch.onclick=()=>{rpLayers[ch.dataset.layer]=!rpLayers[ch.dataset.layer];
+        ch.classList.toggle('on',rpLayers[ch.dataset.layer]);renderRpChart();};
+    });
+    fillRpAnimal();
+  }).catch(e=>{
+    $('rp-foot').textContent='repeat-recordings data unavailable: '+e;
+  });
+}
+
+// ---- analysis suite (sections 04–08) ----------------------------------
 const C_VIPC='#2c6c8c', C_D1C='#7c5784';
 let ANA=null;
 function col(g){return g==='VIP'?C_VIPC:C_D1C;}
@@ -774,6 +1015,8 @@ fetch('data/analyses.json').then(r=>r.json()).then(a=>{
   ANA=a;
   renderClockShift(); renderStability(); renderQC(); renderComp();
   renderArtifact(); renderFirstDays(); renderBoutCa(); renderOnsetTrig(); renderEarlyLate();
+  renderWithin();
+  loadRepeatRecordings();
 }).catch(e=>{
   document.querySelectorAll('#clocks .card, #qc, #feedback, #boutca').forEach(el=>{
     el.insertAdjacentHTML('afterbegin',`<p class="loading">analysis data unavailable: ${e}</p>`);
