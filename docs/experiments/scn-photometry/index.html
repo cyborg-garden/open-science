@@ -755,7 +755,11 @@ function renderRpChart(){
       tooltip:{mode:'index',intersect:false}
     }
   };
-  // light-pulse markers drawn as a plugin so they never scale the axis
+  const chartCfg={type:'scatter',data:{datasets:ds},options:opts};
+  // light-pulse markers drawn as a plugin so they never scale the axis.
+  // Chart.js only invokes plugins passed via the constructor's `plugins`
+  // array (or globally registered) — a plugin object assigned to an
+  // options.plugins.<id> key is *not* run.
   if(lp.length){
     opts.plugins.annotationlessLP = false;
     const lpDraw={
@@ -776,10 +780,10 @@ function renderRpChart(){
         }
       }
     };
-    opts.plugins.lpLines=lpDraw;
+    chartCfg.plugins=[lpDraw];
   }
   if(rpChart) rpChart.destroy();
-  rpChart=new Chart($('rpChart'),{type:'scatter',data:{datasets:ds},options:opts});
+  rpChart=new Chart($('rpChart'),chartCfg);
   // footer
   const behTxt=rec.beh==='wheel'?'wheel revolutions (rebuilt from raw CSVs, bit-exact vs lab ground truth)':
     rec.beh==='motion'?'total-cage motion — a different modality from wheel; no onset analysis claimed':
