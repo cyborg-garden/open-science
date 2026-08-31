@@ -92,7 +92,7 @@ footer a{color:var(--accent)}
     <h1>The Clock Under Constant Darkness</h1>
     <p class="dek">Fiber photometry of the suprachiasmatic nucleus — the brain's master clock — recorded continuously for 14–17 days in constant darkness, with wheel-running behavior and a single light pulse that resets the clock mid-record.</p>
     <div class="meta-row">
-      <span><b>10 animals</b> · 2 sessions</span>
+      <span><b>10 animals</b> · 2 sessions: Sep 27 – Oct 14 (18 d), Nov 14–28 (15 d)</span>
       <span><b>SCN</b> (suprachiasmatic nucleus)</span>
       <span><b>DD</b> constant darkness</span>
       <span>Neurophotometrics 3-color fiber photometry</span>
@@ -106,6 +106,7 @@ footer a{color:var(--accent)}
   <a href="#actogram">Actogram</a>
   <a href="#lightpulse">Light pulse</a>
   <a href="#clocks">Two clocks</a>
+  <a href="#prc">LP in CT</a>
   <a href="#within">Same recording</a>
   <a href="#qc">Quality control</a>
   <a href="#feedback">Running &amp; clock</a>
@@ -135,7 +136,7 @@ footer a{color:var(--accent)}
       <div class="chart-box tall"><canvas id="traceChart"></canvas></div>
     </div>
     <div class="stats" id="stat-grid"></div>
-    <p class="footnote">Zeitgeber time is cumulative from recording start (ZT0 = lights-on convention of the prior LD cycle; in DD it free-runs). ΔF/F₀ baseline = mean of ZT14–22 on cycle 1, per the lab's MATLAB pipeline.</p>
+    <p class="footnote">Sections 01–03 trace one <b>session</b> at a time — one cage of animals recorded together. The Session picker changes the cage; the Animal picker changes the fiber within it. The two sessions are separate experiments (Sep 27 – Oct 14 and Nov 14–28, 2022), not two views of the same animals — except where section 06 flags a re-cut. Zeitgeber time is cumulative from recording start (ZT0 = lights-on convention of the prior LD cycle; in DD it free-runs). ΔF/F₀ baseline = mean of ZT14–22 on cycle 1, per the lab's MATLAB pipeline.</p>
   </div>
 </section>
 
@@ -172,18 +173,18 @@ footer a{color:var(--accent)}
 <section id="clocks">
 <div class="wrap">
   <h2><span class="no">04</span>Two clocks, one pulse</h2>
-  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the wheel clock) and when SCN calcium reaches its daily minimum (the calcium clock). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
+  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the behavioral clock — wheel onsets) and when SCN calcium reaches its daily minimum (the calcium clock). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
   <div class="grid-2">
     <div class="card">
       <div class="chart-head">
-        <span class="chart-title">Phase shift: wheel clock vs calcium clock</span>
+        <span class="chart-title">Phase shift: behavioral clock vs calcium clock</span>
         <span class="badge">ΔCT hours</span>
       </div>
       <div class="chart-box"><canvas id="clockShiftChart"></canvas></div>
     </div>
     <div class="card">
       <div class="chart-head">
-        <span class="chart-title">Leave-one-out stability (wheel shifts)</span>
+        <span class="chart-title">Leave-one-out stability (behavioral shifts)</span>
         <span class="badge">ΔCT h</span>
       </div>
       <div style="overflow-x:auto">
@@ -199,10 +200,36 @@ footer a{color:var(--accent)}
 </div>
 </section>
 
+<section id="prc">
+<div class="wrap">
+  <h2><span class="no">05</span>When the pulse landed, in each clock</h2>
+  <p class="lede">The size of a phase shift depends on when in the cycle the light arrives. The behavioral clock and the calcium clock disagree about when the pulse landed — the same event maps to different circadian times in the two frames — so each panel plots each animal's shift against its own clock's reading of the pulse.</p>
+  <div class="grid-2">
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Pulse time &amp; shift — behavioral clock</span>
+        <span class="badge">LP at CT (wheel onsets)</span>
+      </div>
+      <div class="chart-box"><canvas id="prcWheelChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">CT of the pulse from the pre-pulse onset regression (onset = CT12). This is the frame the original phase-shift analysis used.</p>
+    </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Pulse time &amp; shift — calcium clock</span>
+        <span class="badge">LP at CT (ΔF/F minima)</span>
+      </div>
+      <div class="chart-box"><canvas id="prcCaChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">CT of the pulse from the pre-pulse calcium-trough regression (trough = CT18). Same events, a different frame — an animal's "early night" in one clock can read as another hour entirely in the other.</p>
+    </div>
+  </div>
+  <p class="footnote">n = 5 animals, one pulse each — five points per panel: a description of where each animal sat, not a fitted response curve. Both frames were computed in the original analysis suite; this panel surfaces numbers that previously shipped without a chart.</p>
+</div>
+</section>
+
 <section id="within">
 <div class="wrap">
-  <h2><span class="no">05</span>The same recording, found twice</h2>
-  <p class="lede">Searching the full 1.5-year archive for animals with repeat recordings surfaced an uncomfortable finding before any result: the "new" span the within-animal analysis scored is the pilot recording itself, re-stitched three days longer — and it contains a second light pulse the lab's records never logged.</p>
+  <h2><span class="no">06</span>The same recording, found twice</h2>
+  <p class="lede">Searching the full 1.5-year archive for animals with repeat recordings surfaced an uncomfortable finding before any result: the "new" span the within-animal analysis scored is the pilot recording itself, re-stitched three days longer — and it contains a second light pulse the lab's records never logged. The explorer below shows <b>one span at a time</b> — nothing is overlaid; a span that is actually the pilot recording re-cut is badged as such.</p>
   <div class="grid-2">
     <div class="card">
       <div class="chart-head">
@@ -226,7 +253,7 @@ footer a{color:var(--accent)}
     </div>
     <div style="overflow-x:auto">
       <table id="recon-table">
-        <thead><tr><th>Animal</th><th>Stream</th><th>checkpoint</th><th>cut at pulse 2</th><th>pilot window</th><th>pilot dashboard</th><th>n pre/post</th></tr></thead>
+        <thead><tr><th>Animal</th><th>Stream</th><th>Recording window</th><th>checkpoint</th><th>cut at pulse 2</th><th>pilot window</th><th>pilot dashboard</th><th>n pre/post</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -239,7 +266,7 @@ footer a{color:var(--accent)}
     </div>
     <div style="overflow-x:auto">
       <table id="within-status-table">
-        <thead><tr><th>Animal</th><th>Genotype</th><th>Span start</th><th>Days</th><th>Condition</th><th>Behavior source</th><th>Outcome</th></tr></thead>
+        <thead><tr><th>Animal</th><th>Genotype / sensor</th><th>Recording window</th><th>Days</th><th>Condition</th><th>Behavior source</th><th>Outcome</th></tr></thead>
         <tbody></tbody>
       </table>
     </div>
@@ -250,8 +277,9 @@ footer a{color:var(--accent)}
       <span class="chart-title">Explore the repeat recordings</span>
       <span class="badge" id="repeat-badge">—</span>
     </div>
+    <p class="footnote" style="margin-top:0">Each chart shows <b>one span</b> — the Span picker selects which. Nothing is overlaid. Calendar windows are the lab's day annotations where the file carries them, else derived from the folder date (end-anchored) and marked with an asterisk. "Pilot re-cut" marks a span that <i>is</i> the section-01 recording re-stitched — not an independent replicate.</p>
     <div class="controls">
-      <div class="ctrl"><label>Animal</label><select id="sel-rp-animal"></select></div>
+      <div class="ctrl"><label>Animal (genotype / sensor)</label><select id="sel-rp-animal"></select></div>
       <div class="ctrl"><label>Span</label><select id="sel-rp-span"></select></div>
       <div class="chips" id="rp-toggles">
         <span class="chip on" data-layer="dF">ΔF/F signal</span>
@@ -266,7 +294,7 @@ footer a{color:var(--accent)}
 
 <section id="qc">
 <div class="wrap">
-  <h2><span class="no">06</span>Which animals count</h2>
+  <h2><span class="no">07</span>Which animals count</h2>
   <p class="lede">Two independent noise models — a 24-h sine fit and a circadian signal-to-noise ratio — screened all ten recordings before any physiology was interpreted. Five animals survived; the keep/exclude calls were then reviewed by the researcher who collected the data.</p>
   <div style="overflow-x:auto">
   <table id="qc-table">
@@ -280,7 +308,7 @@ footer a{color:var(--accent)}
 
 <section id="feedback">
 <div class="wrap">
-  <h2><span class="no">07</span>Running and the clock</h2>
+  <h2><span class="no">08</span>Running and the clock</h2>
   <p class="lede">Three questions asked of the wheel data: does a heavy night buy a quieter following day (the mice could be sleeping more soundly)? Does more running change the next cycle's length? And do the light shifts at recording start contaminate the first days?</p>
   <div class="grid-2">
     <div class="card">
@@ -289,7 +317,7 @@ footer a{color:var(--accent)}
         <span class="badge" id="comp-badge">—</span>
       </div>
       <div class="chart-box"><canvas id="compChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px">Per circadian cycle, wheel clock. No compensation: heavy nights do not buy detectably quieter days in this cohort.</p>
+      <p class="footnote" style="margin-top:10px">Per circadian cycle, behavioral clock. No compensation: heavy nights do not buy detectably quieter days in this cohort.</p>
     </div>
     <div class="card">
       <div class="chart-head">
@@ -303,7 +331,7 @@ footer a{color:var(--accent)}
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
       <span class="chart-title">Phase shift vs leading-days exclusion</span>
-      <span class="badge">wheel clock</span>
+      <span class="badge">behavioral clock</span>
     </div>
     <div class="chart-box"><canvas id="firstDaysChart"></canvas></div>
     <p class="footnote" style="margin-top:10px">Dropping the first 1–3 days (light-shift transient at recording start) does not shrink the two large advances — if anything it grows them. But the pre-pulse onset count shrinks with each skip (7390: 6 → 3), so the growing values increasingly rest on thin fits. The <i>sign</i> of every animal's conclusion is stable; magnitudes beyond skip-1 are fragile.</p>
@@ -313,7 +341,7 @@ footer a{color:var(--accent)}
 
 <section id="boutca">
 <div class="wrap">
-  <h2><span class="no">08</span>Calcium at the start of a run</h2>
+  <h2><span class="no">09</span>Calcium at the start of a run</h2>
   <p class="lede">When a mouse breaks a ≥10-min stillness and starts running, SCN calcium rises. The size of that rise depends on circadian time — and the pattern differs between animals.</p>
   <div class="grid-2">
     <div class="card">
@@ -343,12 +371,12 @@ footer a{color:var(--accent)}
 
 <section id="cohort">
   <div class="wrap">
-    <h2><span class="no">09</span>The cohort</h2>
+    <h2><span class="no">10</span>The cohort</h2>
     <p class="lede">Ten animals across two sessions. D1-Cre and VIP-Cre drivers target distinct SCN-relevant cell populations; GCaMP6s reports calcium, GFlamp1 is a faster green indicator, and GFP animals are the fluorescence control — any "signal" there is movement artifact, not biology.</p>
     <div style="overflow-x:auto">
     <table id="cohort-table">
       <thead><tr>
-        <th>Animal</th><th>Session</th><th>Genotype</th><th>Sensor</th><th>Sex</th>
+        <th>Animal</th><th>Session</th><th>Session window</th><th>Genotype</th><th>Sensor</th><th>Sex</th>
         <th>Record</th><th>τ pre</th><th>τ post</th><th>Δτ</th><th>ΔF/F range</th>
       </tr></thead>
       <tbody></tbody>
@@ -360,7 +388,7 @@ footer a{color:var(--accent)}
 
 <section id="methods">
   <div class="wrap">
-    <h2><span class="no">10</span>Methods &amp; validation</h2>
+    <h2><span class="no">11</span>Methods &amp; validation</h2>
     <p class="lede">Everything on this page is computed by a Python port of the lab's MATLAB pipeline, checked against the lab's own MATLAB outputs to numerical exactness before being shown.</p>
     <div class="card" id="validation-card">
       <div class="chart-head">
@@ -377,8 +405,19 @@ footer a{color:var(--accent)}
       <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window, computed separately pre/post light pulse.</p>
     </details>
     <details>
+      <summary>Session naming: calendar windows vs file names</summary>
+      <p>Sessions are named by their calendar window with the day count in parentheses — <span style="font-family:var(--mono);font-size:14px">Sep 27 – Oct 14 (18 d)</span>. The archive's file names key on the <i>last</i> recording day (YYMMDD), which is why a "221014" file describes a window that starts Sep 27. The mapping for every recording on this page:</p>
+      <div style="overflow-x:auto">
+      <table id="filenames-table">
+        <thead><tr><th>Recording</th><th>Calendar window</th><th>Days</th><th>File name</th><th>Date source</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p class="footnote">Windows come from the lab's own day annotations inside each recording file (params.DaysofYear) where present; otherwise they are derived from the folder date minus the photometry duration and marked "derived". A "pilot re-cut" row is the section-01 recording re-stitched — not an independent replicate.</p>
+    </details>
+    <details>
       <summary>What this is and isn't</summary>
-      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. Trace sections are descriptive; the analysis sections (04–08) report small-sample statistics with permutation tests and explicit fragility flags — n is 5 animals, so treat every correlation as a lead, not a conclusion. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
+      <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. Trace sections are descriptive; the analysis sections (04–09) report small-sample statistics with permutation tests and explicit fragility flags — n is 5 animals, so treat every correlation as a lead, not a conclusion. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
       <p>Raw recordings remain on the lab's Dropbox; this page ships only downsampled derived traces (~2 MB).</p>
     </details>
   </div>
@@ -386,7 +425,7 @@ footer a{color:var(--accent)}
 
 <footer>
   <div class="wrap">
-    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day.</p>
+    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day; calendar windows, PRC panel, and recording-index table 2026-08-31.</p>
   </div>
 </footer>
 
@@ -415,7 +454,7 @@ function fillSelectors(){
   ss.innerHTML='';
   DATA.sessions.forEach((s,i)=>{
     const o=document.createElement('option');
-    o.value=i; o.textContent=`${s.session} — ${s.condition}, ${s.animals.length} animals`;
+    o.value=i; o.textContent=`${s.session} — ${s.condition}, ${s.animals.length} animals${s.cal?` · ${s.cal}`:''}`;
     ss.appendChild(o);
   });
   ss.onchange=()=>{cur.sess=+ss.value; fillAnimals();};
@@ -610,7 +649,7 @@ function fillCohort(){
       const dtau=a.circadian.pre_period_h&&a.circadian.post_period_h?a.circadian.post_period_h-a.circadian.pre_period_h:null;
       const tr=document.createElement('tr');
       tr.dataset.id=a.id;
-      tr.innerHTML=`<td><b>#${a.id}</b></td><td>${s.session}</td>
+      tr.innerHTML=`<td><b>#${a.id}</b></td><td>${s.session}</td><td>${s.cal??''}</td>
         <td>${a.genotype}</td><td>${a.virus.replace('_tdTomato','')}</td><td>${a.sex??'—'}</td>
         <td>${(a.duration_h/24).toFixed(1)} d</td>
         <td>${a.circadian.pre_period_h?.toFixed(2)??'—'}</td>
@@ -674,6 +713,7 @@ function renderWithin(){
         const pil=pilotPts[a] ? (stream==='wheel'?pilotPts[a].wheel:pilotPts[a].ca) : null;
         tr.innerHTML=`<td>${stream==='wheel'?`<b>#${a}</b> <span style="color:${col(g)}">${g}</span>`:''}</td>
           <td>${lab}</td>
+          <td style="font-family:var(--mono);font-size:11px">${id.cal||''}</td>
           <td class="${v.contaminated<0?'negv':'pos'}">${v.contaminated>=0?'+':''}${v.contaminated.toFixed(2)}</td>
           <td class="${v.truncated<0?'negv':'pos'}">${v.truncated>=0?'+':''}${v.truncated.toFixed(2)}</td>
           <td class="${v['pilot-window']<0?'negv':'pos'}">${v['pilot-window']>=0?'+':''}${v['pilot-window'].toFixed(2)}</td>
@@ -693,9 +733,10 @@ function renderWithin(){
         if(sp.outcome==='shift pair') completed++;
         const tr=document.createElement('tr');
         const g=row.genotype==='VIP-Cre'?'VIP':'D1';
+        const pilotTag=sp.same_as_pilot?' <span class="badge" style="border-color:#b07d22;color:#b07d22">pilot re-cut</span>':'';
         tr.innerHTML=`<td><b>#${row.animal}</b> <span style="color:${col(g)}">${g}</span></td>
-          <td>${row.genotype||''}</td>
-          <td style="font-family:var(--mono);font-size:12px">${sp.date}</td>
+          <td>${row.genotype||''}${sp.sensor?` / ${sp.sensor}`:''}</td>
+          <td style="font-family:var(--mono);font-size:12px">${sp.cal||sp.date||'—'}${pilotTag}</td>
           <td>${sp.dur_d?sp.dur_d.toFixed(1):'—'}</td>
           <td style="font-size:11px">${sp.cond||''}</td>
           <td>${sp.beh||'—'}</td>
@@ -788,18 +829,19 @@ function renderRpChart(){
   const behTxt=rec.beh==='wheel'?'wheel revolutions (rebuilt from raw CSVs, bit-exact vs lab ground truth)':
     rec.beh==='motion'?'total-cage motion — a different modality from wheel; no onset analysis claimed':
     'no behavior stream in this span';
-  $('rp-foot').innerHTML=`${rec.date} · ${rec.dur_d} d · ${rec.cond} · ${rec.genotype} (${rec.sex||'?'}) · calcium SNR ${rec.ca_snr??'—'}. Behavior: ${behTxt}. ${lp.length?lp.map(e=>`Light pulse at ${e.cumZT} h — ${e.source}.`).join(' '):'No verified light pulse in this span.'}`;
+  $('rp-foot').innerHTML=`<b>#${rec.animal} — ${rec.genotype} / ${rec.sensor||'?'}</b> (${rec.sex||'?'}) · ${rec.cal||rec.date}${(rec.date_source&&rec.date_source!=='lab day-annotation')?'*':''} · ${rec.dur_d} d · ${rec.cond} · calcium SNR ${rec.ca_snr??'—'}${rec.same_as_pilot?' · <span style="color:#b07d22">this span is the pilot recording re-stitched — not an independent replicate</span>':''}. Behavior: ${behTxt}. ${lp.length?lp.map(e=>`Light pulse at ${e.cumZT} h — ${e.source}.`).join(' '):'No verified light pulse in this span.'}`;
 }
 function fillRpAnimal(){
   const as=$('sel-rp-animal'); as.innerHTML='';
   rpAnimals().forEach((a,i)=>{const o=document.createElement('option');o.value=i;
-    o.textContent=`#${a} — ${rpSpans(a)[0].genotype}`;as.appendChild(o);});
+    const s0=rpSpans(a)[0];
+    o.textContent=`#${a} — ${s0.genotype} / ${s0.sensor||'?'}`;as.appendChild(o);});
   as.value=rpCur.a; fillRpSpan();
 }
 function fillRpSpan(){
   const a=rpAnimals()[rpCur.a]; const ss=$('sel-rp-span'); ss.innerHTML='';
   rpSpans(a).forEach((r,i)=>{const o=document.createElement('option');o.value=i;
-    o.textContent=`${r.date} · ${r.dur_d} d · ${r.cond.split(',')[0]}`;ss.appendChild(o);});
+    o.textContent=`${r.cal||r.date}${(r.date_source&&r.date_source!=='lab day-annotation')?'*':''} · ${r.dur_d} d · ${r.cond.split(',')[0]}${r.same_as_pilot?' · pilot re-cut':''}`;ss.appendChild(o);});
   ss.value=Math.min(rpCur.s,rpSpans(a).length-1); rpCur.s=parseInt(ss.value);
   renderRpChart();
 }
@@ -828,6 +870,39 @@ const C_VIPC='#2c6c8c', C_D1C='#7c5784';
 let ANA=null;
 function col(g){return g==='VIP'?C_VIPC:C_D1C;}
 
+function renderPRC(){
+  for(const [canvas,stream] of [['prcWheelChart','wheel'],['prcCaChart','ca']]){
+    const ds=[]; const keys=Object.keys(ANA.dual_clock);
+    keys.forEach((a,i)=>{
+      const d=ANA.dual_clock[a], g=d.group;
+      ds.push({type:'scatter', label:`#${a} ${g}`, data:[{x:d[stream].lp_in_ct, y:d[stream].shift_CT}],
+        backgroundColor:col(g), pointRadius:7, pointHoverRadius:9});
+    });
+    new Chart($(canvas),{type:'scatter',data:{datasets:ds},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
+        scales:{x:{min:0,max:24,title:{display:true,text:'CT of light pulse'},grid:{color:RULE}},
+                y:{title:{display:true,text:'phase shift (ΔCT h)'},grid:{color:RULE}}},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:it=>{const a=keys[it.datasetIndex]; const d=ANA.dual_clock[a][stream];
+            return `#${a}: LP at CT ${d.lp_in_ct.toFixed(1)}, shift ${d.shift_CT>=0?'+':''}${d.shift_CT.toFixed(2)} h`;}}}}}});
+  }
+}
+function fillFilenames(){
+  const tb=$('filenames-table').querySelector('tbody');
+  const rows=[];
+  DATA.sessions.forEach(s=>{
+    s.animals.forEach(a=>{
+      rows.push({rec:`#${a.id} · ${s.session}`, cal:s.cal||'', days:'', file:`${s.session}_${a.id}_FullTrace.mat`, src:'lab day-annotation', pilot:false});
+    });
+  });
+  fetch('data/repeat_recordings.json').then(r=>r.json()).then(list=>{
+    for(const r of list){
+      rows.push({rec:`#${r.animal} · ${r.date}`, cal:r.cal||'', days:r.dur_d, file:r.file, src:r.date_source, pilot:r.same_as_pilot});
+    }
+    rows.sort((x,y)=> (x.cal||'')<(y.cal||'')?-1:1);
+    tb.innerHTML=rows.map(r=>`<tr><td><b>${r.rec}</b>${r.pilot?' <span style="color:#b07d22">pilot re-cut</span>':''}</td><td>${r.cal}</td><td>${r.days??''}</td><td style="font-size:12px">${r.file}</td><td style="font-size:11px">${r.src}</td></tr>`).join('');
+  }).catch(()=>{ tb.innerHTML='<tr><td colspan="5">repeat-recordings data unavailable</td></tr>'; });
+}
 function renderClockShift(){
   const sc=ANA.shift_correlation, pts=sc.points;
   $('clock-r').textContent=`r = ${sc.r>=0?'+':''}${sc.r.toFixed(2)}, permutation p = ${sc.p.toFixed(2)}, n = ${sc.n}`;
@@ -1017,7 +1092,7 @@ function renderEarlyLate(){
 
 fetch('data/analyses.json').then(r=>r.json()).then(a=>{
   ANA=a;
-  renderClockShift(); renderStability(); renderQC(); renderComp();
+  renderClockShift(); renderStability(); renderPRC(); renderQC(); renderComp();
   renderArtifact(); renderFirstDays(); renderBoutCa(); renderOnsetTrig(); renderEarlyLate();
   renderWithin();
   loadRepeatRecordings();
@@ -1029,7 +1104,7 @@ fetch('data/analyses.json').then(r=>r.json()).then(a=>{
 
 fetch('data/sessions.json').then(r=>r.json()).then(d=>{
   DATA=d;
-  fillSelectors(); fillCohort();
+  fillSelectors(); fillCohort(); fillFilenames();
   fetch('data/validation.json').then(r=>r.json()).then(v=>{
     const c=v.cross_session_221128_7390;
     $('val-body').innerHTML=`<p style="font-size:16px;color:var(--ink-soft);margin-top:6px">Python port vs MATLAB <span style="font-family:var(--mono);font-size:13px">221128_concat_7390_FullTrace.mat</span> — a second-session animal the port was never tuned on:</p>
