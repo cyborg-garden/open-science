@@ -97,7 +97,7 @@ footer a{color:var(--accent)}
     <h1>The Clock Under Constant Darkness</h1>
     <p class="dek">Fiber photometry of the suprachiasmatic nucleus — the brain's master clock — recorded continuously for 14–17 days in constant darkness, with wheel-running behavior and a single light pulse that resets the clock mid-record.</p>
     <div class="meta-row">
-      <span><b>10 animals</b> · 2 sessions: Sep 27 – Oct 14 (18 d), Nov 14–28 (15 d)</span>
+      <span><b>10 animals</b> · 2 sessions: Sep 27 – Oct 14 (17.0 d), Nov 14–28 (14.0 d)</span>
       <span><b>SCN</b> (suprachiasmatic nucleus)</span>
       <span><b>DD</b> constant darkness</span>
       <span>Neurophotometrics 3-color fiber photometry</span>
@@ -515,10 +515,10 @@ footer a{color:var(--accent)}
     </details>
     <details>
       <summary>Session naming: calendar windows vs file names</summary>
-      <p>Sessions are named by their calendar window with the day count in parentheses — <span style="font-family:var(--mono);font-size:14px">Sep 27 – Oct 14 (18 d)</span>. The archive's file names key on the <i>last</i> recording day (YYMMDD), which is why a "221014" file describes a window that starts Sep 27. The mapping for every recording on this page:</p>
+      <p>Sessions are named by their calendar window with the recorded duration in parentheses (actual data length, not calendar days touched — recordings starting or ending mid-day run shorter than the window: <span style="font-family:var(--mono);font-size:14px">Sep 27 – Oct 14 (17.0 d)</span>). The archive's file names key on the <i>last</i> recording day (YYMMDD), which is why a "221014" file describes a window that starts Sep 27. The mapping for every recording on this page:</p>
       <div style="overflow-x:auto">
       <table id="filenames-table">
-        <thead><tr><th>Recording</th><th>Calendar window</th><th>Days</th><th>File name</th><th>Date source</th></tr></thead>
+        <thead><tr><th>Recording</th><th>Calendar window</th><th>Duration (d)</th><th>File name</th><th>Date source</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
@@ -1149,12 +1149,12 @@ function fillFilenames(){
   const rows=[];
   DATA.sessions.forEach(s=>{
     s.animals.forEach(a=>{
-      rows.push({rec:`#${a.id} · ${s.session}`, cal:s.cal||'', days:'', file:`${s.session}_${a.id}_FullTrace.mat`, src:'lab day-annotation', pilot:false});
+      rows.push({rec:`#${a.id} · ${s.session}`, cal:s.cal||'', days:(a.duration_h/24).toFixed(1), file:`${s.session}_${a.id}_FullTrace.mat`, src:'lab day-annotation', pilot:false});
     });
   });
   fetch('data/repeat_recordings.json').then(r=>r.json()).then(list=>{
     for(const r of list){
-      rows.push({rec:`#${r.animal} · ${r.date}`, cal:r.cal||'', days:r.dur_d, file:r.file, src:r.date_source, pilot:r.same_as_pilot});
+      rows.push({rec:`#${r.animal} · ${r.date}`, cal:r.cal||'', days:r.dur_d?.toFixed(1), file:r.file, src:r.date_source, pilot:r.same_as_pilot});
     }
     rows.sort((x,y)=> (x.cal||'')<(y.cal||'')?-1:1);
     tb.innerHTML=rows.map(r=>`<tr><td><b>${r.rec}</b>${r.pilot?' <span style="color:#b07d22">pilot re-cut</span>':''}</td><td>${r.cal}</td><td>${r.days??''}</td><td style="font-size:12px">${r.file}</td><td style="font-size:11px">${r.src}</td></tr>`).join('');
