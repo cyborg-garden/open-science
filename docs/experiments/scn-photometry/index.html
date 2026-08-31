@@ -237,11 +237,20 @@ footer a{color:var(--accent)}
       <div class="chart-box"><canvas id="lpChart"></canvas></div>
     </div>
     <p class="footnote">Pre/post periods below come from a χ² periodogram (Sokolove–Bushell) on wheel activity before vs. after the pulse. In DD, mice run ~23.3–23.6 h cycles — shorter than 24 h, as expected for the species.</p>
+    <div class="card" style="margin-top:14px">
+      <div class="chart-head">
+        <span class="chart-title">Two cycles around the pulse — cohort average</span>
+        <span class="badge">n = 5 animals · LP centered</span>
+      </div>
+      <div class="chart-box tall"><canvas id="lpCycleChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">One cycle before and one cycle after the pulse, averaged across all five animals with the pulse at CT0. Each side is CT-normalized in its own rhythm's units (pre side in pre-pulse CT, post side in post-pulse CT), so the onset of running appears where each animal actually started — no onsets are aligned away. The section 03 averages exclude exactly these two cycles (the pulse cycle and the first after it), so this panel surfaces the transition that average deliberately omits. Shaded band = SEM across animals; dashed = post-pulse side.</p>
+    </div>
     <details>
       <summary>Methods &amp; additional information — the light pulse</summary>
       <p><b>Window.</b> ±12 h around pulse onset at the full 15-s resolution (the only section where raw-resolution traces are shown), so the acute response — suppression during the pulse, release after — is separable from the circadian-scale rhythm. Envelope as in section 01: per-bin min–max, nothing averaged.</p>
       <p><b>Pre/post periods.</b> χ² periodogram (Sokolove–Bushell 1978) on 10-min wheel histograms, 20–28 h window, computed separately on pre-pulse and post-pulse days. The lab's MATLAB pipeline computes these identically; the Python port matches it to r = 1.0000 on the pilot (methods section).</p>
       <p><b>What to look for.</b> The photic response is biphasic in calcium: acute suppression while the light is on, then rebound. The <i>phase</i> consequence is not in this panel — it's sections 05–06 (shift in each clock, and when the pulse landed) and 07 (recovery of the shift windows).</p>
+      <p><b>Cohort LP-centered panel.</b> Pre side: the window [LP − τ_pre, LP) resampled onto 96 bins spanning −24…0 CT h (τ_pre = median inter-onset interval of pre-pulse onsets); post side: [LP, LP + τ_post) onto 0…+24 CT h. Each window contains exactly one activity onset (verified per animal: pre-side onsets at −1.9…−7.3 CT h, post-side at +17.8…+21.5), so each side is one genuine cycle of its rhythm. ΔF/F from the 1-s grid, wheel rate from the 10-min grid, both linearly interpolated onto the CT bins; cohort mean ± SEM across the 5 animals. This is the peri-stimulus companion to the steady-state averages in section 03, which exclude exactly these two cycles.</p>
     </details>
   </div>
 </section>
@@ -272,7 +281,7 @@ footer a{color:var(--accent)}
       <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the daily ΔF/F minimum (CT18, night trough).</p>
     </div>
   </div>
-  <p class="footnote">Correlation between the two clocks' shifts: <b id="clock-r">—</b> — no reliable coupling at this sample size; a lead, not a conclusion. An earlier calcium-shift estimator (ΔF-weighted circular mean) produced r = −0.93; the corrected daily-minimum anchor flips two animals' calcium signs and gives the value shown. 6978's advance is confirmed by its calcium clock (+3.4 CT) — its noisy wheel data had <i>under</i>estimated it — while 7390's wheel-clock advance (+4.3 CT) vanishes in the calcium frame (−0.8): its wheel onsets drove that outlier. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29% for the others), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
+  <p class="footnote">Correlation between the two clocks' shifts: <b id="clock-r">—</b> — no reliable coupling at this sample size; a lead, not a conclusion. An earlier calcium-shift estimator (ΔF-weighted circular mean) produced r = −0.93; the corrected daily-minimum anchor flips two animals' calcium signs and gives the value shown. 6978's advance is confirmed by its calcium clock (+3.4 CT) — its noisy wheel data had <i>under</i>estimated it — while 7390's behavioral-clock advance (+4.3 CT) vanishes in the calcium frame (−0.8): its wheel onsets drove that outlier. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29% for the others), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
 </div>
 </section>
 
@@ -942,7 +951,7 @@ function renderRpChart(){
           ticks:{callback:v=>v>=1000?(v/1000)+'k':v}}
     },
     plugins:{
-      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
+      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},filter:it=>typeof it.text==='string'}},
       tooltip:{mode:'index',intersect:false}
     }
   };
@@ -1064,49 +1073,65 @@ function renderQCGallery(){
 }
 function renderCohortDay(){
   fetch('data/cohort_cycle.json').then(r=>r.json()).then(CD=>{
-    const ct=[...Array(96)].map((_,i)=>((i*0.25+12)%24));
+    // Data bins are CT12..CT35.75 (mod 24 for display); a naive mod-24 x
+    // draws a spurious segment from CT23.75 back to CT0 (the wrap artifact).
+    // Display the bins in monotone CT order instead: index permutation only,
+    // no data change — disp[j] = data[(j+48)%96], x = 0.25*j.
+    const disp=a=>[...Array(96)].map((_,j)=>a[(j+48)%96]);
+    const ct=[...Array(96)].map((_,j)=>j*0.25);
     const ds=[];
     for(const [g,ccol] of [['VIP','#2c6c8c'],['D1','#7c5784']]){
       const v=CD.groups[g]; if(!v) continue;
-      const mean=v.ca_ct_mean, sem=v.ca_ct_sem;
+      const mean=disp(v.ca_ct_mean), sem=disp(v.ca_ct_sem);
       ds.push({type:'line',showLine:true,label:`${g}-Cre (n=${v.n_animals})`,data:ct.map((x,i)=>({x,y:mean[i]})),
         borderColor:ccol,borderWidth:2,pointRadius:0});
       ds.push({type:'line',data:ct.map((x,i)=>({x,y:mean[i]+sem[i]})),borderColor:'transparent',pointRadius:0,
         backgroundColor:ccol+'22',fill:'+1'});
       ds.push({type:'line',data:ct.map((x,i)=>({x,y:mean[i]-sem[i]})),borderColor:'transparent',pointRadius:0,fill:false});
     }
-    // night shading CT12-24 (onset=CT12; wrap axis 0-24)
+    // night shading CT12-24 (onset=CT12; axis 0-24, no wrap segment)
     new Chart($('cycleCaChart'),{type:'scatter',data:{datasets:ds},options:{responsive:true,
       maintainAspectRatio:false,animation:false,
       scales:{x:{type:'linear',min:0,max:24,title:{display:true,text:'circadian time (CT)'},grid:{color:RULE}},
               y:{title:{display:true,text:'ΔF/F'},grid:{color:RULE}}},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+        filter:it=>typeof it.text==='string'}}, // hide unlabeled SEM-band datasets
         annotation:{}}}});
-    // wheel chart
+    // wheel chart (same display order; SEM band added)
     const dw=[];
     for(const [g,ccol] of [['VIP','#2c6c8c'],['D1','#7c5784']]){
       const v=CD.groups[g]; if(!v) continue;
-      dw.push({type:'line',showLine:true,label:`${g}-Cre`,data:ct.map((x,i)=>({x,y:v.wh_ct_mean[i]})),
+      const mean=disp(v.wh_ct_mean), sem=disp(v.wh_ct_sem);
+      dw.push({type:'line',showLine:true,label:`${g}-Cre`,data:ct.map((x,i)=>({x,y:mean[i]})),
         borderColor:ccol,borderWidth:2,pointRadius:0});
+      dw.push({type:'line',data:ct.map((x,i)=>({x,y:mean[i]+sem[i]})),borderColor:'transparent',pointRadius:0,
+        backgroundColor:ccol+'22',fill:'+1'});
+      dw.push({type:'line',data:ct.map((x,i)=>({x,y:mean[i]-sem[i]})),borderColor:'transparent',pointRadius:0,fill:false});
     }
     new Chart($('cycleWhChart'),{type:'scatter',data:{datasets:dw},options:{responsive:true,
       maintainAspectRatio:false,animation:false,
       scales:{x:{type:'linear',min:0,max:24,title:{display:true,text:'circadian time (CT)'},grid:{color:RULE}},
               y:{title:{display:true,text:'wheel revs/s'},grid:{color:RULE}}},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
-    // raw ZT chart
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+        filter:it=>typeof it.text==='string'}}}}});
+    // raw ZT chart (SEM band added)
     const dr=[];
     const zt=[...Array(48)].map((_,i)=>i*0.5);
     for(const [g,ccol] of [['VIP','#2c6c8c'],['D1','#7c5784']]){
       const v=CD.raw_groups[g]; if(!v) continue;
       dr.push({type:'line',showLine:true,label:`${g}-Cre (raw time)`,data:zt.map((x,i)=>({x,y:v.ca_zt_mean[i]})),
         borderColor:ccol,borderWidth:2,pointRadius:0,borderDash:[5,3]});
+      dr.push({type:'line',data:zt.map((x,i)=>({x,y:v.ca_zt_mean[i]+v.ca_zt_sem[i]})),borderColor:'transparent',
+        pointRadius:0,backgroundColor:ccol+'22',fill:'+1'});
+      dr.push({type:'line',data:zt.map((x,i)=>({x,y:v.ca_zt_mean[i]-v.ca_zt_sem[i]})),borderColor:'transparent',
+        pointRadius:0,fill:false});
     }
     new Chart($('rawZtChart'),{type:'scatter',data:{datasets:dr},options:{responsive:true,
       maintainAspectRatio:false,animation:false,
       scales:{x:{type:'linear',min:0,max:24,title:{display:true,text:'ZT (recording clock, unstretched)'},grid:{color:RULE}},
               y:{title:{display:true,text:'ΔF/F'},grid:{color:RULE}}},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+        filter:it=>typeof it.text==='string'}}}}});
     // summary table
     const tb=$('cohortday-table').querySelector('tbody'); tb.innerHTML='';
     let totCycles={VIP:0,D1:0};
@@ -1126,6 +1151,45 @@ function renderCohortDay(){
     const allC=totCycles.VIP+totCycles.D1;
     $('cohortday-badge').textContent=`${both} animals · ${allC} cycles`;
   }).catch(e=>{$('cohortday-badge').textContent='unavailable: '+e;});
+}
+// ---- LP-centered two-cycle panel (section 04, round 5 item 6) -----------
+function renderLpCycle(){
+  fetch('data/lp_centered.json').then(r=>r.json()).then(LPC=>{
+    const C=LPC.cohort;
+    const xPre=[...Array(96)].map((_,i)=>-24+(i+0.5)*0.25);
+    const xPost=[...Array(96)].map((_,i)=>(i+0.5)*0.25);
+    const band=(x,m,s,fillc)=>[
+      {type:'line',data:x.map((v,i)=>({x:v,y:m[i]+s[i]})),borderColor:'transparent',pointRadius:0,
+       backgroundColor:fillc,fill:'+1'},
+      {type:'line',data:x.map((v,i)=>({x:v,y:m[i]-s[i]})),borderColor:'transparent',pointRadius:0,fill:false}];
+    const ds=[
+      {type:'line',showLine:true,label:'ΔF/F — cycle before LP',data:xPre.map((x,i)=>({x,y:C.ca_pre_mean[i]})),
+        borderColor:ACCENT,borderWidth:2,pointRadius:0},
+      ...band(xPre,C.ca_pre_mean,C.ca_pre_sem,'rgba(31,66,87,.10)'),
+      {type:'line',showLine:true,label:'ΔF/F — cycle after LP',data:xPost.map((x,i)=>({x,y:C.ca_post_mean[i]})),
+        borderColor:ACCENT,borderWidth:2,pointRadius:0,borderDash:[6,3]},
+      ...band(xPost,C.ca_post_mean,C.ca_post_sem,'rgba(31,66,87,.10)'),
+      {type:'line',showLine:true,label:'wheel rate — before',data:xPre.map((x,i)=>({x,y:C.wh_pre_mean[i]})),
+        borderColor:WHEEL,borderWidth:1.4,pointRadius:0,yAxisID:'y1',borderDash:[2,2]},
+      ...band(xPre,C.wh_pre_mean,C.wh_pre_sem,'rgba(107,143,58,.10)').map(d=>({...d,yAxisID:'y1'})),
+      {type:'line',showLine:true,label:'wheel rate — after',data:xPost.map((x,i)=>({x,y:C.wh_post_mean[i]})),
+        borderColor:WHEEL,borderWidth:1.4,pointRadius:0,yAxisID:'y1',borderDash:[6,3]},
+      ...band(xPost,C.wh_post_mean,C.wh_post_sem,'rgba(107,143,58,.10)').map(d=>({...d,yAxisID:'y1'})),
+    ];
+    new Chart($('lpCycleChart'),{type:'scatter',data:{datasets:ds},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
+        interaction:{mode:'nearest',intersect:false},
+        scales:{x:{type:'linear',min:-24,max:24,title:{display:true,text:'CT h relative to the light pulse (LP at 0; left = before, right = after)'},grid:{color:RULE}},
+                y:{title:{display:true,text:'ΔF/F'},grid:{color:RULE}},
+                y1:{position:'right',title:{display:true,text:'wheel revs/s'},grid:{display:false},
+                    ticks:{color:WHEEL},title:{color:WHEEL}}},
+        plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+          filter:it=>typeof it.text==='string'}},
+          tooltip:{callbacks:{title:it=>`${it[0].parsed.x>=0?'+':''}${it[0].parsed.x.toFixed(2)} CT h from LP`}}}}});
+    // LP band drawn by the registered lpMarker plugin; ~30-min pulse width
+    // in post-frame CT units (24/tau scaling is negligible at this width)
+    const chart=Chart.getChart($('lpCycleChart')); if(chart) chart.$lp={on:0,off:0.5};
+  }).catch(e=>{const c=$('lpCycleChart'); if(c) c.closest('.card').insertAdjacentHTML('afterbegin',`<p class="loading">LP-centered data unavailable: ${e}</p>`);});
 }
 function renderPRC(){
   for(const [canvas,stream] of [['prcWheelChart','wheel'],['prcCaChart','ca']]){
@@ -1178,7 +1242,7 @@ function renderClockShift(){
     borderColor:'#a99e89', borderWidth:1, borderDash:[5,4], pointRadius:0, order:0, label:'fit'});
   new Chart($('clockShiftChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{title:{display:true,text:'wheel-clock shift (ΔCT h)'},grid:{color:RULE}},
+      scales:{x:{title:{display:true,text:'behavioral-clock shift (ΔCT h)'},grid:{color:RULE}},
               y:{title:{display:true,text:'calcium-clock shift (ΔCT h)'},grid:{color:RULE}}},
       plugins:{legend:{display:false},
         tooltip:{callbacks:{label:it=>{const a=labels[it.datasetIndex];return a?`#${a}: wheel ${pts[a].wheel.toFixed(2)}, calcium ${pts[a].ca.toFixed(2)} CT`:'';}}}}}});
@@ -1316,7 +1380,7 @@ function renderOnsetTrig(){
       y:{title:{display:true,text:'ΔF/F change (z)'},grid:{color:RULE}}
     },
     plugins:{
-      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}
+      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},filter:it=>typeof it.text==='string'}}
     }
   };
   new Chart($('onsetTrigChart'),{type:'scatter',data:{datasets:ds},options:opts});
@@ -1364,6 +1428,7 @@ fetch('data/sessions.json').then(r=>r.json()).then(d=>{
   fillSelectors(); fillCohort(); fillFilenames();
   if(typeof ANA!=='undefined'&&ANA) renderQCGallery(); // needs both DATA and ANA
   renderCohortDay(); // independent of both, but safe here
+  renderLpCycle();
 // ---- histology supplemental (section 13) ------------------------------
 let HISTO=null, histoImages=[];
 function renderHistology(){
