@@ -79,6 +79,11 @@ details p,details li{font-size:16px;color:var(--ink-soft);margin-top:10px}
 details li{margin-left:20px}
 .footnote{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-top:14px;line-height:1.5}
 .ok-pill{display:inline-block;font-family:var(--mono);font-size:11px;background:var(--pos);color:var(--paper);padding:2px 9px;border-radius:999px}
+.histo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+.histo-card{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:14px;text-align:center}
+.histo-card img{width:100%;height:auto;display:block;border:1px solid var(--rule);border-radius:2px}
+.histo-foot{font-family:var(--mono);font-size:11.5px;color:var(--ink-faint);margin-top:8px;line-height:1.5}
+.histo-foot b{color:var(--ink)}
 footer{padding:48px 0 72px;color:var(--ink-soft);font-size:15px}
 footer a{color:var(--accent)}
 .loading{font-family:var(--mono);font-size:13px;color:var(--ink-faint);padding:40px 0;text-align:center}
@@ -115,7 +120,6 @@ footer a{color:var(--accent)}
   <a href="#cohort">Cohort</a>
   <a href="#methods">Methods &amp; validation</a>
 </div></nav>
-
 <section id="explore">
   <div class="wrap">
     <h2><span class="no">01</span>Full-record traces</h2>
@@ -522,14 +526,55 @@ footer a{color:var(--accent)}
     <details>
       <summary>What this is and isn't</summary>
       <p>This is a data exploration dashboard over two exemplar sessions (2022-10-14, n=4; 2022-11-28, n=6) pulled from a 1.5-year, 1.23 TB archive — not a full-cohort study. Trace sections are descriptive; the analysis sections (05–10) report small-sample statistics with permutation tests and explicit fragility flags — n is 5 animals, so treat every correlation as a lead, not a conclusion. Session 221014 contains VIP-Cre and D1-Cre animals (recording quality permitting); 221128 is D1-Cre only, with sensor-type contrasts (GCaMP6s / GFlamp1 / GFP control).</p>
-      <p>Raw recordings remain on the lab's Dropbox; this page ships only downsampled derived traces (~2 MB).</p>
+      <p>Raw recordings and the full histology set remain on the lab's Dropbox; this page ships only downsampled derived traces (~2 MB) plus one compressed histology section per animal (~90 KB each, ~2.4 MB).</p>
     </details>
+  </div>
+</section>
+
+<section id="histology">
+  <div class="wrap">
+    <h2><span class="no">13</span>Histology — supplemental</h2>
+    <p class="lede">Coronal sections with sensor fluorescence (and tdTomato, where co-injected) from the lab's post-mortem histology, one section per animal. A supplemental resource: shown here for provenance, not as analysis.</p>
+    <details style="margin-top:0;margin-bottom:16px">
+      <summary>Open the histology gallery (26 animals · 1 selection each)</summary>
+      <p style="margin-top:10px"><b>How the one section per animal was picked.</b> By channel dominance: animals co-injected with tdTomato are ranked by <b>red</b> dominance — mean red / (mean green + mean blue) across each section — and the top section is shown; animals with green-only fluorophores (GCaMP / GFP / Per1-Venus, no tdTomato) are ranked by <b>green</b> dominance the same way. Every pick below carries its channel label, so the fallback is visible, not silent. All picks are provisional — the researcher who collected the data reviews each one visually; swap any section by noting its number.</p>
+      <p class="footnote">Images: RGB fluorescence composites from the lab's <span style="font-family:var(--mono);font-size:14px">_rgb tifs</span> (1388×1040 px, compressed ~90 KB each for the page). The full 406-section set (1.7 GB) stays in the lab archive.</p>
+      <div class="controls" style="margin-top:14px">
+        <div class="ctrl"><label>Filter</label><select id="sel-histo-filter">
+          <option value="all">All animals with histology (26)</option>
+          <option value="kept">Kept cohort only</option>
+          <option value="green">Green-fluorophore picks (no tdTomato)</option>
+          <option value="red">tdTomato animals (red picks)</option>
+        </select></div>
+      </div>
+      <div class="histo-grid" id="histo-grid"><p class="loading">loading histology…</p></div>
+      <p class="footnote" id="histo-count" style="margin-top:14px"></p>
+      <details style="margin-top:14px">
+        <summary>Methods &amp; additional information — histology</summary>
+        <p><b>Selection criterion.</b> One section per animal, auto-picked by channel dominance (see above). The criterion is a starting point per the lab's own framing — the most-red (or most-green) area should be near the expression site — and every pick is pending visual confirmation. Section numbering follows the lab's original file names.</p>
+        <p><b>Notation.</b> "tdTomato" animals carry the red co-injection; their pick is the red-dominance winner. Green-fluorophore animals (GCaMP6s / GCaMP8s / GFP / Per1-Venus) carry no tdTomato, so green dominance is the substitute criterion — these picks are labeled and were surfaced for review when the criterion was set.</p>
+        <p><b>Coverage.</b> 26 of the archive's animals have histology. Four recorded animals have no histology anywhere in the archive — kept animals 6977, 6978 (the two-pulse pair), and 7390, plus repeat-recording animal 6529 — and the 221114 GFlamp1/GFP cohort (7121, 7122, 7381, 7382, 7386) likewise. Those animals are listed with that stated, not omitted.</p>
+      </details>
+    </details>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Coverage — histology across the recorded animals</span>
+        <span class="badge" id="histo-coverage-badge">—</span>
+      </div>
+      <div style="overflow-x:auto">
+      <table id="histo-coverage-table">
+        <thead><tr><th>Animal</th><th>Role on this page</th><th>Genotype</th><th>Injected</th><th>Channel used</th><th>Pick</th><th>Sections</th><th>Notes</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p class="footnote" style="margin-top:12px">One row per recorded or repeat animal, plus archive animals with histology, grouped by role. "No histology located" is a statement about the archive, not a claim about the experiment — some animals' sections may simply not have been collected or not yet located.</p>
+    </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day; calendar windows, PRC panel, and recording-index table 2026-08-31; cohort cycle-average section, per-section methods tabs, and exclusion gallery added same day (round 2).</p>
+    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day; calendar windows, PRC panel, and recording-index table 2026-08-31; cohort cycle-average section, per-section methods tabs, and exclusion gallery added same day (round 2); supplemental histology gallery and coverage table (round 3).</p>
   </div>
 </footer>
 
@@ -1318,7 +1363,54 @@ fetch('data/sessions.json').then(r=>r.json()).then(d=>{
   fillSelectors(); fillCohort(); fillFilenames();
   if(typeof ANA!=='undefined'&&ANA) renderQCGallery(); // needs both DATA and ANA
   renderCohortDay(); // independent of both, but safe here
-  fetch('data/validation.json').then(r=>r.json()).then(v=>{
+// ---- histology supplemental (section 13) ------------------------------
+let HISTO=null, histoImages=[];
+function renderHistology(){
+  const grid=$('histo-grid'), sel=$('sel-histo-filter');
+  const build=()=>{
+    const f=sel.value;
+    const rows=histoImages.filter(a=>f==='all'||f==='kept'&&a.kept||f==='green'&&a.channel==='green'||f==='red'&&a.channel==='red');
+    grid.innerHTML=rows.map(a=>`
+      <div class="histo-card">
+        <img src="data/histology/${a.mouse}.jpg" alt="${a.mouse} coronal section, ${a.channel}-dominant pick ${a.pick}" loading="lazy">
+        <p class="histo-foot"><b>#${a.mouse}</b> ${a.genotype??''} · ${a.tdtomato?'tdTomato + ':''}${(a.injected??'').replace('_tdTomato','')}<br>
+        ${a.channel}-dominant pick · ${a.pick} · ${a.n_sections} sections on file</p>
+      </div>`).join('');
+    $('histo-count').textContent=`Showing ${rows.length} of ${histoImages.length} animals with histology.`;
+  };
+  sel.onchange=build; build();
+  // coverage table: every recorded/repeat animal + archive animals, stated gaps
+  const tb=$('histo-coverage-table').querySelector('tbody'); tb.innerHTML='';
+  const rows=[...HISTO.animals].sort((x,y)=>{
+    const rank=a=>a.kept?0:a.status==='session'?1:a.status==='repeat'?2:3;
+    return rank(x)-rank(y)||Number(x.mouse)-Number(y.mouse);
+  });
+  const role={kept:'kept cohort',session:'recorded (excluded / control)',repeat:'repeat recordings',archive:'archive (not on this page)'};
+  for(const a of rows){
+    const tr=document.createElement('tr');
+    const chan=a.channel?a.channel+' dominance':'—';
+    tr.innerHTML=`<td><b>#${a.mouse}</b></td><td style="font-size:11px">${role[a.status]??a.status}</td>
+      <td>${a.genotype??'—'}</td><td style="font-size:12px">${(a.injected??'—').replace('_tdTomato','')}</td>
+      <td>${chan}</td>
+      <td style="font-family:var(--mono);font-size:12px">${a.pick??'—'}</td>
+      <td>${a.n_sections??'—'}</td>
+      <td style="font-size:11px">${a.note??a.reason??''}</td>`;
+    tb.appendChild(tr);
+  }
+  const nImg=HISTO.animals.filter(a=>a.pick).length;
+  const nNo=HISTO.animals.length-nImg;
+  $('histo-coverage-badge').textContent=`${nImg} with images · ${nNo} stated without`;
+}
+fetch('data/histology.json').then(r=>r.json()).then(h=>{
+  HISTO=h;
+  histoImages=h.animals.filter(a=>a.pick);
+  renderHistology();
+}).catch(e=>{
+  const g=$('histo-grid'); if(g) g.innerHTML=`<p class="loading">histology unavailable: ${e}</p>`;
+  const b=$('histo-coverage-badge'); if(b) b.textContent='unavailable';
+});
+
+fetch('data/validation.json').then(r=>r.json()).then(v=>{
     const c=v.cross_session_221128_7390;
     $('val-body').innerHTML=`<p style="font-size:16px;color:var(--ink-soft);margin-top:6px">Python port vs MATLAB <span style="font-family:var(--mono);font-size:13px">221128_concat_7390_FullTrace.mat</span> — a second-session animal the port was never tuned on:</p>
     <table style="margin-top:12px"><tbody>
