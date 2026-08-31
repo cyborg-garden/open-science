@@ -119,6 +119,7 @@ footer a{color:var(--accent)}
   <a href="#boutca">Bout calcium</a>
   <a href="#cohort">Cohort</a>
   <a href="#methods">Methods &amp; validation</a>
+  <a href="#histology">Histology</a>
 </div></nav>
 <section id="explore">
   <div class="wrap">
@@ -536,8 +537,8 @@ footer a{color:var(--accent)}
     <h2><span class="no">13</span>Histology — supplemental</h2>
     <p class="lede">Coronal sections with sensor fluorescence (and tdTomato, where co-injected) from the lab's post-mortem histology, one section per animal. A supplemental resource: shown here for provenance, not as analysis.</p>
     <details style="margin-top:0;margin-bottom:16px">
-      <summary>Open the histology gallery (26 animals · 1 selection each)</summary>
-      <p style="margin-top:10px"><b>How the one section per animal was picked.</b> By channel dominance: animals co-injected with tdTomato are ranked by <b>red</b> dominance — mean red / (mean green + mean blue) across each section — and the top section is shown; animals with green-only fluorophores (GCaMP / GFP / Per1-Venus, no tdTomato) are ranked by <b>green</b> dominance the same way. Every pick below carries its channel label, so the fallback is visible, not silent. All picks are provisional — the researcher who collected the data reviews each one visually; swap any section by noting its number.</p>
+      <summary>Open the histology gallery (26 animals · 1 selection each · placeholders pending lab validation)</summary>
+      <p style="margin-top:10px"><b>How the one section per animal was picked.</b> By channel dominance: animals co-injected with tdTomato are ranked by <b>red</b> dominance — mean red / (mean green + mean blue) across each section — and the top section is shown; animals with green-only fluorophores (GCaMP / GFP / Per1-Venus, no tdTomato) are ranked by <b>green</b> dominance the same way. Every pick below carries its channel label, so the fallback is visible, not silent. <b>These picks are placeholders</b> — auto-picked by the dominance rule as a starting point; the lab will validate each selection against the original sections and swap any that don't hold up.</p>
       <p class="footnote">Images: RGB fluorescence composites from the lab's <span style="font-family:var(--mono);font-size:14px">_rgb tifs</span> (1388×1040 px, compressed ~90 KB each for the page). The full 406-section set (1.7 GB) stays in the lab archive.</p>
       <div class="controls" style="margin-top:14px">
         <div class="ctrl"><label>Filter</label><select id="sel-histo-filter">
@@ -551,7 +552,7 @@ footer a{color:var(--accent)}
       <p class="footnote" id="histo-count" style="margin-top:14px"></p>
       <details style="margin-top:14px">
         <summary>Methods &amp; additional information — histology</summary>
-        <p><b>Selection criterion.</b> One section per animal, auto-picked by channel dominance (see above). The criterion is a starting point per the lab's own framing — the most-red (or most-green) area should be near the expression site — and every pick is pending visual confirmation. Section numbering follows the lab's original file names.</p>
+        <p><b>Selection criterion.</b> One section per animal, auto-picked by channel dominance (see above). The criterion is a starting point — the lab will validate each selection and swap sections where needed; picks shown are placeholders until that pass. Section numbering follows the lab's original file names.</p>
         <p><b>Notation.</b> "tdTomato" animals carry the red co-injection; their pick is the red-dominance winner. Green-fluorophore animals (GCaMP6s / GCaMP8s / GFP / Per1-Venus) carry no tdTomato, so green dominance is the substitute criterion — these picks are labeled and were surfaced for review when the criterion was set.</p>
         <p><b>Coverage.</b> 26 of the archive's animals have histology. Four recorded animals have no histology anywhere in the archive — kept animals 6977, 6978 (the two-pulse pair), and 7390, plus repeat-recording animal 6529 — and the 221114 GFlamp1/GFP cohort (7121, 7122, 7381, 7382, 7386) likewise. Those animals are listed with that stated, not omitted.</p>
       </details>
@@ -567,14 +568,14 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
       </div>
-      <p class="footnote" style="margin-top:12px">One row per recorded or repeat animal, plus archive animals with histology, grouped by role. "No histology located" is a statement about the archive, not a claim about the experiment — some animals' sections may simply not have been collected or not yet located.</p>
+      <p class="footnote" style="margin-top:12px">One row per recorded or repeat animal, plus archive animals with histology, grouped by role. Picks are placeholders pending lab validation. "No histology located" is a statement about the archive, not a claim about the experiment — some animals' sections may simply not have been collected or not yet located.</p>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day; calendar windows, PRC panel, and recording-index table 2026-08-31; cohort cycle-average section, per-section methods tabs, and exclusion gallery added same day (round 2); supplemental histology gallery and coverage table (round 3).</p>
+    <p>Part of <a href="https://cyborg.garden/open-science/">Cyborg.Garden Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day; calendar windows, PRC panel, and recording-index table 2026-08-31; cohort cycle-average section, per-section methods tabs, and exclusion gallery added same day (round 2); supplemental histology gallery and coverage table (round 3).</p>
   </div>
 </footer>
 
