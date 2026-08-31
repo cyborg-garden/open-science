@@ -240,17 +240,17 @@ footer a{color:var(--accent)}
     <div class="card" style="margin-top:14px">
       <div class="chart-head">
         <span class="chart-title">Two cycles around the pulse — cohort average</span>
-        <span class="badge">n = 5 animals · LP centered</span>
+        <span class="badge">5 animals · LP centered · calcium split by genotype</span>
       </div>
       <div class="chart-box tall"><canvas id="lpCycleChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px">One cycle before and one cycle after the pulse, averaged across all five animals with the pulse at CT0. Each side is CT-normalized in its own rhythm's units (pre side in pre-pulse CT, post side in post-pulse CT), so the onset of running appears where each animal actually started — no onsets are aligned away. The section 03 averages exclude exactly these two cycles (the pulse cycle and the first after it), so this panel surfaces the transition that average deliberately omits. Shaded band = SEM across animals; dashed = post-pulse side.</p>
+      <p class="footnote" style="margin-top:10px">One cycle before and one cycle after the pulse, with the pulse at CT0. <b>Calcium is averaged within genotype only</b> — D1-Cre and VIP-Cre traces are never pooled (VIP-Cre n=2, D1-Cre n=3); wheel rate is the cohort average (all 5). Each side is CT-normalized in its own rhythm's units (pre side in pre-pulse CT, post side in post-pulse CT), so the onset of running appears where each animal actually started — no onsets are aligned away. The section 03 averages exclude exactly these two cycles (the pulse cycle and the first after it), so this panel surfaces the transition that average deliberately omits. Shaded band = SEM across animals; dashed = post-pulse side.</p>
     </div>
     <details>
       <summary>Methods &amp; additional information — the light pulse</summary>
       <p><b>Window.</b> ±12 h around pulse onset at the full 15-s resolution (the only section where raw-resolution traces are shown), so the acute response — suppression during the pulse, release after — is separable from the circadian-scale rhythm. Envelope as in section 01: per-bin min–max, nothing averaged.</p>
       <p><b>Pre/post periods.</b> χ² periodogram (Sokolove–Bushell 1978) on 10-min wheel histograms, 20–28 h window, computed separately on pre-pulse and post-pulse days. The lab's MATLAB pipeline computes these identically; the Python port matches it to r = 1.0000 on the pilot (methods section).</p>
       <p><b>What to look for.</b> The photic response is biphasic in calcium: acute suppression while the light is on, then rebound. The <i>phase</i> consequence is not in this panel — it's sections 05–06 (shift in each clock, and when the pulse landed) and 07 (recovery of the shift windows).</p>
-      <p><b>Cohort LP-centered panel.</b> Pre side: the window [LP − τ_pre, LP) resampled onto 96 bins spanning −24…0 CT h (τ_pre = median inter-onset interval of pre-pulse onsets); post side: [LP, LP + τ_post) onto 0…+24 CT h. Each window contains exactly one activity onset (verified per animal: pre-side onsets at −1.9…−7.3 CT h, post-side at +17.8…+21.5), so each side is one genuine cycle of its rhythm. ΔF/F from the 1-s grid, wheel rate from the 10-min grid, both linearly interpolated onto the CT bins; cohort mean ± SEM across the 5 animals. This is the peri-stimulus companion to the steady-state averages in section 03, which exclude exactly these two cycles.</p>
+      <p><b>Cohort LP-centered panel.</b> Pre side: the window [LP − τ_pre, LP) resampled onto 96 bins spanning −24…0 CT h (τ_pre = median inter-onset interval of pre-pulse onsets); post side: [LP, LP + τ_post) onto 0…+24 CT h. Each window contains exactly one activity onset (verified per animal: pre-side onsets at −1.9…−7.3 CT h, post-side at +17.8…+21.5), so each side is one genuine cycle of its rhythm. ΔF/F from the 1-s grid, wheel rate from the 10-min grid, both linearly interpolated onto the CT bins; genotype-split calcium mean ± SEM (VIP-Cre n=2, D1-Cre n=3 — never pooled across genotypes; Jules 2026-08-31), wheel cohort mean ± SEM across all 5. This is the peri-stimulus companion to the steady-state averages in section 03, which exclude exactly these two cycles.</p>
     </details>
   </div>
 </section>
@@ -1155,7 +1155,7 @@ function renderCohortDay(){
 // ---- LP-centered two-cycle panel (section 04, round 5 item 6) -----------
 function renderLpCycle(){
   fetch('data/lp_centered.json').then(r=>r.json()).then(LPC=>{
-    const C=LPC.cohort;
+    const C=LPC.cohort; const G=LPC.groups;
     const xPre=[...Array(96)].map((_,i)=>-24+(i+0.5)*0.25);
     const xPost=[...Array(96)].map((_,i)=>(i+0.5)*0.25);
     const band=(x,m,s,fillc)=>[
@@ -1163,16 +1163,22 @@ function renderLpCycle(){
        backgroundColor:fillc,fill:'+1'},
       {type:'line',data:x.map((v,i)=>({x:v,y:m[i]-s[i]})),borderColor:'transparent',pointRadius:0,fill:false}];
     const ds=[
-      {type:'line',showLine:true,label:'ΔF/F — cycle before LP',data:xPre.map((x,i)=>({x,y:C.ca_pre_mean[i]})),
-        borderColor:ACCENT,borderWidth:2,pointRadius:0},
-      ...band(xPre,C.ca_pre_mean,C.ca_pre_sem,'rgba(31,66,87,.10)'),
-      {type:'line',showLine:true,label:'ΔF/F — cycle after LP',data:xPost.map((x,i)=>({x,y:C.ca_post_mean[i]})),
-        borderColor:ACCENT,borderWidth:2,pointRadius:0,borderDash:[6,3]},
-      ...band(xPost,C.ca_post_mean,C.ca_post_sem,'rgba(31,66,87,.10)'),
-      {type:'line',showLine:true,label:'wheel rate — before',data:xPre.map((x,i)=>({x,y:C.wh_pre_mean[i]})),
+      {type:'line',showLine:true,label:'VIP-Cre ΔF/F — before (n=2)',data:xPre.map((x,i)=>({x,y:G.VIP.ca_pre_mean[i]})),
+        borderColor:C_VIPC,borderWidth:2,pointRadius:0},
+      ...band(xPre,G.VIP.ca_pre_mean,G.VIP.ca_pre_sem,'rgba(44,108,140,.10)'),
+      {type:'line',showLine:true,label:'VIP-Cre ΔF/F — after (n=2)',data:xPost.map((x,i)=>({x,y:G.VIP.ca_post_mean[i]})),
+        borderColor:C_VIPC,borderWidth:2,pointRadius:0,borderDash:[6,3]},
+      ...band(xPost,G.VIP.ca_post_mean,G.VIP.ca_post_sem,'rgba(44,108,140,.10)'),
+      {type:'line',showLine:true,label:'D1-Cre ΔF/F — before (n=3)',data:xPre.map((x,i)=>({x,y:G.D1.ca_pre_mean[i]})),
+        borderColor:C_D1C,borderWidth:2,pointRadius:0},
+      ...band(xPre,G.D1.ca_pre_mean,G.D1.ca_pre_sem,'rgba(124,87,132,.10)'),
+      {type:'line',showLine:true,label:'D1-Cre ΔF/F — after (n=3)',data:xPost.map((x,i)=>({x,y:G.D1.ca_post_mean[i]})),
+        borderColor:C_D1C,borderWidth:2,pointRadius:0,borderDash:[6,3]},
+      ...band(xPost,G.D1.ca_post_mean,G.D1.ca_post_sem,'rgba(124,87,132,.10)'),
+      {type:'line',showLine:true,label:'wheel rate — before (all 5)',data:xPre.map((x,i)=>({x,y:C.wh_pre_mean[i]})),
         borderColor:WHEEL,borderWidth:1.4,pointRadius:0,yAxisID:'y1',borderDash:[2,2]},
       ...band(xPre,C.wh_pre_mean,C.wh_pre_sem,'rgba(107,143,58,.10)').map(d=>({...d,yAxisID:'y1'})),
-      {type:'line',showLine:true,label:'wheel rate — after',data:xPost.map((x,i)=>({x,y:C.wh_post_mean[i]})),
+      {type:'line',showLine:true,label:'wheel rate — after (all 5)',data:xPost.map((x,i)=>({x,y:C.wh_post_mean[i]})),
         borderColor:WHEEL,borderWidth:1.4,pointRadius:0,yAxisID:'y1',borderDash:[6,3]},
       ...band(xPost,C.wh_post_mean,C.wh_post_sem,'rgba(107,143,58,.10)').map(d=>({...d,yAxisID:'y1'})),
     ];
