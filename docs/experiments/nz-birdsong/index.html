@@ -514,7 +514,7 @@ tr:hover td{background:var(--surface-2)}
           trained against human-verified examples.
         </p>
         <div style="margin-top:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)">
-          47 recordings · 1,790 calls · features per Campbell ARU protocol
+          47 Xeno-Canto recordings · 1,790 calls · features per Campbell ARU protocol · +106 staged Macaulay units (2026-09-03)
         </div>
       </div>
     </div>
@@ -1244,7 +1244,7 @@ tr:hover td{background:var(--surface-2)}
         <h3>Data Sources</h3>
         <div id="kaka-source-bars"></div>
         <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-          1,790 calls · 47 recordings · one Xeno-Canto archive source (details in the methods foldout below)
+          1,790 clustered Xeno-Canto calls · 106 staged Macaulay units · sources &amp; methods in the foldout below
         </div>
       </div>
 
@@ -1288,11 +1288,14 @@ tr:hover td{background:var(--surface-2)}
       <div class="card">
         <h3>Where these calls come from</h3>
         <div id="kaka-source-bars-xc"></div>
-        <div style="margin-top:.6rem;font-size:.84rem;color:var(--ink-soft)">
-          Currently one source: <b>Xeno-Canto archive</b> — 47 recordings, 1,790 annotated call units,
-          19 recordists, 8 regions, 2008–2024. Every unsupervised result on this page derives from
-          these recordings. (The Campbell ARU set — 53 calls, Kāpiti + Zealandia — is held out for
-          classifier validation and is not yet merged.)
+                <div style="margin-top:.6rem;font-size:.84rem;color:var(--ink-soft)">
+          Two sources. <b>Xeno-Canto archive</b> — 47 recordings, 1,790 annotated call units,
+          19 recordists, 8 regions, 2008–2024: every unsupervised result on this page derives from
+          these recordings. <b>Macaulay Library (staged, 2026-09-03)</b> — 106 units from 14
+          recordings (1969–2016) that passed four quality gates; they are projected into the
+          explorer below but excluded from all cluster and dialect claims (label class:
+          <i>vocalisation, species unconfirmed</i>). (The Campbell ARU set — 53 calls, Kāpiti +
+          Zealandia — remains held out for classifier validation and is not merged.)
         </div>
       </div>
       <details style="margin:1rem 0 1.2rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
@@ -1307,6 +1310,22 @@ tr:hover td{background:var(--surface-2)}
           (z-scored per dimension), then embedded in 2D by <b>UMAP</b> (n_neighbours=30, min_dist=0.3,
           Euclidean). Cluster colouring comes from <b>HDBSCAN run on a 3D t-SNE embedding</b> of the same
           standardised features (min_samples=8, seed 42) — 27 clusters, 687 calls left unclustered.</p>
+          <p><b>The staged Macaulay subset (2026-09-03).</b> 201 candidate calls were detected in 17
+          Macaulay Library recordings (1969–2016) by the same energy-based segmenter and featurised
+          identically. Each candidate then passed four quality gates: not in the recording excluded
+          wholesale pending a listen (ML 94335961); inside the Xeno-Canto 15-nearest-neighbour
+          distance envelope (p95); 15-NN majority not HDBSCAN noise; and not the first segment of
+          its recording (tape-head announcement risk). <b>106 units from 14 recordings survived</b>
+          and were <i>projected into the existing embedding via UMAP transform</i> — the Xeno-Canto
+          coordinates are unchanged. They carry the label class <b>"vocalisation, species
+          unconfirmed"</b>: detected as vocalisations, but species identity is not ear-verifiable
+          from archive audio, so <b>no call-type, cluster or dialect claims are made for them</b>
+          (grey dots in the explorer; the full 201-row gate table ships alongside this page as
+          <span style="font-family:var(--mono)">kaka_macaulay_staged.csv</span>). One honest
+          limitation: the channel-removed view is not available for these units — the per-recording
+          normalisation recipe was not recoverable bit-exactly, so only the raw-features view is
+          shown rather than a re-derived approximation. Channel robustness stays an open question
+          until a channel-robust embedder is built and tested.</p>
           <p><b>The two views.</b> <i>Raw features</i> preserves absolute spectral content; in a
           crowd-sourced archive this makes the recording chain (microphone, gain, distance, habitat)
           a dominant variance component, and clusters largely track the recordist. <i>Channel-removed</i>
@@ -1325,9 +1344,10 @@ tr:hover td{background:var(--surface-2)}
         </div>
       </details>
       <div class="prose" style="margin-bottom:1.2rem">
-        <p>Every call in the corpus (n = 1,790) embedded by <b>UMAP</b> over the same 52 acoustic
+        <p>Every call in the corpus (n = 1,896: 1,790 clustered Xeno-Canto calls + 106 staged Macaulay
+        units) embedded by <b>UMAP</b> over the same 52 acoustic
         features used elsewhere on this dashboard. <b>Click any dot</b> to see its spectrogram and
-        play the call. Two views of the same calls:</p>
+        play the call. Two views:</p>
         <ul>
           <li><b>Raw features</b> — the honest archive view. Colour by <i>unsupervised cluster</i>
           (HDBSCAN) and the 27 clusters look crisp; switch the colour to <i>recordist</i> and the
@@ -1361,7 +1381,7 @@ tr:hover td{background:var(--surface-2)}
         <div id="kakaUmapLegend" style="display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.6rem;font-size:.78rem;font-family:var(--mono)"></div>
         <div id="kakaUmapSelected" style="margin-top:1rem"></div>
         <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-          1,790 calls · 47 Xeno-Canto recordings · UMAP (n_neighbours=30, min_dist=0.3) on standardised Campbell 52-dim features · clusters: HDBSCAN on t-SNE (ms=8)
+          1,896 calls (1,790 XC + 106 staged Macaulay) · UMAP (n_neighbours=30, min_dist=0.3) on standardised Campbell 52-dim features · XC clusters: HDBSCAN on t-SNE (ms=8) · Macaulay units: projected, excluded from cluster claims
         </div>
       </div>
 
@@ -2675,9 +2695,10 @@ function initSyllables() {
     });
   }
 
-  // === KĀKĀ SOURCE BARS (XC only; rule categories withdrawn 2026-09-03) ===
+  // === KĀKĀ SOURCE BARS (rule categories withdrawn 2026-09-03; Macaulay staged 2026-09-03) ===
   const kakaSource = [
-    {name:'Xeno-Canto archive',count:1790,pct:100.0,color:'#7c5784'},
+    {name:'Xeno-Canto archive (clustered corpus)',count:1790,pct:94.4,color:'#7c5784'},
+    {name:'Macaulay Library (staged, unclassified)',count:106,pct:5.6,color:'#556b71'},
   ];
   ['kaka-source-bars','kaka-source-bars-xc'].forEach(id => {
     const el = document.getElementById(id);
@@ -4519,6 +4540,7 @@ const GameEngine = {
   }
   function coords(p) { return view === 'raw' ? [p.x, p.y] : (p.x2 == null ? null : [p.x2, p.y2]); }
   function colorFor(p) {
+    if (p.cluster === -2) return '#556b71';           // staged Macaulay units — own class, never a cluster claim
     if (colMode === 'rec') return REC_PALETTE[hashStr(p.rec_full) % REC_PALETTE.length];
     return p.cluster < 0 ? 'rgba(120,120,120,.35)' : CLUSTER_PALETTE[p.cluster % CLUSTER_PALETTE.length];
   }
@@ -4562,11 +4584,16 @@ const GameEngine = {
     let items = [];
     if (colMode === 'cluster') {
       const counts = {};
-      DATA.points.forEach(p => { const k = p.cluster < 0 ? 'noise' : 'C' + p.cluster; counts[k] = (counts[k] || 0) + 1; });
+      let nStaged = 0;
+      DATA.points.forEach(p => {
+        if (p.cluster === -2) { nStaged++; return; }
+        const k = p.cluster < 0 ? 'noise' : 'C' + p.cluster; counts[k] = (counts[k] || 0) + 1;
+      });
       items = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({
         label: k === 'noise' ? 'unclustered' : `${k} (n=${n})`,
         color: k === 'noise' ? 'rgba(120,120,120,.35)' : CLUSTER_PALETTE[+k.slice(1) % CLUSTER_PALETTE.length]
       }));
+      if (nStaged) items.push({ label: `Macaulay staged (n=${nStaged})`, color: '#556b71' });
     } else {
       const counts = {};
       DATA.points.forEach(p => { counts[p.rec_full] = (counts[p.rec_full] || 0) + 1; });
@@ -4596,7 +4623,8 @@ const GameEngine = {
       const hint = document.getElementById('kakaUmapHint');
       if (hovered >= 0) {
         const p = DATA.points[hovered];
-        hint.textContent = `${p.id} · ${p.rec} · ${p.dur}ms · ${view === 'raw' ? ('C' + (p.cluster < 0 ? '?' : p.cluster)) : 'channel-removed view'}`;
+        const cl = p.cluster === -2 ? 'Macaulay staged' : (p.cluster < 0 ? 'unclustered' : 'C' + p.cluster);
+        hint.textContent = `${p.id} · ${p.rec} · ${p.dur}ms · ${view === 'raw' ? cl : 'channel-removed view'}`;
       } else hint.textContent = 'hover a dot · click to open call';
     }
   });
@@ -4609,15 +4637,22 @@ const GameEngine = {
   function showCall(p) {
     const el = document.getElementById('kakaUmapSelected'); if (!el) return;
     const audioUrl = `annotation/kaka/${p.id}.wav`;
+    const isML = p.src === 'ML' || p.cluster === -2;
+    const recLink = isML
+      ? `<a href="https://macaulaylibrary.org/asset/${p.recording.replace(/^ML/, '')}" target="_blank" rel="noopener">${p.recording}</a>`
+      : `<a href="https://xeno-canto.org/explore?query=${encodeURIComponent('nr:' + p.recording.slice(2))}" target="_blank" rel="noopener">${p.recording}</a>`;
+    const clusterHtml = p.cluster === -2
+      ? '<b>staged (no cluster claims)</b><div>label: <i>vocalisation, species unconfirmed</i></div>'
+      : (p.cluster < 0 ? 'unclustered' : 'C' + p.cluster);
     const imgHtml = `<img id="kakaUmapSpectro" src="annotation/kaka/${p.id}.png" alt="spectrogram ${p.id}" style="max-width:360px;width:100%;border-radius:4px;border:1px solid var(--rule);display:block">`;
     el.innerHTML = `
       <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start">
         ${imgHtml}
         <div style="font-size:.84rem;font-family:var(--mono);line-height:1.7;min-width:180px">
           <div><b>${p.id}</b></div>
-          <div>cluster: <b>${p.cluster < 0 ? 'unclustered' : 'C' + p.cluster}</b></div>
+          <div>cluster: ${clusterHtml}</div>
           <div>recordist: ${p.rec_full}</div>
-          <div>recording: <a href="https://xeno-canto.org/explore?query=${encodeURIComponent('nr:' + p.recording.slice(2))}" target="_blank" rel="noopener">${p.recording}</a></div>
+          <div>recording: ${recLink}</div>
           <div>region: ${p.region}</div>
           <div>duration: ${(p.dur / 1000).toFixed(2)} s</div>
           <button class="btn" style="background:var(--accent);color:#fff;margin-top:.5rem" onclick="kakaPlayUnit('${audioUrl}')">▶ Play call</button>
