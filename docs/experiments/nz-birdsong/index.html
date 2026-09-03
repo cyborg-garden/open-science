@@ -961,6 +961,60 @@ tr:hover td{background:var(--surface-2)}
         <div style="margin-top:.6rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)" id="fcUmapCaption">loading…</div>
       </div>
 
+      <!-- ============ UNSUPERVISED SYLLABLE CALL-SPACE EXPLORER ============ -->
+      <div class="section-label" style="margin-top:2.5rem">Unsupervised syllable call-space — no labels, no rules</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Every syllable embedded by its 52 acoustic features alone — <b>no family labels, no classifier, no
+        rules</b> involved in forming the clusters. Colour it by the <b>unsupervised clusters</b>, then toggle
+        to <b>family</b> (stage-4 classifier labels, Webb taxonomy) and see how much of the human taxonomy
+        the unsupervised structure recovers on its own — or colour by bird / site / sex to check the clusters
+        don't just track who or where. Includes the <b>241 human-verified syllables</b> (Raven-style manual
+        annotation) projected into the same space. <b>Click any dot</b> to play the syllable in song context.</p></div>
+      <div class="card" style="border-left:3px solid var(--bellbird)">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
+          <button id="kori-col-cluster" class="btn" style="background:var(--accent);color:#fff">colour: unsupervised cluster</button>
+          <button id="kori-col-family" class="btn">colour: family</button>
+          <button id="kori-col-human" class="btn">colour: human-verified</button>
+          <button id="kori-col-individual" class="btn">colour: bird (top 20)</button>
+          <button id="kori-col-site" class="btn">colour: site</button>
+          <button id="kori-col-sex" class="btn">colour: sex</button>
+        </div>
+        <div style="position:relative">
+          <canvas id="koriUmapCanvas" style="width:100%;height:460px;cursor:crosshair;border-radius:4px;border:1px solid var(--rule)"></canvas>
+          <div id="koriUmapHint" style="position:absolute;top:8px;left:10px;font-size:.78rem;color:var(--ink-soft);font-family:var(--mono);pointer-events:none">hover a dot · click to play</div>
+        </div>
+        <div id="koriUmapLegend" style="display:flex;flex-wrap:wrap;gap:.3rem .9rem;margin-top:.6rem;font-size:.76rem;font-family:var(--mono)"></div>
+        <div id="koriUmapSelected" style="margin-top:1rem"></div>
+        <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+          3,241 shown of 19,815 syllables (1,496 songs; human-verified always included) · UMAP (n=30, min_dist=0.3) on standardised 52-dim features · clusters: HDBSCAN on t-SNE(3d), ms=25/mcs=50
+        </div>
+        <details style="margin-top:1rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+          <summary style="cursor:pointer;padding:.8rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
+            Validation &amp; confound battery (click to expand)
+          </summary>
+          <div style="padding:.2rem 1.2rem .8rem;font-size:.86rem;line-height:1.65">
+            <p><b>Does the unsupervised structure match the labels?</b> Cluster–family agreement
+            (ARI, known-family syllables only): <b>0.222</b>. On the 241 human-verified syllables the
+            correspondence is much sharper — e.g. Cough 24/24 into one cluster, Chortle 24/24, Peaksqueak
+            19/19, Stutter 74/79 — while the corpus-wide number is diluted by classifier noise and by
+            families that genuinely grade into each other.</p>
+            <p><b>Confound battery (every grouping tested identically):</b> cluster vs individual
+            <b>0.014</b>, vs site <b>0.040</b>, vs sex <b>0.010</b>. The clusters do <i>not</i> track who
+            sang, where, or which sex — the opposite of the kākā archive case, where clusters tracked the
+            recording channel (ARI 0.63). This is a single-protocol corpus (Koe), so that confound is
+            largely absent by design.</p>
+            <p><b>Honest caveats.</b> (1) Family labels on the full corpus are stage-4 classifier
+            outputs (Webb 2021 taxonomy, 0.893 held-out-bird accuracy) — only the 241 projected points are
+            human-verified; the family toggle is therefore "classifier labels", not human labels.
+            (2) Cluster granularity is density-scale-dependent: at a coarser HDBSCAN sensitivity
+            (ms=50/mcs=100) the structure collapses to 2 mega-clusters. (3) 22.6% of syllables are
+            unclustered noise. (4) The explorer shows a 3,000-syllable random subsample for canvas
+            performance; every number above is computed on the full 19,815. Full table:
+            <span style="font-family:var(--mono)">kori_syllables.csv</span>.</p>
+          </div>
+        </details>
+      </div>
+
       <div class="section-label" style="margin-top:2.5rem;color:var(--ink-faint)">Earlier tutorial-subset analysis (kept for comparison)</div>
 
       <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
@@ -2767,6 +2821,8 @@ function initSyllables() {
     if (species === 'kaka' && window.kakaMapOnShow) window.kakaMapOnShow();
     // Campbell reference panel shares the kaka species panel
     if (species === 'kaka' && window.cbMapOnShow) window.cbMapOnShow();
+    // korimako unsupervised syllable explorer draws on panel show
+    if (species === 'bellbird' && window.koriMapOnShow) window.koriMapOnShow();
   };
 
   // === SAMPLE RENDERER ===
@@ -4726,6 +4782,160 @@ const GameEngine = {
     if (DATA && scale) { draw(); legend(); }
   };
 
+  window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
+})();
+</script>
+
+<script>
+/* ============================================================
+   KORIMAKO UNSUPERVISED SYLLABLE EXPLORER (kori_umap_data.json)
+   52-dim features -> UMAP 2D view; HDBSCAN clusters; colour
+   toggles: cluster / family / human-verified / bird / site / sex.
+   Click plays the syllable (song-context MP3 seek, or the
+   human-verified clip WAV directly). 3,000-point subsample; the
+   241 human-verified syllables always included (cluster=-3).
+   ============================================================ */
+(function() {
+  const canvas = document.getElementById('koriUmapCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const wrap = canvas.parentElement;
+  const PAL24 = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#946d4f','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a','#3a4f7a','#4f7a3a','#7a3a5f'];
+  const FAM_COLORS = {'Stutter':'#b07d22','Pipe':'#2c6c8c','Cough':'#bb4a33','Alarmy':'#7c5784','Downsqueak':'#5f7a3a','Waah':'#8c4a2c','Down':'#4f6d94','Bip':'#a99e89','Click':'#6d8a72','Upsqueak':'#94564f','Chiggle':'#946d4f','Chortle':'#7a3a5f','Trill':'#3a7a6d','Flatsqueak':'#5f5f3a','Stepdown':'#3a5f7a','Shrieky':'#7a5f3a','Chump':'#4f3a7a','Peaksqueak':'#7a3a3a','Stepup':'#3a7a4f','UNKNOWN':'rgba(120,120,120,.4)'};
+  const HUMAN_GOLD = '#c9a227';
+  let DATA = null, colMode = 'cluster', scale = null, hovered = -1, selected = -1;
+  let topBirds = [], birdColor = {};
+  let kAudio = null;
+
+  fetch('annotation/kori/kori_umap_data.json').then(r => r.json()).then(d => {
+    DATA = d;
+    const counts = {};
+    DATA.points.forEach(p => { if (p.individual) counts[p.individual] = (counts[p.individual]||0)+1; });
+    topBirds = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20).map(e=>e[0]);
+    topBirds.forEach((b,i) => birdColor[b] = PAL24[i % PAL24.length]);
+    if (window.koriMapOnShow) window.koriMapOnShow();
+  }).catch(e => console.warn('kori umap load', e));
+
+  window.koriMapOnShow = function() { if (DATA) sizeAndDraw(); };
+
+  function fieldFor(p) {
+    if (colMode === 'cluster') return p.cluster === -3 ? 'human-verified' : (p.cluster < 0 ? 'unclustered' : 'C' + p.cluster);
+    if (colMode === 'family') return p.family || 'UNKNOWN';
+    if (colMode === 'human') return p.human ? 'human-verified' : 'model-corpus';
+    if (colMode === 'individual') return topBirds.includes(p.individual) ? p.individual : 'other';
+    if (colMode === 'site') return p.site || '?';
+    if (colMode === 'sex') return p.sex || '?';
+    return '?';
+  }
+  function colorFor(p) {
+    const f = fieldFor(p);
+    if (colMode === 'cluster') return f === 'unclustered' ? 'rgba(120,120,120,.35)' : (f === 'human-verified' ? 'rgba(120,120,120,.5)' : PAL24[+f.slice(1) % PAL24.length]);
+    if (colMode === 'family') return FAM_COLORS[f] || '#556b71';
+    if (colMode === 'human') return f === 'human-verified' ? HUMAN_GOLD : 'rgba(150,150,150,.35)';
+    if (colMode === 'individual') return f === 'other' ? 'rgba(150,150,150,.35)' : birdColor[f];
+    if (colMode === 'site') return {'TMK':'#b07d22','TMI':'#5f7a3a','MRB':'#2c6c8c','WAI':'#bb4a33','CUV':'#7c5784','Aro':'#8c4a2c'}[f] || '#556b71';
+    if (colMode === 'sex') return f === 'M' ? '#2c6c8c' : (f === 'F' ? '#bb4a33' : '#a99e89');
+    return '#556b71';
+  }
+  function bounds() {
+    const xs = DATA.points.map(p => p.x), ys = DATA.points.map(p => p.y);
+    let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const pad = 0.06 * Math.max(x1 - x0, y1 - y0);
+    return [x0-pad, x1+pad, y0-pad, y1+pad];
+  }
+  function sizeAndDraw() {
+    const w = wrap.clientWidth; if (!w) return;
+    const h = 460, dpr = window.devicePixelRatio || 1;
+    canvas.width = w*dpr; canvas.height = h*dpr; canvas.style.height = h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const [x0,x1,y0,y1] = bounds();
+    scale = {x0,x1,y0,y1,w,h};
+    draw(); legend();
+  }
+  function toPx(c) {
+    return [ (c[0]-scale.x0)/(scale.x1-scale.x0)*scale.w,
+             (1-(c[1]-scale.y0)/(scale.y1-scale.y0))*scale.h ];
+  }
+  function draw() {
+    ctx.fillStyle = '#faf7f0'; ctx.fillRect(0,0,scale.w,scale.h);
+    DATA.points.forEach((p,i) => {
+      const [px,py] = toPx([p.x,p.y]);
+      if (p.human) { // gold ring always marks human-verified
+        ctx.beginPath(); ctx.arc(px,py,4.6,0,7); ctx.strokeStyle = HUMAN_GOLD; ctx.lineWidth = 1.4; ctx.stroke();
+      }
+      if (i === selected) { ctx.beginPath(); ctx.arc(px,py,7,0,7); ctx.fillStyle = '#111'; ctx.fill(); }
+      ctx.beginPath(); ctx.arc(px,py, i===hovered||i===selected ? 3.2 : 2.0, 0, 7);
+      ctx.fillStyle = colorFor(p); ctx.globalAlpha = i===hovered||i===selected ? 1 : .8;
+      ctx.fill(); ctx.globalAlpha = 1;
+    });
+  }
+  function legend() {
+    const el = document.getElementById('koriUmapLegend'); if (!el) return;
+    const counts = {};
+    DATA.points.forEach(p => { const k = fieldFor(p); counts[k] = (counts[k]||0)+1; });
+    let entries = Object.entries(counts);
+    if (colMode === 'cluster') entries = entries.filter(e=>e[0]!=='human-verified').sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).concat([['human-verified', (DATA.n_human_verified||0)]]);
+    else entries = entries.sort((a,b)=>b[1]-a[1]);
+    const cap = colMode === 'family' ? 25 : (colMode === 'individual' ? 21 : 60);
+    el.innerHTML = entries.slice(0,cap).map(([k,n]) => {
+      const color = (colMode==='cluster') ? (k==='unclustered'?'rgba(120,120,120,.35)':(k==='human-verified'?HUMAN_GOLD:PAL24[+k.slice(1)%PAL24.length]))
+        : colorFor({family:k, human:k==='human-verified', individual:k, site:k, sex:k, cluster:-1});
+      return `<span style="display:inline-flex;align-items:center;gap:.25rem"><span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block"></span>${k} (${n})</span>`;
+    }).join('');
+  }
+  function nearest(evt) {
+    const r = canvas.getBoundingClientRect();
+    const mx = evt.clientX-r.left, my = evt.clientY-r.top;
+    let best = -1, bd = 25;
+    DATA.points.forEach((p,i) => {
+      const [px,py] = toPx([p.x,p.y]);
+      const d = (px-mx)*(px-mx)+(py-my)*(py-my);
+      if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+  canvas.addEventListener('mousemove', evt => {
+    if (!DATA || !scale) return;
+    const h0 = hovered; hovered = nearest(evt);
+    if (h0 !== hovered) {
+      draw();
+      const hint = document.getElementById('koriUmapHint');
+      if (hovered >= 0) {
+        const p = DATA.points[hovered];
+        hint.textContent = p.human
+          ? `${p.id} · ${p.family} · human-verified · near C${p.nn_cluster < 0 ? '?' : p.nn_cluster}`
+          : `${p.family}${p.p_family ? ' ('+p.p_family.toFixed(2)+')' : ''} · ${p.sex||'?'} ${p.site||'?'} · C${p.cluster < 0 ? '?' : p.cluster} · ${p.dur}ms`;
+      } else hint.textContent = 'hover a dot · click to play';
+    }
+  });
+  canvas.addEventListener('click', evt => {
+    if (!DATA || !scale) return;
+    const i = nearest(evt); if (i < 0) return;
+    selected = i; draw(); playSyllable(DATA.points[i]);
+  });
+  function playSyllable(p) {
+    const el = document.getElementById('koriUmapSelected'); if (!el) return;
+    el.innerHTML = p.human
+      ? `<div style="font-size:.84rem;font-family:var(--mono)"><b>${p.id}</b> · <b>${p.family}</b> · human-verified · nearest unsupervised cluster: C${p.nn_cluster < 0 ? '—' : p.nn_cluster} · <span style="color:var(--ink-faint)">playing clip…</span></div>`
+      : `<div style="font-size:.84rem;font-family:var(--mono)"><b>${p.family}</b> (${(p.p_family||0).toFixed(2)}) · bird ${p.individual} · ${p.sex} · ${p.site} · cluster C${p.cluster < 0 ? '?' : p.cluster} · song ${p.song_id} @${(p.onset_ms/1000).toFixed(2)}s · <span style="color:var(--ink-faint)">playing in song context…</span></div>`;
+    if (kAudio) { kAudio.pause(); kAudio = null; }
+    kAudio = new Audio(p.human ? p.clip : `full-corpus/audio/${p.song_id}.mp3`);
+    kAudio.addEventListener('loadedmetadata', () => { if (!p.human) kAudio.currentTime = p.onset_ms/1000; });
+    kAudio.play().catch(e => { el.innerHTML += '<div style="font-size:.78rem;color:var(--ink-faint)">play failed</div>'; });
+  }
+  ['cluster','family','human','individual','site','sex'].forEach(mode => {
+    const btn = document.getElementById('kori-col-'+mode);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      colMode = mode;
+      ['cluster','family','human','individual','site','sex'].forEach(m => {
+        const b = document.getElementById('kori-col-'+m);
+        b.style.background = m===mode ? 'var(--accent)' : '';
+        b.style.color = m===mode ? '#fff' : '';
+      });
+      if (DATA && scale) { draw(); legend(); }
+    });
+  });
   window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
 })();
 </script>
