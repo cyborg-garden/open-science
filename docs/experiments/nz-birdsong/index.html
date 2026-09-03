@@ -1295,7 +1295,9 @@ tr:hover td{background:var(--surface-2)}
           recordings (1969–2016) that passed four quality gates; they are projected into the
           explorer below but excluded from all cluster and dialect claims (label class:
           <i>vocalisation, species unconfirmed</i>). (The Campbell ARU set — 53 calls, Kāpiti +
-          Zealandia — remains held out for classifier validation and is not merged.)
+          Zealandia — is the human-verified reference set that motivates the feature recipe and
+          the future classifier's ground truth; it is not part of the clustered corpus and is
+          shown separately in the reference panel below.)
         </div>
       </div>
       <details style="margin:1rem 0 1.2rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
@@ -1382,6 +1384,37 @@ tr:hover td{background:var(--surface-2)}
         <div id="kakaUmapSelected" style="margin-top:1rem"></div>
         <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
           1,896 calls (1,790 XC + 106 staged Macaulay) · UMAP (n_neighbours=30, min_dist=0.3) on standardised Campbell 52-dim features · XC clusters: HDBSCAN on t-SNE (ms=8) · Macaulay units: projected, excluded from cluster claims
+        </div>
+      </div>
+
+      <!-- CAMPBELL ARU REFERENCE PANEL — label vs unsupervised-cluster comparison -->
+      <div class="card" style="margin-top:1.2rem;border-left:3px solid var(--kaka)">
+        <h3>Campbell ARU Reference Set — human labels vs unsupervised clusters</h3>
+        <p style="font-size:.9rem;color:var(--ink-soft);line-height:1.6">
+          The 53 human-verified kākā calls (Raven-annotated by Fraser Campbell, Kāpiti island +
+          Zealandia, single standardised ARU protocol) projected into the same call-space
+          embedding as the archive corpus. This set is the reason the 52-feature recipe exists
+          and is the project's only human-labelled kākā reference — but it was never a
+          <em>validation</em> step for the unsupervised clustering, which runs label-free
+          (53 calls / 3 types / 2 sites is a proof of concept, not a validation). Projecting it
+          here consumes nothing: the corpus, the clustering, and all claims are untouched.
+          <b>Toggle the colour</b> to compare how the human call-type labels and the
+          unsupervised archive clusters carve up the same calls.
+        </p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin:.8rem 0">
+          <button id="cb-col-calltype" class="btn" style="background:var(--accent);color:#fff">colour: call type</button>
+          <button id="cb-col-cluster" class="btn">colour: unsupervised cluster</button>
+          <button id="cb-col-site" class="btn">colour: site</button>
+          <button id="cb-col-behaviour" class="btn">colour: behaviour</button>
+        </div>
+        <div style="position:relative">
+          <canvas id="cbUmapCanvas" style="width:100%;height:420px;cursor:crosshair;border-radius:4px;border:1px solid var(--rule)"></canvas>
+          <div id="cbUmapHint" style="position:absolute;top:8px;left:10px;font-size:.78rem;color:var(--ink-soft);font-family:var(--mono);pointer-events:none">hover a dot · click to open call</div>
+        </div>
+        <div id="cbUmapLegend" style="display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.6rem;font-size:.78rem;font-family:var(--mono)"></div>
+        <div id="cbUmapSelected" style="margin-top:1rem"></div>
+        <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+          53 calls · projected into the archive embedding (UMAP transform, XC coordinates unchanged) · "unsupervised cluster" = 15-nearest-XC-neighbour majority HDBSCAN cluster · comparison overlay only — not part of the corpus
         </div>
       </div>
 
@@ -2732,6 +2765,8 @@ function initSyllables() {
     }
     // kākā unsupervised explorer: draw now that the panel has layout
     if (species === 'kaka' && window.kakaMapOnShow) window.kakaMapOnShow();
+    // Campbell reference panel shares the kaka species panel
+    if (species === 'kaka' && window.cbMapOnShow) window.cbMapOnShow();
   };
 
   // === SAMPLE RENDERER ===
@@ -4691,6 +4726,173 @@ const GameEngine = {
     if (DATA && scale) { draw(); legend(); }
   };
 
+  window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
+})();
+</script>
+
+<script>
+/* ============================================================
+   CAMPBELL ARU REFERENCE PANEL (kaka_campbell_umap.json)
+   53 human-verified calls projected into the archive embedding;
+   colour toggles: human call type / unsupervised XC cluster / site /
+   behaviour. Comparison overlay — not part of the clustered corpus.
+   ============================================================ */
+(function() {
+  const canvas = document.getElementById('cbUmapCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const wrap = canvas.parentElement;
+
+  const PAL = {
+    calltype: { 'Skraak': '#bb4a33', 'Whistle': '#2c6c8c', 'Slide whistle': '#5f7a3a' },
+    site: { 'Kāpiti island': '#7c5784', 'Zealandia': '#8c4a2c' },
+    behaviour: { 'Perching': '#2c6c8c', 'Foraging': '#5f7a3a', 'Flying': '#bb4a33' }
+  };
+  const CLUSTER_PALETTE = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#946d4f','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a','#3a4f7a','#4f7a3a','#7a3a5f','#3a5f5f','#5f7a3a','#6d4f94','#944f4f','#4f947a'];
+
+  let DATA = null, colMode = 'calltype', scale = null, hovered = -1, selected = -1;
+  let cbAudio = null;
+
+  fetch('annotation/kaka_campbell_umap.json').then(r => r.json()).then(d => {
+    DATA = d;
+    if (window.__cbVisible) sizeAndDraw();
+  }).catch(e => console.warn('campbell umap load', e));
+
+  window.cbMapOnShow = function() { if (DATA) { window.__cbVisible = true; sizeAndDraw(); } };
+
+  function fieldFor(p) {
+    if (colMode === 'calltype') return p.call_type;
+    if (colMode === 'cluster') return p.xc_cluster < 0 ? 'unclustered' : 'C' + p.xc_cluster;
+    if (colMode === 'site') return p.site;
+    if (colMode === 'behaviour') return p.behaviour;
+    return '?';
+  }
+  function colorFor(p) {
+    if (colMode === 'cluster')
+      return p.xc_cluster < 0 ? 'rgba(120,120,120,.4)' : CLUSTER_PALETTE[p.xc_cluster % CLUSTER_PALETTE.length];
+    const pal = PAL[colMode];
+    return pal[p.call_type] || pal[p.site] || pal[p.behaviour] || '#556b71';
+  }
+  function bounds() {
+    const xs = DATA.points.map(p => p.x), ys = DATA.points.map(p => p.y);
+    let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const pad = 0.09 * Math.max(x1 - x0, y1 - y0);
+    return [x0 - pad, x1 + pad, y0 - pad, y1 + pad];
+  }
+  function sizeAndDraw() {
+    const w = wrap.clientWidth; if (!w) return;
+    const h = 420, dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const [x0, x1, y0, y1] = bounds();
+    scale = { x0, x1, y0, y1, w, h };
+    draw(); legend();
+  }
+  function toPx(c) {
+    return [ (c[0] - scale.x0) / (scale.x1 - scale.x0) * scale.w,
+             (1 - (c[1] - scale.y0) / (scale.y1 - scale.y0)) * scale.h ];
+  }
+  function draw() {
+    ctx.fillStyle = '#faf7f0'; ctx.fillRect(0, 0, scale.w, scale.h);
+    DATA.points.forEach((p, i) => {
+      if (i === selected) { // halo
+        const [px, py] = toPx([p.x, p.y]);
+        ctx.beginPath(); ctx.arc(px, py, 8, 0, 7); ctx.fillStyle = '#111'; ctx.fill();
+      }
+      const [px, py] = toPx([p.x, p.y]);
+      ctx.beginPath(); ctx.arc(px, py, i === hovered || i === selected ? 5 : 3.6, 0, 7);
+      ctx.fillStyle = colorFor(p); ctx.globalAlpha = i === hovered || i === selected ? 1 : .82;
+      ctx.fill(); ctx.globalAlpha = 1;
+    });
+  }
+  function legend() {
+    const el = document.getElementById('cbUmapLegend'); if (!el) return;
+    const counts = {};
+    DATA.points.forEach(p => { const k = fieldFor(p); counts[k] = (counts[k] || 0) + 1; });
+    const entries = Object.entries(counts).sort((a, b) => {
+      if (colMode === 'cluster') return (a[0] === 'unclustered') ? 1 : (b[0] === 'unclustered' ? -1 : +a[0].slice(1) - +b[0].slice(1));
+      return b[1] - a[1];
+    });
+    el.innerHTML = entries.map(([k, n]) => {
+      const color = (colMode === 'cluster')
+        ? (k === 'unclustered' ? 'rgba(120,120,120,.4)' : CLUSTER_PALETTE[+k.slice(1) % CLUSTER_PALETTE.length])
+        : (PAL[colMode][k] || '#556b71');
+      return `<span style="display:inline-flex;align-items:center;gap:.3rem"><span style="width:9px;height:9px;border-radius:50%;background:${color};display:inline-block"></span>${k} (n=${n})</span>`;
+    }).join('');
+  }
+  function nearest(evt) {
+    const r = canvas.getBoundingClientRect();
+    const mx = evt.clientX - r.left, my = evt.clientY - r.top;
+    let best = -1, bd = 36;
+    DATA.points.forEach((p, i) => {
+      const [px, py] = toPx([p.x, p.y]);
+      const d = (px - mx) * (px - mx) + (py - my) * (py - my);
+      if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+  canvas.addEventListener('mousemove', evt => {
+    if (!DATA || !scale) return;
+    const h0 = hovered; hovered = nearest(evt);
+    if (h0 !== hovered) {
+      draw();
+      const hint = document.getElementById('cbUmapHint');
+      if (hovered >= 0) {
+        const p = DATA.points[hovered];
+        hint.textContent = `${p.id} · ${p.call_type} · ${p.site} · ${colMode === 'cluster' ? 'near C' + (p.xc_cluster < 0 ? '?' : p.xc_cluster) : 'C' + (p.xc_cluster < 0 ? '?' : p.xc_cluster)}`;
+      } else hint.textContent = 'hover a dot · click to open call';
+    }
+  });
+  canvas.addEventListener('click', evt => {
+    if (!DATA || !scale) return;
+    const i = nearest(evt); if (i < 0) return;
+    selected = i; draw(); showCall(DATA.points[i]);
+  });
+  function showCall(p) {
+    const el = document.getElementById('cbUmapSelected'); if (!el) return;
+    const audioUrl = `annotation/kaka_campbell/${p.id}.wav`;
+    const imgHtml = `<img id="cbUmapSpectro" src="annotation/kaka_campbell/${p.id}.png" alt="spectrogram ${p.id}" style="max-width:360px;width:100%;border-radius:4px;border:1px solid var(--rule);display:block">`;
+    el.innerHTML = `
+      <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start">
+        ${imgHtml}
+        <div style="font-size:.84rem;font-family:var(--mono);line-height:1.7;min-width:190px">
+          <div><b>${p.id}</b> <span style="color:var(--ink-faint)">(human-verified)</span></div>
+          <div>call type: <b>${p.call_type}</b></div>
+          <div>site: ${p.site}</div>
+          <div>behaviour: ${p.behaviour}</div>
+          <div>date: ${p.date}</div>
+          <div>source file: ${p.orig_file}</div>
+          <div>nearest unsupervised cluster: ${p.xc_cluster < 0 ? 'unclustered' : 'C' + p.xc_cluster} <span style="color:var(--ink-faint)">(15-NN majority)</span></div>
+          <div>duration: ${(p.dur / 1000).toFixed(2)} s</div>
+          <button class="btn" style="background:var(--accent);color:#fff;margin-top:.5rem" onclick="cbPlayUnit('${audioUrl}')">▶ Play call</button>
+          <div id="cbUmapPlayMsg" style="margin-top:.4rem;font-size:.78rem;color:var(--ink-faint)"></div>
+        </div>
+      </div>`;
+    const img = document.getElementById('cbUmapSpectro');
+    img.onerror = () => { img.outerHTML = '<div style="max-width:360px;font-size:.8rem;color:var(--ink-faint);border:1px dashed var(--rule);padding:1rem;border-radius:4px">spectrogram unavailable</div>'; };
+  }
+  window.cbPlayUnit = function(url) {
+    if (cbAudio) { cbAudio.pause(); cbAudio = null; }
+    const msg = document.getElementById('cbUmapPlayMsg');
+    cbAudio = new Audio(url);
+    cbAudio.play().then(() => { if (msg) msg.textContent = 'playing…'; })
+      .catch(e => { if (msg) msg.textContent = 'play failed — try the direct file: ' + url; });
+    cbAudio.onended = () => { if (msg) msg.textContent = ''; };
+  };
+  ['calltype', 'cluster', 'site', 'behaviour'].forEach(mode => {
+    const btn = document.getElementById('cb-col-' + mode);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      colMode = mode;
+      ['calltype', 'cluster', 'site', 'behaviour'].forEach(m => {
+        const b = document.getElementById('cb-col-' + m);
+        b.style.background = m === mode ? 'var(--accent)' : '';
+        b.style.color = m === mode ? '#fff' : '';
+      });
+      if (DATA && scale) { draw(); legend(); }
+    });
+  });
   window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
 })();
 </script>
