@@ -1276,6 +1276,50 @@ tr:hover td{background:var(--surface-2)}
       <div class="section-label">Representative Samples</div>
       <div id="voc-samples-kaka"><!-- Populated by JS --></div>
 
+      <!-- UNSUPERVISED CLUSTER EXPLORER -->
+      <div class="section-label" style="margin-top:2.5rem">Unsupervised Call-Space Explorer</div>
+      <div class="prose" style="margin-bottom:1.2rem">
+        <p>Every call in the corpus (n = 1,790) embedded by <b>UMAP</b> over the same 52 acoustic
+        features used elsewhere on this dashboard. <b>Click any dot</b> to see its spectrogram and
+        play the call. Two views of the same calls:</p>
+        <ul>
+          <li><b>Raw features</b> — the honest archive view. Colour by <i>unsupervised cluster</i>
+          (HDBSCAN) and the 27 clusters look crisp; switch the colour to <i>recordist</i> and the
+          same map turns into a fingerprint of <em>who recorded it</em> — the clusters track the
+          recording channel more than the call type (ARI 0.63 vs 0.02). Try it: the picture
+          barely changes.</li>
+          <li><b>Channel-removed</b> — the same calls after per-recording normalisation strips the
+          recording-chain signature. The channel structure vanishes, and what remains is close to a
+          continuum: kākā call variation grades smoothly rather than sorting into discrete
+          acoustic types.</li>
+        </ul>
+        <p style="font-size:.88rem;color:var(--ink-faint)">One aggregate lesson, stated plainly: in a
+        heterogeneous volunteer archive, unit-level clusters are recording-channel clusters. A
+        dialect claim needs the composition level and the confound battery — see the
+        <a href="cluster.html">cluster viewer</a> for the annotate-tool view of the same corpus.</p>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-bottom:.8rem">
+          <span style="font-size:.82rem;color:var(--ink-soft);font-family:var(--mono)">view:</span>
+          <button class="btn" id="kmap-btn-raw" style="background:var(--accent);color:#fff" onclick="kakaMapSetView('raw')">Raw features</button>
+          <button class="btn" id="kmap-btn-recnorm" onclick="kakaMapSetView('recnorm')">Channel-removed</button>
+          <span style="width:1rem"></span>
+          <span style="font-size:.82rem;color:var(--ink-soft);font-family:var(--mono)">colour:</span>
+          <button class="btn" id="kmap-col-cluster" style="background:var(--accent);color:#fff" onclick="kakaMapSetCol('cluster')">Cluster</button>
+          <button class="btn" id="kmap-col-rule" onclick="kakaMapSetCol('rule')">Rule call type</button>
+          <button class="btn" id="kmap-col-rec" onclick="kakaMapSetCol('rec')">Recordist</button>
+        </div>
+        <div style="position:relative">
+          <canvas id="kakaUmapCanvas" style="width:100%;height:460px;cursor:crosshair;border-radius:4px;border:1px solid var(--rule)"></canvas>
+          <div id="kakaUmapHint" style="position:absolute;top:8px;left:10px;font-size:.78rem;color:var(--ink-soft);font-family:var(--mono);pointer-events:none">hover a dot · click to open call</div>
+        </div>
+        <div id="kakaUmapLegend" style="display:flex;flex-wrap:wrap;gap:.4rem 1rem;margin-top:.6rem;font-size:.78rem;font-family:var(--mono)"></div>
+        <div id="kakaUmapSelected" style="margin-top:1rem"></div>
+        <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+          1,790 calls · 47 Xeno-Canto recordings · UMAP (n_neighbours=30, min_dist=0.3) on standardised Campbell 52-dim features · clusters: HDBSCAN on t-SNE (ms=8)
+        </div>
+      </div>
+
       <!-- BEHAVIOUR–VOCALISATION CORRELATION -->
       <div class="section-label" style="margin-top:2.5rem">Behaviour–Vocalisation Correlation</div>
       <div class="prose" style="margin-bottom:1.5rem">
@@ -2647,6 +2691,8 @@ function initSyllables() {
     if (species === 'bellbird') {
       setTimeout(() => { window.dispatchEvent(new Event('resize')); }, 30);
     }
+    // kākā unsupervised explorer: draw now that the panel has layout
+    if (species === 'kaka' && window.kakaMapOnShow) window.kakaMapOnShow();
   };
 
   // === SAMPLE RENDERER ===
@@ -4442,6 +4488,193 @@ const GameEngine = {
       `(gold ≥${d.gold_songs}: ${d.n_intermediate_gold} + ${d.n_atypical_gold}; ${d.n_intermediate_all + d.n_atypical_all} birds of interest exist at any n). ` +
       'Wide CIs mean few songs — trust those axis positions less.';
   }).catch(e => { console.warn('fc examples load', e); });
+})();
+
+/* ============================================================
+   KĀKĀ UNSUPERVISED CALL-SPACE EXPLORER (kaka_umap_data.json)
+   UMAP over Campbell 52-dim features, raw + channel-removed views,
+   colour by HDBSCAN cluster / rule label / recordist; click a dot
+   to see the spectrogram PNG and play the unit WAV.
+   ============================================================ */
+(function() {
+  const canvas = document.getElementById('kakaUmapCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const wrap = canvas.parentElement;
+
+  // -- palette (rule type colours match the call-type table on this page) --
+  const RULE_COLORS = { snicker:'#7c5784', bark:'#8c4a2c', gurgle:'#2c6c8c', shraak:'#bb4a33', 'shraak_woo':'#b07d22' };
+  const CLUSTER_PALETTE = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#946d4f','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a','#3a4f7a','#4f7a3a','#7a3a5f','#3a5f5f','#5f7a3a','#6d4f94','#944f4f','#4f947a'];
+  const REC_PALETTE = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a'];
+
+  let DATA = null, view = 'raw', colMode = 'cluster', scale = null, hovered = null, selected = null;
+  let kAudio = null;
+
+  // -- load data --
+  fetch('annotation/kaka_umap_data.json').then(r => r.json()).then(d => {
+    DATA = d;
+    if (window.kakaMapOnShow) sizeAndDraw();
+  }).catch(e => console.warn('kaka umap load', e));
+
+  // exposed for showVocSpecies('kaka'): panel just became visible
+  window.kakaMapOnShow = function() { if (DATA) sizeAndDraw(); };
+
+  function bounds() {
+    const xs = [], ys = [];
+    DATA.points.forEach(p => {
+      const c = coords(p); if (!c) return;
+      xs.push(c[0]); ys.push(c[1]);
+    });
+    let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const pad = 0.06 * Math.max(x1 - x0, y1 - y0);
+    return [x0 - pad, x1 + pad, y0 - pad, y1 + pad];
+  }
+  function coords(p) { return view === 'raw' ? [p.x, p.y] : (p.x2 == null ? null : [p.x2, p.y2]); }
+  function colorFor(p) {
+    if (colMode === 'rule') return RULE_COLORS[p.rule] || '#a99e89';
+    if (colMode === 'rec') return REC_PALETTE[hashStr(p.rec_full) % REC_PALETTE.length];
+    return p.cluster < 0 ? 'rgba(120,120,120,.35)' : CLUSTER_PALETTE[p.cluster % CLUSTER_PALETTE.length];
+  }
+  function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) { h = (h * 31 + s.charCodeAt(i)) >>> 0; } return h; }
+
+  function sizeAndDraw() {
+    const w = wrap.clientWidth; if (!w) return;
+    const h = 460, dpr = window.devicePixelRatio || 1;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    canvas.style.height = h + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const [x0, x1, y0, y1] = bounds();
+    scale = { x0, x1, y0, y1, w, h };
+    draw(); legend();
+  }
+
+  function toPx(c) {
+    return [ (c[0] - scale.x0) / (scale.x1 - scale.x0) * scale.w,
+             (1 - (c[1] - scale.y0) / (scale.y1 - scale.y0)) * scale.h ];
+  }
+
+  function draw() {
+    ctx.fillStyle = '#faf7f0'; ctx.fillRect(0, 0, scale.w, scale.h);
+    if (selected) { // halo under selection
+      const c = coords(DATA.points[selected]); if (c) {
+        const [px, py] = toPx(c);
+        ctx.beginPath(); ctx.arc(px, py, 7, 0, 7); ctx.fillStyle = '#111'; ctx.fill();
+      }
+    }
+    DATA.points.forEach((p, i) => {
+      const c = coords(p); if (!c) return;
+      const [px, py] = toPx(c);
+      ctx.beginPath(); ctx.arc(px, py, i === hovered || i === selected ? 3.2 : 2.1, 0, 7);
+      ctx.fillStyle = colorFor(p); ctx.globalAlpha = i === hovered || i === selected ? 1 : .78;
+      ctx.fill(); ctx.globalAlpha = 1;
+    });
+  }
+
+  function legend() {
+    const el = document.getElementById('kakaUmapLegend'); if (!el) return;
+    let items = [];
+    if (colMode === 'cluster') {
+      const counts = {};
+      DATA.points.forEach(p => { const k = p.cluster < 0 ? 'noise' : 'C' + p.cluster; counts[k] = (counts[k] || 0) + 1; });
+      items = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({
+        label: k === 'noise' ? 'unclustered' : `${k} (n=${n})`,
+        color: k === 'noise' ? 'rgba(120,120,120,.35)' : CLUSTER_PALETTE[+k.slice(1) % CLUSTER_PALETTE.length]
+      }));
+    } else if (colMode === 'rule') {
+      const counts = {};
+      DATA.points.forEach(p => { counts[p.rule] = (counts[p.rule] || 0) + 1; });
+      items = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ label: `${k} (n=${n})`, color: RULE_COLORS[k] || '#a99e89' }));
+    } else {
+      const counts = {};
+      DATA.points.forEach(p => { counts[p.rec_full] = (counts[p.rec_full] || 0) + 1; });
+      items = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 19).map(([k, n]) => ({ label: `${k} (n=${n})`, color: REC_PALETTE[hashStr(k) % REC_PALETTE.length] }));
+    }
+    el.innerHTML = items.map(it => `<span style="display:inline-flex;align-items:center;gap:.3rem"><span style="width:9px;height:9px;border-radius:50%;background:${it.color};display:inline-block"></span>${it.label}</span>`).join('');
+  }
+
+  function nearest(evt) {
+    const r = canvas.getBoundingClientRect();
+    const mx = evt.clientX - r.left, my = evt.clientY - r.top;
+    let best = -1, bd = 25;
+    DATA.points.forEach((p, i) => {
+      const c = coords(p); if (!c) return;
+      const [px, py] = toPx(c);
+      const d = (px - mx) * (px - mx) + (py - my) * (py - my);
+      if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+
+  canvas.addEventListener('mousemove', evt => {
+    if (!DATA || !scale) return;
+    const h0 = hovered; hovered = nearest(evt);
+    if (h0 !== hovered) {
+      draw();
+      const hint = document.getElementById('kakaUmapHint');
+      if (hovered >= 0) {
+        const p = DATA.points[hovered];
+        hint.textContent = `${p.id} · ${p.rule} · ${p.rec} · ${p.dur}ms · ${view === 'raw' ? ('C' + (p.cluster < 0 ? '?' : p.cluster)) : 'channel-removed view'}`;
+      } else hint.textContent = 'hover a dot · click to open call';
+    }
+  });
+  canvas.addEventListener('click', evt => {
+    if (!DATA || !scale) return;
+    const i = nearest(evt); if (i < 0) return;
+    selected = i; draw(); showCall(DATA.points[i]);
+  });
+
+  function showCall(p) {
+    const el = document.getElementById('kakaUmapSelected'); if (!el) return;
+    const audioUrl = `annotation/kaka/${p.id}.wav`;
+    const imgHtml = `<img id="kakaUmapSpectro" src="annotation/kaka/${p.id}.png" alt="spectrogram ${p.id}" style="max-width:360px;width:100%;border-radius:4px;border:1px solid var(--rule);display:block">`;
+    el.innerHTML = `
+      <div style="display:flex;gap:1.2rem;flex-wrap:wrap;align-items:flex-start">
+        ${imgHtml}
+        <div style="font-size:.84rem;font-family:var(--mono);line-height:1.7;min-width:180px">
+          <div><b>${p.id}</b></div>
+          <div>rule label: <b style="color:${RULE_COLORS[p.rule] || '#333'}">${p.rule}</b> <span style="color:var(--ink-faint)">(unverified — rule classifier)</span></div>
+          <div>cluster: <b>${p.cluster < 0 ? 'unclustered' : 'C' + p.cluster}</b></div>
+          <div>recordist: ${p.rec_full}</div>
+          <div>recording: <a href="https://xeno-canto.org/explore?query=${encodeURIComponent('nr:' + p.recording.slice(2))}" target="_blank" rel="noopener">${p.recording}</a></div>
+          <div>region: ${p.region}</div>
+          <div>duration: ${(p.dur / 1000).toFixed(2)} s</div>
+          <button class="btn" style="background:var(--accent);color:#fff;margin-top:.5rem" onclick="kakaPlayUnit('${audioUrl}')">▶ Play call</button>
+          <div id="kakaUmapPlayMsg" style="margin-top:.4rem;font-size:.78rem;color:var(--ink-faint)"></div>
+        </div>
+      </div>`;
+    // show a friendly message if the spectrogram 404s
+    const img = document.getElementById('kakaUmapSpectro');
+    img.onerror = () => { img.outerHTML = '<div style="max-width:360px;font-size:.8rem;color:var(--ink-faint);border:1px dashed var(--rule);padding:1rem;border-radius:4px">spectrogram unavailable</div>'; };
+  }
+
+  window.kakaPlayUnit = function(url) {
+    if (kAudio) { kAudio.pause(); kAudio = null; }
+    const msg = document.getElementById('kakaUmapPlayMsg');
+    kAudio = new Audio(url);
+    kAudio.play().then(() => { if (msg) msg.textContent = 'playing…'; })
+      .catch(e => { if (msg) msg.textContent = 'play failed — try the direct file: ' + url; });
+    kAudio.onended = () => { if (msg) msg.textContent = ''; };
+  };
+
+  window.kakaMapSetView = function(v) {
+    view = v; selected = null; hovered = null;
+    document.getElementById('kakaUmapSelected').innerHTML = '';
+    ['raw', 'recnorm'].forEach(k => {
+      const b = document.getElementById('kmap-btn-' + k), on = k === v;
+      b.style.background = on ? 'var(--accent)' : ''; b.style.color = on ? '#fff' : '';
+    });
+    if (DATA && scale) sizeAndDraw();
+  };
+  window.kakaMapSetCol = function(m) {
+    colMode = m;
+    ['cluster', 'rule', 'rec'].forEach(k => {
+      const b = document.getElementById('kmap-col-' + k), on = k === m;
+      b.style.background = on ? 'var(--accent)' : ''; b.style.color = on ? '#fff' : '';
+    });
+    if (DATA && scale) { draw(); legend(); }
+  };
+
+  window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
 })();
 </script>
 </body>
