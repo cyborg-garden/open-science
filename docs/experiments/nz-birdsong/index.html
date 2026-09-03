@@ -1015,6 +1015,52 @@ tr:hover td{background:var(--surface-2)}
         </details>
       </div>
 
+      <!-- ============ SONG-LEVEL UNSUPERVISED VIEW ============ -->
+      <div class="section-label" style="margin-top:2.5rem">Song-level view — unsupervised repertoire space</div>
+      <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
+        Each song as one point, described <b>only by its composition over the 50 unsupervised
+        syllable clusters</b> plus timing — no labels, no family names anywhere in the feature
+        space (unlike the by-bird song map above, which uses family labels for its features).
+        Toggle the colour to see what the space tracks: <b>bird</b> shows the strong individual
+        signature of learned song (same-bird songs clump, JSD ratio 2.12 — that's how
+        individual ID works), <b>site</b> shows the site structure that survives <i>beyond</i>
+        the individual, and <b>sex</b> shows what little it carries.</p></div>
+      <div class="card" style="border-left:3px solid var(--bellbird)">
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
+          <button id="ksong-col-individual" class="btn" style="background:var(--accent);color:#fff">colour: bird (top 20)</button>
+          <button id="ksong-col-site" class="btn">colour: site</button>
+          <button id="ksong-col-sex" class="btn">colour: sex</button>
+        </div>
+        <div style="position:relative">
+          <canvas id="ksongUmapCanvas" style="width:100%;height:460px;cursor:crosshair;border-radius:4px;border:1px solid var(--rule)"></canvas>
+          <div id="ksongUmapHint" style="position:absolute;top:8px;left:10px;font-size:.78rem;color:var(--ink-soft);font-family:var(--mono);pointer-events:none">hover a dot · click to play song</div>
+        </div>
+        <div id="ksongUmapLegend" style="display:flex;flex-wrap:wrap;gap:.3rem .9rem;margin-top:.6rem;font-size:.76rem;font-family:var(--mono)"></div>
+        <div id="ksongUmapSelected" style="margin-top:1rem"></div>
+        <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+          1,496 songs · composition vectors over the 50 syllable clusters · UMAP (n=30, min_dist=0.3) · same songs as the by-bird map above, different (label-free) features
+        </div>
+        <details style="margin-top:1rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+          <summary style="cursor:pointer;padding:.8rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
+            Composition battery — what does the repertoire space track? (click to expand)
+          </summary>
+          <div style="padding:.2rem 1.2rem .8rem;font-size:.86rem;line-height:1.65">
+            <p><b>Individual: JSD ratio 2.12</b> — songs by the same bird are twice as similar
+            to each other as songs by different birds. Expected for learned song, and the
+            confound to beat for any geographic claim.</p>
+            <p><b>Site beyond the individual: observed diff 0.147, permutation p ≈ 0 (200 shuffles).</b>
+            Songs by <i>different</i> birds differ more <i>across</i> sites than <i>within</i> sites —
+            a between-bird, nesting-aware test, so this is structure that survives controlling for
+            individual identity. A candidate vocal-culture signal (repertoire composition varying by
+            site), NOT yet a dialect claim: sites are recording locations (6 sites, 753 birds,
+            individuals nested within sites), the permutation shuffles bird→site labels, and
+            proximity/demography/channel differences are not separately modelled.</p>
+            <p><b>Sex: ratio 1.09</b> — barely above chance; repertoire composition carries
+            little sex signal once bird identity is accounted for.</p>
+          </div>
+        </details>
+      </div>
+
       <div class="section-label" style="margin-top:2.5rem;color:var(--ink-faint)">Earlier tutorial-subset analysis (kept for comparison)</div>
 
       <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
@@ -2823,6 +2869,8 @@ function initSyllables() {
     if (species === 'kaka' && window.cbMapOnShow) window.cbMapOnShow();
     // korimako unsupervised syllable explorer draws on panel show
     if (species === 'bellbird' && window.koriMapOnShow) window.koriMapOnShow();
+    // korimako song-level unsupervised view draws on panel show too
+    if (species === 'bellbird' && window.ksongMapOnShow) window.ksongMapOnShow();
   };
 
   // === SAMPLE RENDERER ===
@@ -5106,5 +5154,136 @@ const GameEngine = {
   window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
 })();
 </script>
-</body>
+<script>
+/* ============================================================
+   KORIMAKO SONG-LEVEL UNSUPERVISED VIEW (kori_song_umap_data.json)
+   Songs as compositions over the 50 unsupervised syllable clusters.
+   Toggles: bird (top 20) / site / sex. Click plays the song MP3.
+   ============================================================ */
+(function() {
+  const canvas = document.getElementById('ksongUmapCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const wrap = canvas.parentElement;
+  const PAL24 = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#946d4f','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a','#3a4f7a','#4f7a3a','#7a3a5f'];
+  const SITE_COLORS = {'TMI':'#b07d22','CUV':'#5f7a3a','PKI':'#2c6c8c','TAW':'#bb4a33','LBI':'#7c5784','LAI':'#8c4a2c'};
+  let DATA = null, colMode = 'individual', scale = null, hovered = -1, selected = -1;
+  let topBirds = [], birdColor = {};
+  let sAudio = null;
+
+  fetch('annotation/kori/kori_song_umap_data.json').then(r => r.json()).then(d => {
+    DATA = d;
+    const counts = {};
+    DATA.points.forEach(p => { counts[p.individual] = (counts[p.individual]||0)+1; });
+    topBirds = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20).map(e=>e[0]);
+    topBirds.forEach((b,i) => birdColor[b] = PAL24[i % PAL24.length]);
+    if (window.ksongMapOnShow) window.ksongMapOnShow();
+  }).catch(e => console.warn('kori song umap load', e));
+
+  window.ksongMapOnShow = function() { if (DATA) sizeAndDraw(); };
+
+  function fieldFor(p) {
+    if (colMode === 'individual') return topBirds.includes(p.individual) ? p.individual : 'other';
+    if (colMode === 'site') return p.site || '?';
+    if (colMode === 'sex') return p.sex || '?';
+    return '?';
+  }
+  function colorFor(p) {
+    const f = fieldFor(p);
+    if (colMode === 'individual') return f === 'other' ? 'rgba(150,150,150,.35)' : birdColor[f];
+    if (colMode === 'site') return SITE_COLORS[f] || '#556b71';
+    if (colMode === 'sex') return f === 'M' ? '#2c6c8c' : (f === 'F' ? '#bb4a33' : '#a99e89');
+    return '#556b71';
+  }
+  function bounds() {
+    const xs = DATA.points.map(p => p.x), ys = DATA.points.map(p => p.y);
+    let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+    const pad = 0.06 * Math.max(x1 - x0, y1 - y0);
+    return [x0-pad, x1+pad, y0-pad, y1+pad];
+  }
+  function sizeAndDraw() {
+    const w = wrap.clientWidth; if (!w) return;
+    const h = 460, dpr = window.devicePixelRatio || 1;
+    canvas.width = w*dpr; canvas.height = h*dpr; canvas.style.height = h+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    const [x0,x1,y0,y1] = bounds();
+    scale = {x0,x1,y0,y1,w,h};
+    draw(); legend();
+  }
+  function toPx(c) {
+    return [ (c[0]-scale.x0)/(scale.x1-scale.x0)*scale.w,
+             (1-(c[1]-scale.y0)/(scale.y1-scale.y0))*scale.h ];
+  }
+  function draw() {
+    ctx.fillStyle = '#faf7f0'; ctx.fillRect(0,0,scale.w,scale.h);
+    DATA.points.forEach((p,i) => {
+      const [px,py] = toPx([p.x,p.y]);
+      if (i === selected) { ctx.beginPath(); ctx.arc(px,py,7,0,7); ctx.fillStyle = '#111'; ctx.fill(); }
+      ctx.beginPath(); ctx.arc(px,py, i===hovered||i===selected ? 3.2 : 2.2, 0, 7);
+      ctx.fillStyle = colorFor(p); ctx.globalAlpha = i===hovered||i===selected ? 1 : .8;
+      ctx.fill(); ctx.globalAlpha = 1;
+    });
+  }
+  function legend() {
+    const el = document.getElementById('ksongUmapLegend'); if (!el) return;
+    const counts = {};
+    DATA.points.forEach(p => { const k = fieldFor(p); counts[k] = (counts[k]||0)+1; });
+    const entries = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+    const cap = colMode === 'individual' ? 21 : 10;
+    el.innerHTML = entries.slice(0,cap).map(([k,n]) => {
+      const color = colorFor({individual:k, site:k, sex:k});
+      return `<span style="display:inline-flex;align-items:center;gap:.25rem"><span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block"></span>${k} (${n})</span>`;
+    }).join('');
+  }
+  function nearest(evt) {
+    const r = canvas.getBoundingClientRect();
+    const mx = evt.clientX-r.left, my = evt.clientY-r.top;
+    let best = -1, bd = 25;
+    DATA.points.forEach((p,i) => {
+      const [px,py] = toPx([p.x,p.y]);
+      const d = (px-mx)*(px-mx)+(py-my)*(py-my);
+      if (d < bd) { bd = d; best = i; }
+    });
+    return best;
+  }
+  canvas.addEventListener('mousemove', evt => {
+    if (!DATA || !scale) return;
+    const h0 = hovered; hovered = nearest(evt);
+    if (h0 !== hovered) {
+      draw();
+      const hint = document.getElementById('ksongUmapHint');
+      if (hovered >= 0) {
+        const p = DATA.points[hovered];
+        hint.textContent = `song ${p.song_id} · ${p.individual} · ${p.sex} · ${p.site} · ${p.n_syll} syllables`;
+      } else hint.textContent = 'hover a dot · click to play song';
+    }
+  });
+  canvas.addEventListener('click', evt => {
+    if (!DATA || !scale) return;
+    const i = nearest(evt); if (i < 0) return;
+    selected = i; draw(); playSong(DATA.points[i]);
+  });
+  function playSong(p) {
+    const el = document.getElementById('ksongUmapSelected'); if (!el) return;
+    el.innerHTML = `<div style="font-size:.84rem;font-family:var(--mono)"><b>song ${p.song_id}</b> · bird ${p.individual} · ${p.sex} · site ${p.site} · ${p.n_syll} syllables · <span style="color:var(--ink-faint)">playing…</span></div>`;
+    if (sAudio) { sAudio.pause(); sAudio = null; }
+    sAudio = new Audio(`full-corpus/audio/${p.song_id}.mp3`);
+    sAudio.play().catch(e => { el.innerHTML += '<div style="font-size:.78rem;color:var(--ink-faint)">play failed</div>'; });
+  }
+  ['individual','site','sex'].forEach(mode => {
+    const btn = document.getElementById('ksong-col-'+mode);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      colMode = mode;
+      ['individual','site','sex'].forEach(m => {
+        const b = document.getElementById('ksong-col-'+m);
+        b.style.background = m===mode ? 'var(--accent)' : '';
+        b.style.color = m===mode ? '#fff' : '';
+      });
+      if (DATA && scale) { draw(); legend(); }
+    });
+  });
+  window.addEventListener('resize', () => { if (DATA && canvas.offsetParent) sizeAndDraw(); });
+})();
+</script></body>
 </html>
