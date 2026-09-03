@@ -969,7 +969,10 @@ tr:hover td{background:var(--surface-2)}
         to <b>family</b> (stage-4 classifier labels, Webb taxonomy) and see how much of the human taxonomy
         the unsupervised structure recovers on its own — or colour by bird / site / sex to check the clusters
         don't just track who or where. Includes the <b>241 human-verified syllables</b> (Raven-style manual
-        annotation) projected into the same space. <b>Click any dot</b> to play the syllable in song context.</p></div>
+        annotation) and <b>6,114 archive-staged syllables</b> (94 Xeno-Canto + 9 Macaulay Library
+        recordings, segmented by the same Koe-validated segmenter and projected in; hollow dots,
+        with outside-envelope units ringed in red — the channel/quality flag). <b>Click any Koe dot</b>
+        to play the syllable in song context; archive dots link to their source recordings.</p></div>
       <div class="card" style="border-left:3px solid var(--bellbird)">
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.8rem">
           <button id="kori-col-cluster" class="btn" style="background:var(--accent);color:#fff">colour: unsupervised cluster</button>
@@ -986,7 +989,7 @@ tr:hover td{background:var(--surface-2)}
         <div id="koriUmapLegend" style="display:flex;flex-wrap:wrap;gap:.3rem .9rem;margin-top:.6rem;font-size:.76rem;font-family:var(--mono)"></div>
         <div id="koriUmapSelected" style="margin-top:1rem"></div>
         <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-          3,241 shown of 19,815 syllables (1,496 songs; human-verified always included) · UMAP (n=30, min_dist=0.3) on standardised 52-dim features · clusters: HDBSCAN on t-SNE(3d), ms=25/mcs=50
+          3,241 Koe (of 19,815; human-verified always shown) + 6,114 archive-staged (94 XC + 9 Macaulay, TN v2-segmented) · UMAP (n=30, min_dist=0.3) on standardised 52-dim features · clusters: HDBSCAN on t-SNE(3d), ms=25/mcs=50 · archive points: hollow, outside-envelope dashed-red
         </div>
         <details style="margin-top:1rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
           <summary style="cursor:pointer;padding:.8rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
@@ -4867,7 +4870,7 @@ const GameEngine = {
   window.koriMapOnShow = function() { if (DATA) sizeAndDraw(); };
 
   function fieldFor(p) {
-    if (colMode === 'cluster') return p.cluster === -3 ? 'human-verified' : (p.cluster < 0 ? 'unclustered' : 'C' + p.cluster);
+    if (colMode === 'cluster') return p.cluster === -3 ? 'human-verified' : (p.cluster === -4 ? 'archive (staged)' : (p.cluster < 0 ? 'unclustered' : 'C' + p.cluster));
     if (colMode === 'family') return p.family || 'UNKNOWN';
     if (colMode === 'human') return p.human ? 'human-verified' : 'model-corpus';
     if (colMode === 'individual') return topBirds.includes(p.individual) ? p.individual : 'other';
@@ -4877,7 +4880,8 @@ const GameEngine = {
   }
   function colorFor(p) {
     const f = fieldFor(p);
-    if (colMode === 'cluster') return f === 'unclustered' ? 'rgba(120,120,120,.35)' : (f === 'human-verified' ? 'rgba(120,120,120,.5)' : PAL24[+f.slice(1) % PAL24.length]);
+    if (colMode === 'cluster') return f === 'unclustered' ? 'rgba(120,120,120,.35)' : (f === 'human-verified' ? 'rgba(120,120,120,.5)' : (f === 'archive (staged)' ? '#8a7355' : PAL24[+f.slice(1) % PAL24.length]));
+    if (p.archive) return 'rgba(138,115,85,.45)';
     if (colMode === 'family') return FAM_COLORS[f] || '#556b71';
     if (colMode === 'human') return f === 'human-verified' ? HUMAN_GOLD : 'rgba(150,150,150,.35)';
     if (colMode === 'individual') return f === 'other' ? 'rgba(150,150,150,.35)' : birdColor[f];
@@ -4911,6 +4915,12 @@ const GameEngine = {
       if (p.human) { // gold ring always marks human-verified
         ctx.beginPath(); ctx.arc(px,py,4.6,0,7); ctx.strokeStyle = HUMAN_GOLD; ctx.lineWidth = 1.4; ctx.stroke();
       }
+      if (p.archive) { // archive-staged: hollow dots; dashed ring if outside envelope
+        ctx.beginPath(); ctx.arc(px,py, i===hovered||i===selected ? 3.4 : 2.2, 0, 7);
+        ctx.strokeStyle = p.outside ? 'rgba(187,74,51,.75)' : '#8a7355';
+        if (p.outside) ctx.setLineDash([2,1.5]);
+        ctx.lineWidth = 1.2; ctx.stroke(); ctx.setLineDash([]);
+      }
       if (i === selected) { ctx.beginPath(); ctx.arc(px,py,7,0,7); ctx.fillStyle = '#111'; ctx.fill(); }
       ctx.beginPath(); ctx.arc(px,py, i===hovered||i===selected ? 3.2 : 2.0, 0, 7);
       ctx.fillStyle = colorFor(p); ctx.globalAlpha = i===hovered||i===selected ? 1 : .8;
@@ -4922,11 +4932,11 @@ const GameEngine = {
     const counts = {};
     DATA.points.forEach(p => { const k = fieldFor(p); counts[k] = (counts[k]||0)+1; });
     let entries = Object.entries(counts);
-    if (colMode === 'cluster') entries = entries.filter(e=>e[0]!=='human-verified').sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).concat([['human-verified', (DATA.n_human_verified||0)]]);
+    if (colMode === 'cluster') entries = entries.filter(e=>e[0]!=='human-verified'&&e[0]!=='archive (staged)').sort((a,b)=>+a[0].slice(1)-+b[0].slice(1)).concat([['human-verified', (DATA.n_human_verified||0)], ['archive (staged)', (DATA.n_archive_staged||0)]]);
     else entries = entries.sort((a,b)=>b[1]-a[1]);
     const cap = colMode === 'family' ? 25 : (colMode === 'individual' ? 21 : 60);
     el.innerHTML = entries.slice(0,cap).map(([k,n]) => {
-      const color = (colMode==='cluster') ? (k==='unclustered'?'rgba(120,120,120,.35)':(k==='human-verified'?HUMAN_GOLD:PAL24[+k.slice(1)%PAL24.length]))
+      const color = (colMode==='cluster') ? (k==='unclustered'?'rgba(120,120,120,.35)':(k==='human-verified'?HUMAN_GOLD:(k==='archive (staged)'?'#8a7355':PAL24[+k.slice(1)%PAL24.length])))
         : colorFor({family:k, human:k==='human-verified', individual:k, site:k, sex:k, cluster:-1});
       return `<span style="display:inline-flex;align-items:center;gap:.25rem"><span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block"></span>${k} (${n})</span>`;
     }).join('');
@@ -4950,7 +4960,9 @@ const GameEngine = {
       const hint = document.getElementById('koriUmapHint');
       if (hovered >= 0) {
         const p = DATA.points[hovered];
-        hint.textContent = p.human
+        hint.textContent = p.archive
+          ? `${p.id} · ${p.source==='xc'?'XC':'Macaulay'} ${p.recording} · staged · ${p.outside ? 'outside envelope' : 'in envelope'}`
+          : p.human
           ? `${p.id} · ${p.family} · human-verified · near C${p.nn_cluster < 0 ? '?' : p.nn_cluster}`
           : `${p.family}${p.p_family ? ' ('+p.p_family.toFixed(2)+')' : ''} · ${p.sex||'?'} ${p.site||'?'} · C${p.cluster < 0 ? '?' : p.cluster} · ${p.dur}ms`;
       } else hint.textContent = 'hover a dot · click to play';
@@ -4963,6 +4975,18 @@ const GameEngine = {
   });
   function playSyllable(p) {
     const el = document.getElementById('koriUmapSelected'); if (!el) return;
+    if (p.archive) {
+      const isXC = p.source === 'xc';
+      const link = isXC
+        ? `<a href="https://xeno-canto.org/explore?query=${encodeURIComponent('nr:' + p.recording.slice(2))}" target="_blank" rel="noopener">${p.recording}</a>`
+        : `<a href="https://macaulaylibrary.org/asset/${p.recording}" target="_blank" rel="noopener">${p.recording}</a>`;
+      el.innerHTML = `<div style="font-size:.84rem;font-family:var(--mono)">
+        <b>${p.id}</b> · archive-staged (${isXC ? 'Xeno-Canto' : 'Macaulay Library'}) · ${link} ·
+        ${p.start_s}s · ${p.dur}ms · nearest Koe cluster: C${p.nn_cluster < 0 ? '—' : p.nn_cluster}
+        ${p.outside ? ' · <span style="color:var(--neg,#bb4a33)"><b>outside envelope</b> (channel/quality flag)</span>' : ' · inside envelope'}
+        · <span style="color:var(--ink-faint)">no cluster claims; audio not shipped — open source recording</span></div>`;
+      return;
+    }
     el.innerHTML = p.human
       ? `<div style="font-size:.84rem;font-family:var(--mono)"><b>${p.id}</b> · <b>${p.family}</b> · human-verified · nearest unsupervised cluster: C${p.nn_cluster < 0 ? '—' : p.nn_cluster} · <span style="color:var(--ink-faint)">playing clip…</span></div>`
       : `<div style="font-size:.84rem;font-family:var(--mono)"><b>${p.family}</b> (${(p.p_family||0).toFixed(2)}) · bird ${p.individual} · ${p.sex} · ${p.site} · cluster C${p.cluster < 0 ? '?' : p.cluster} · song ${p.song_id} @${(p.onset_ms/1000).toFixed(2)}s · <span style="color:var(--ink-faint)">playing in song context…</span></div>`;
