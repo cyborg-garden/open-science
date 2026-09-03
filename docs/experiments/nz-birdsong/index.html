@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aotearoa Birdsong, Decoded — NimbleCo AI</title>
-<meta name="description" content="Species-specific analysis of NZ birdsong from Xeno-Canto: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls (Van Horik 2007). 3,096 recordings, 177 species.">
+<meta name="description" content="Species-specific analysis of NZ birdsong from Xeno-Canto: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls analysed unsupervised (rule categories withdrawn after failed validation). 3,096 recordings, 177 species.">
 <meta property="og:title" content="Aotearoa Birdsong, Decoded">
-<meta property="og:description" content="Species-specific analysis of NZ birdsong: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls (Van Horik 2007). Categories never shared across species.">
+<meta property="og:description" content="Species-specific analysis of NZ birdsong: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls analysed unsupervised. Categories never shared across species.">
 <meta property="og:type" content="article">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -416,7 +416,7 @@ tr:hover td{background:var(--surface-2)}
   <header class="masthead">
     <div class="eyebrow">Open Science · Field Report 02</div>
     <h1>Aotearoa Birdsong, <em>Decoded</em></h1>
-    <p class="deck">We downloaded <b>3,096 recordings</b> of New Zealand birds from Xeno-Canto, then classified vocalisations for three species using published literature frameworks: tūī syllables (Hill &amp; Ji 2014), korimako (bellbird) syllables (Webb 2021), and kākā calls (Van Horik 2007). Here's what automated analysis finds — and where it diverges from manual fieldwork.</p>
+    <p class="deck">We downloaded <b>3,096 recordings</b> of New Zealand birds from Xeno-Canto, then classified vocalisations for three species using published literature frameworks: tūī syllables (Hill &amp; Ji 2014), korimako (bellbird) syllables (Webb 2021), and kākā calls. Here's what automated analysis finds — where the automated categories survived validation, and where they didn't (the kākā rule categories were withdrawn).</p>
     <div class="byline">
       Bioacoustic replication · after <a href="https://doi.org/10.63172/301002sqblid">Hill &amp; Ji (2014)</a> · 177 species · 3,096 recordings<br>
       Source: <a href="https://xeno-canto.org">Xeno-Canto</a> API v3 · Analysis in Python (librosa, scikit-learn) · Full pipeline on <a href="https://github.com/cyborg-garden/open-science">GitHub</a><br>
@@ -461,7 +461,7 @@ tr:hover td{background:var(--surface-2)}
     <div class="lede">
       <span class="drop">E</span>ach species sings its own language. This analysis uses <b>species-specific classification schemes</b> drawn from the published literature — 
       tūī syllables follow Hill &amp; Ji (2014), korimako syllables follow Webb et al. (2021) and Roper et al. (2018), and kākā <em>calls</em> 
-      follow Van Horik, Bell &amp; Burns (2007). Categories are never shared across species.
+      are analysed <b>unsupervised</b> — their rule-based categories were withdrawn after failing validation. Categories are never shared across species.
     </div>
     
     <div class="prose">
@@ -503,14 +503,18 @@ tr:hover td{background:var(--surface-2)}
         </div>
       </div>
       <div class="card" style="border-left:3px solid var(--kaka)">
-        <h3 style="color:var(--kaka)">Kākā — 5 Call Types</h3>
+        <h3 style="color:var(--kaka)">Kākā — Unsupervised Call Space</h3>
         <p style="font-size:.88rem;color:var(--ink-soft);line-height:1.55">
-          <b>Snicker calls dominate at 85.5%</b> — rapid chattering series are by far the most common call type. 
-          Bark (12.6%) and gurgle (1.8%) follow. Shraak and shraak-woo (loud long-distance contact calls) 
-          were not detected — likely because field recordings capture closer-range vocalisations.
+          <b>Rule-based call categories withdrawn from the dashboard.</b> The Van Horik (2007) rule
+          classifier's categories (snicker / bark / gurgle) failed validation against our
+          unsupervised clustering and human-listened examples, and are shown nowhere on this page
+          any more. What remains for kākā is the <b>unsupervised acoustic space itself</b> — every
+          call embedded by its 52 acoustic features, explorable point by point in the
+          Vocalisation Analysis tab. Call-type labelling will return only when a classifier is
+          trained against human-verified examples.
         </p>
         <div style="margin-top:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)">
-          47 recordings · 1,790 calls · Van Horik et al. (2007)
+          47 recordings · 1,790 calls · features per Campbell ARU protocol
         </div>
       </div>
     </div>
@@ -676,8 +680,8 @@ tr:hover td{background:var(--surface-2)}
             <text x="280" y="113" text-anchor="middle" font-size="10" fill="#675e4f">(data-limited today)</text>
             <rect x="390" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
             <text x="470" y="80" text-anchor="middle" font-weight="600">3 · Call typing</text>
-            <text x="470" y="98" text-anchor="middle" font-size="10" fill="#675e4f">Van Horik 2007 scheme</text>
-            <text x="470" y="113" text-anchor="middle" font-size="10" fill="#675e4f">RF 96.2% LOO</text>
+            <text x="470" y="98" text-anchor="middle" font-size="10" fill="#675e4f">human-verified types —</text>
+            <text x="470" y="113" text-anchor="middle" font-size="10" fill="#675e4f">rule classifier withdrawn</text>
             <rect x="580" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
             <text x="660" y="80" text-anchor="middle" font-weight="600">4 · Acoustic features</text>
             <text x="660" y="98" text-anchor="middle" font-size="10" fill="#675e4f">spectral shape, duration</text>
@@ -741,7 +745,7 @@ tr:hover td{background:var(--surface-2)}
         <b>snicker</b> calls are used during close-range social interactions and copulation;
         <b>shraak</b> calls carry over long distances for flock coordination between widely separated birds;
         <b>bark</b> calls serve as alarm or alert signals; and <b>gurgle</b> calls are associated
-        with social bonding. The call repertoire is tuned to communication at different distances —
+        with social bonding. <i>(Ethology from the original paper; our automated use of these categories was withdrawn 2026-09-03 after failed validation.)</i> The call repertoire is tuned to communication at different distances —
         from intimate contact to forest-wide coordination.</div>
       </div>
     </div>
@@ -1227,43 +1231,35 @@ tr:hover td{background:var(--surface-2)}
     <div class="voc-species-panel" id="voc-kaka" style="display:none">
       <div class="prose" style="margin-bottom:1.5rem">
         <p>Kākā are <b>parrots (Psittaciformes)</b>, not songbirds. They produce <b>calls</b>, not songs.
-        The term "syllable" is inappropriate for their vocalisations. Classification follows
-        <b>Van Horik, Bell &amp; Burns (2007)</b>, who identified 5 call types through 500 hours of field
-        observation and spectrographic analysis. Call boundaries defined by ≥200ms silence gaps —
-        much longer than songbird syllable boundaries, reflecting the different temporal structure of parrot calls.</p>
+        The term "syllable" is inappropriate for their vocalisations. The rule-based call-type
+        categories previously shown here (Van Horik, Bell &amp; Burns 2007) were
+        <b>withdrawn on 2026-09-03</b>: they failed validation against unsupervised clustering and
+        human-listened examples, and displaying them as if established was misleading. What this
+        section now shows is the <b>unsupervised acoustic space</b> — every call embedded by 52
+        acoustic features, with no assumed categories. Call-type labelling returns only when a
+        classifier has been trained and validated against human-verified examples.</p>
       </div>
 
       <div class="card">
-        <h3>Call Type Distribution</h3>
-        <div id="kaka-call-bars"></div>
+        <h3>Data Sources</h3>
+        <div id="kaka-source-bars"></div>
         <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-          1,790 calls · 47 recordings · Classifier: Van Horik, Bell &amp; Burns (2007), DOI: 10.1080/03014220709510093
+          1,790 calls · 47 recordings · one Xeno-Canto archive source (details in the methods foldout below)
         </div>
       </div>
 
-      <div class="section-label">Category Definitions</div>
-      <div class="card">
-        <table style="width:100%;font-size:.88rem">
-          <thead><tr><th style="text-align:left">Call Type</th><th>Count</th><th>%</th><th style="text-align:left">Definition (Van Horik et al. 2007)</th></tr></thead>
-          <tbody>
-            <tr><td><b style="color:#7c5784">Snicker</b></td><td class="num">1,531</td><td class="num">85.5%</td><td>Rapid chattering series of short elements</td></tr>
-            <tr><td><b style="color:#8c4a2c">Bark</b></td><td class="num">226</td><td class="num">12.6%</td><td>Short sharp percussive call — brief broadband energy burst</td></tr>
-            <tr><td><b style="color:#2c6c8c">Gurgle</b></td><td class="num">33</td><td class="num">1.8%</td><td>Complex low-frequency call with gurgling quality</td></tr>
-            <tr><td><b style="color:#bb4a33">Shraak</b></td><td class="num">0</td><td class="num">0.0%</td><td>Loud harsh broadband contact call (not detected)</td></tr>
-            <tr><td><b style="color:#b07d22">Shraak-woo</b></td><td class="num">0</td><td class="num">0.0%</td><td>Shraak with descending tonal component (not detected)</td></tr>
-          </tbody>
-        </table>
-      </div>
+      
 
       <div class="note" style="margin-top:1.5rem">
-        <div class="mark">Why No Shraak?</div>
-        <div>Shraak and shraak-woo are <b>loud long-distance contact calls</b> — they function for communication
-        across large distances in forest canopy. The Xeno-Canto recordings in our dataset appear to capture
-        primarily closer-range vocalisations (snicker, bark, gurgle). Van Horik et al. observed shraak calls
-        "used for communication under different spatial and social circumstances" — the recording context
-        (microphone distance, habitat) likely biases toward closer-range call types. For comparison, the closely
-        related kea (<i>Nestor notabilis</i>) has 7 call types including the famous "warble" play call
-        (<a href="https://doi.org/10.1093/czoolo/58.5.727">Schwing et al. 2012</a>).</div>
+        <div class="mark">Why categories were withdrawn</div>
+        <div>Snicker / bark / gurgle were the output of a threshold-rule classifier, never verified
+        against kākā calls by a human listener at scale. When we clustered the same calls
+        unsupervised, the clusters tracked <b>who recorded the call</b> (recordist ARI 0.63) far more
+        than any call-type structure (ARI 0.02) — and listening to "canonical" examples per category
+        showed they mixed unrelated call shapes. A category system that fails both checks should not
+        be displayed as established knowledge, so it is gone. For comparison, the closely
+        related kea (<i>Nestor notabilis</i>) has 7 documented call types including the
+        famous "warble" play call (<a href="https://doi.org/10.1093/czoolo/58.5.727">Schwing et al. 2012</a>).</div>
       </div>
 
       <div class="section-label">Per-Recording Breakdown</div>
@@ -1271,13 +1267,63 @@ tr:hover td{background:var(--surface-2)}
         <div class="chart-wrap" style="height:400px">
           <canvas id="kakaPerRecChart"></canvas>
         </div>
+        <div style="margin-top:.8rem;font-size:.84rem;color:var(--ink-soft)">
+          Total calls per recording — a source-of-audio fact, not a call-type claim. It remains valid
+          regardless of how call types are categorised.
+        </div>
       </div>
 
       <div class="section-label">Representative Samples</div>
-      <div id="voc-samples-kaka"><!-- Populated by JS --></div>
+      <div id="voc-samples-kaka">
+        <div class="card" style="padding:1rem;font-size:.88rem;color:var(--ink-soft)">
+          Sample cards by rule category (snicker / bark / gurgle) were removed with the categories
+          themselves — the labels were unreliable, so cards organised by them were misleading.
+          To see and hear individual calls, use the <b>Unsupervised Call-Space Explorer</b> below:
+          every one of the 1,790 calls is clickable there, with its spectrogram and audio.
+        </div>
+      </div>
 
       <!-- UNSUPERVISED CLUSTER EXPLORER -->
       <div class="section-label" style="margin-top:2.5rem">Unsupervised Call-Space Explorer</div>
+      <div class="card">
+        <h3>Where these calls come from</h3>
+        <div id="kaka-source-bars-xc"></div>
+        <div style="margin-top:.6rem;font-size:.84rem;color:var(--ink-soft)">
+          Currently one source: <b>Xeno-Canto archive</b> — 47 recordings, 1,790 annotated call units,
+          19 recordists, 8 regions, 2008–2024. Every unsupervised result on this page derives from
+          these recordings. (The Campbell ARU set — 53 calls, Kāpiti + Zealandia — is held out for
+          classifier validation and is not yet merged.)
+        </div>
+      </div>
+      <details style="margin:1rem 0 1.2rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+        <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
+          Methods &amp; assumptions — how this embedding is built (click to expand)
+        </summary>
+        <div style="padding:.2rem 1.2rem 1rem;font-size:.86rem;line-height:1.65">
+          <p><b>Pipeline.</b> Each call unit is summarised by <b>52 acoustic features</b> (13 MFCC
+          means, stds and delta-means + 7 spectral-contrast bands + 6 tonnetz), computed at 22.05 kHz —
+          the recipe validated on Fraser Campbell's ARU kākā recordings (96% leave-one-out call-type
+          accuracy, 95% within-skraak site accuracy on that set). Features are standardised
+          (z-scored per dimension), then embedded in 2D by <b>UMAP</b> (n_neighbours=30, min_dist=0.3,
+          Euclidean). Cluster colouring comes from <b>HDBSCAN run on a 3D t-SNE embedding</b> of the same
+          standardised features (min_samples=8, seed 42) — 27 clusters, 687 calls left unclustered.</p>
+          <p><b>The two views.</b> <i>Raw features</i> preserves absolute spectral content; in a
+          crowd-sourced archive this makes the recording chain (microphone, gain, distance, habitat)
+          a dominant variance component, and clusters largely track the recordist. <i>Channel-removed</i>
+          z-normalises features within each recording (cepstral mean/variance subtraction), which
+          strips the recording-chain signature — and with it most discrete structure: kākā call
+          variation is close to a continuum in this feature space.</p>
+          <p><b>Assumptions, honestly listed.</b> (1) That 52 summary statistics capture what matters
+          about a call — temporal fine-structure and sequence context are discarded. (2) That units are
+          correctly segmented single calls (mostly true; ~20 units are longer series). (3) That
+          Euclidean distance in standardised feature space corresponds to perceptual similarity —
+          untested. (4) UMAP/t-SNE preserve local neighbourhoods, not global geometry; distances
+          between far-apart points should not be over-read. (5) Clusters are
+          <b>not</b> call types: the same procedure run on raw features yields clusters that track
+          recordists (ARI 0.63 vs 0.02 for call-type agreement), which is why rule-based categories
+          were withdrawn from this dashboard.</p>
+        </div>
+      </details>
       <div class="prose" style="margin-bottom:1.2rem">
         <p>Every call in the corpus (n = 1,790) embedded by <b>UMAP</b> over the same 52 acoustic
         features used elsewhere on this dashboard. <b>Click any dot</b> to see its spectrogram and
@@ -1306,7 +1352,6 @@ tr:hover td{background:var(--surface-2)}
           <span style="width:1rem"></span>
           <span style="font-size:.82rem;color:var(--ink-soft);font-family:var(--mono)">colour:</span>
           <button class="btn" id="kmap-col-cluster" style="background:var(--accent);color:#fff" onclick="kakaMapSetCol('cluster')">Cluster</button>
-          <button class="btn" id="kmap-col-rule" onclick="kakaMapSetCol('rule')">Rule call type</button>
           <button class="btn" id="kmap-col-rec" onclick="kakaMapSetCol('rec')">Recordist</button>
         </div>
         <div style="position:relative">
@@ -1622,54 +1667,26 @@ tr:hover td{background:var(--surface-2)}
     </div>
     </div><!-- /geo-species Tui -->
 
-    <!-- KĀKĀ DIALECT COMPARISON -->
+    <!-- KĀKĀ GEOGRAPHIC (rule categories withdrawn 2026-09-03: regional call-type profiles were artefacts of the rule classifier + recordist nesting) -->
     <div class="geo-species-section" data-geo-species="New Zealand Kaka">
-    <div class="section-label" style="margin-top:2.5rem">Kākā — Forest Dialects</div>
+    <div class="section-label" style="margin-top:2.5rem">Kākā — Geographic Coverage</div>
     <div class="lede" style="font-size:1.15rem;margin-bottom:1rem">
-      Kākā from different forests show strikingly different vocal profiles. Southland birds have the most bark calls (32.7%) 
-      and all the gurgle calls in the dataset (7.2%), while Waikato (Pureora) birds are overwhelmingly snicker-dominant (93.1%) — 
-      suggesting genuine regional vocal differences.
+      The earlier "forest dialects" comparison on this page was removed: the regional call-type
+      profiles it showed were built from rule-classifier categories that failed validation, and the
+      confound battery showed recordist and region were inseparable in this corpus (repertoire-distance
+      ratios: region 1.46 ≈ recordist 1.43 ≈ year 1.42). What we can say honestly: kākā calls from
+      8 regions across both islands exist in the corpus, and whether geographic structure exists
+      is an open question that needs human-verified call types first.
     </div>
 
     <div class="card">
-      <h3>Kākā Vocal Profiles by Location</h3>
-      <div class="chart-wrap" style="height:300px">
-        <canvas id="kakaDialectChart"></canvas>
+      <h3>Where the recordings come from</h3>
+      <div style="font-size:.9rem;color:var(--ink-soft);line-height:1.7">
+        47 recordings · 1,790 call units · 8 regions (Waikato 22, Stewart Island 11,
+        Wellington/Manawatū 5, Nelson/Tasman 3, Auckland 2, Northland 2, Kāpiti Island 1,
+        other/unresolved 1) · 2008–2024 · 19 recordists. Explore per-call geography in the
+        Vocalisation Analysis tab's unsupervised explorer.
       </div>
-      <div style="font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);margin-top:.5rem">
-        19 geotagged kākā recordings across 4 regions · Note small sample sizes
-      </div>
-    </div>
-    
-    <div class="two-col" style="margin-top:1rem">
-      <div class="card">
-        <h3>Southland / Stewart Island</h3>
-        <p style="font-size:.92rem;color:var(--ink-soft);line-height:1.55">
-          <b>8 recordings, 404 calls.</b> The most diverse kākā vocal profile: 60.1% snicker, 32.7% bark, and 7.2% gurgle — 
-          this is the only population with substantial gurgle calls. Bark calls are 5× more common here than in Waikato.
-        </p>
-        <div style="margin-top:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)">
-          Locations: Oban (5), Ulva Island (1), Pilgrims Cottage (2)
-        </div>
-      </div>
-      <div class="card">
-        <h3>Waikato / Pureora Forest</h3>
-        <p style="font-size:.92rem;color:var(--ink-soft);line-height:1.55">
-          <b>12 recordings, 476 calls.</b> Overwhelmingly snicker-dominant at 93.1% — bark only 6.1%, gurgle 0.8%. 
-          These are mainland forest birds with a notably uniform vocal profile compared to the island population.
-        </p>
-        <div style="margin-top:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)">
-          Locations: Ngaherenga DOC campsite, Mangakino
-        </div>
-      </div>
-    </div>
-
-    <div class="note" style="margin-top:1rem">
-      <div class="mark">Caveat</div>
-      <div>Kākā sample sizes are small (4–8 recordings per region). These patterns are <b>suggestive, not conclusive</b> — 
-      individual variation could explain the differences as much as genuine dialect. The same recorder contributed 
-      many Pureora recordings, so recorder bias is also possible. More XC recordings from other kākā populations 
-      (e.g. Zealandia, Codfish Island, Whirinaki) would strengthen these comparisons.</div>
     </div>
     </div><!-- /geo-species Kaka -->
 
@@ -1806,7 +1823,8 @@ tr:hover td{background:var(--surface-2)}
         pipeline, which is why the acoustic manifold now shows a korimako example (TN v2 + stage-4) front and
         centre and keeps the tūī recordings as a labelled "legacy rule-based" option in the dropdown, not
         because the tūī work is wrong, but because it is a different, older method applied to a different
-        bird. Kākā uses a third, call-based framework (Van Horik 2007 / Vaishnav 2026) that has no sequence
+        bird. Kākā uses a third, call-based approach (analysed unsupervised; its rule-based categories were withdrawn
+        after failed validation) that has no sequence
         grammar and is out of scope for the sequence-based methods below.</p>
 
         <p style="margin:0">Full-corpus figures (repertoire, sex, site, atypical individuals) recompute on
@@ -2360,8 +2378,10 @@ tr:hover td{background:var(--surface-2)}
     <div class="lit-card match">
       <h4>Kākā Vocal Ethology <span class="lit-tag tag-match">Call types</span></h4>
       <p>Van Horik, Bell &amp; Burns (2007) identified five distinctive kākā call types through 500 hours of field
-      observation and spectrographic analysis. This is the classifier applied to our Xeno-Canto kākā recordings
-      (snicker, bark, gurgle, shraak, shraak-woo).</p>
+      observation and spectrographic analysis (snicker, bark, gurgle, shraak, shraak-woo). <b>Withdrawn from our
+      pipeline 2026-09-03:</b> the automated rule classifier built on this scheme produced categories that failed
+      validation against unsupervised clustering and human-listened examples, and no longer labels any call on
+      this dashboard. The citation stands for the underlying ethology.</p>
       <a class="lit-ref" href="https://doi.org/10.1080/03014220709510093">Van Horik, J., Bell, B. &amp; Burns, K.C. (2007). New Zealand Journal of Zoology, 34(4), 337-345. DOI: 10.1080/03014220709510093 ✓</a>
     </div>
 
@@ -2377,7 +2397,7 @@ tr:hover td{background:var(--surface-2)}
     <div class="prose">
       <p><b>✓ Full tūī analysis:</b> All 232 A-quality song recordings analysed — 36,268 syllables across 5 types (doubled from 116/17,716 this session; distribution essentially unchanged, confirming the smaller sample wasn't distorting the tūī findings).</p>
       <p><b>✓ Korimako comparison:</b> 94 A-quality recordings (doubled from 46), 13,086 syllables. Stutter still dominates but dropped from 62.8%→56.1% as click grew 19.4%→24.1% — a real shift with the larger sample, not noise.</p>
-      <p><b>✓ Kākā comparison:</b> 47 A-quality recordings (doubled from 25), 1,790 calls. Simpler call-dominated repertoire vs honeyeater song; snicker dominance strengthened slightly (80.9%→85.5%).</p>
+      <p><b>✓ Kākā comparison:</b> 47 A-quality recordings (doubled from 25), 1,790 calls. Simpler call-dominated repertoire vs honeyeater song; rule-classifier call counts were withdrawn on 2026-09-03 after the categories failed validation.</p>
       <p><b>✓ Geographic variation:</b> Now 13 regions for tūī with the doubled sample (was 10). Prose below reflects the original 116-recording pass — regional breakdowns are queued for a refresh with the new 232-recording data (see Methodology note).</p>
       <p><b>✓ Unsupervised clustering:</b> HDBSCAN on 32-dim MFCC+spectral features. Resolved the low-frequency
       discrepancy: 93.9% of "low-frequency" syllables have centroids above 2kHz — it's a threshold-ordering
@@ -2655,24 +2675,22 @@ function initSyllables() {
     });
   }
 
-  // === KĀKĀ DISTRIBUTION BARS ===
-  const kakaTypes = [
-    {name:'Snicker',count:1531,pct:85.5,color:'#7c5784'},
-    {name:'Bark',count:226,pct:12.6,color:'#8c4a2c'},
-    {name:'Gurgle',count:33,pct:1.8,color:'#2c6c8c'},
+  // === KĀKĀ SOURCE BARS (XC only; rule categories withdrawn 2026-09-03) ===
+  const kakaSource = [
+    {name:'Xeno-Canto archive',count:1790,pct:100.0,color:'#7c5784'},
   ];
-  const kakaBars = document.getElementById('kaka-call-bars');
-  if(kakaBars) {
-    const maxC = kakaTypes[0].count;
-    kakaTypes.forEach(t => {
+  ['kaka-source-bars','kaka-source-bars-xc'].forEach(id => {
+    const el = document.getElementById(id);
+    if(!el) return;
+    kakaSource.forEach(t => {
       const row = document.createElement('div');
       row.className = 'syl-bar-row';
       row.innerHTML = `<div class="syl-label">${t.name}</div>
-        <div class="syl-track"><div class="syl-fill" style="width:${(t.count/maxC*100).toFixed(1)}%;background:${t.color}"></div></div>
+        <div class="syl-track"><div class="syl-fill" style="width:${t.pct}%;background:${t.color}"></div></div>
         <div class="syl-val">${t.count.toLocaleString()} <span class="syl-pct">${t.pct}%</span></div>`;
-      kakaBars.appendChild(row);
+      el.appendChild(row);
     });
-  }
+  });
 
   // === SPECIES SUB-TAB SWITCHING ===
   window.showVocSpecies = function(species, btn) {
@@ -2714,10 +2732,10 @@ function initSyllables() {
       },
       kaka: {
         unit: 'call',
-        categories: ['snicker','bark','gurgle'],
-        labels: {snicker:'Snicker',bark:'Bark',gurgle:'Gurgle'},
-        colors: {snicker:'#7c5784',bark:'#8c4a2c',gurgle:'#2c6c8c'},
-        descs: {snicker:'Rapid chattering series',bark:'Short sharp percussive call',gurgle:'Complex low-frequency call'},
+        categories: [],
+        labels: {},
+        colors: {},
+        descs: {},
       },
     };
     const cfg = configs[species];
@@ -2813,25 +2831,24 @@ function initSyllables() {
     });
   }
 
-  // Kaka per-recording
+  // Kaka per-recording — total calls per recording (rule categories withdrawn 2026-09-03; totals are source-of-audio facts)
   if(document.getElementById('kakaPerRecChart')) {
+    const kPerRecTotals = [211, 135, 132, 87, 80, 69, 66, 61, 60, 53, 51, 50, 49, 48, 46, 46, 44, 40, 37, 35, 34, 33, 29, 28, 23, 22, 22, 21, 19, 17, 16, 16, 15, 12, 10, 9, 9, 8, 8, 8, 7, 7, 7, 5, 3, 1, 1];
     new Chart(document.getElementById('kakaPerRecChart'), {
       type:'bar',
       data:{
         labels:["XC473412", "XC959270", "XC378283", "XC925377", "XC207335", "XC959284", "XC962687", "XC959281", "XC963596", "XC37192", "XC925379", "XC207311", "XC959275", "XC853668", "XC293835", "XC295408", "XC963595", "XC88155", "XC152946", "XC198513", "XC293133", "XC341676", "XC378285", "XC378282", "XC526605", "XC326938", "XC462033", "XC776552", "XC959427", "XC37193", "XC378284", "XC963598", "XC959271", "XC428663", "XC843574", "XC206341", "XC526604", "XC526601", "XC526602", "XC526603", "XC198852", "XC526606", "XC959278", "XC293110", "XC206337", "XC123234", "XC198297"],
         datasets:[
-        {label:'snicker',data:[186, 125, 73, 84, 46, 63, 60, 57, 53, 43, 49, 21, 47, 44, 42, 42, 42, 39, 31, 31, 34, 31, 25, 17, 21, 18, 21, 21, 16, 13, 15, 16, 13, 12, 9, 9, 9, 7, 8, 8, 6, 7, 7, 5, 3, 1, 1],backgroundColor:'#7c5784'},
-        {label:'bark',data:[24, 7, 51, 3, 32, 6, 6, 4, 6, 10, 2, 15, 2, 4, 4, 4, 2, 1, 6, 4, 0, 2, 4, 8, 2, 3, 1, 0, 3, 4, 1, 0, 2, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0],backgroundColor:'#8c4a2c'},
-        {label:'gurgle',data:[1, 3, 8, 0, 2, 0, 0, 0, 1, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],backgroundColor:'#2c6c8c'}
+        {label:'calls per recording',data:kPerRecTotals,backgroundColor:'#7c5784'}
         ]
       },
       options:{
         responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{position:'bottom',labels:{font:chartFont,usePointStyle:true,pointStyle:'rect',padding:10}},
-          tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.y}}},
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:ctx=>ctx.parsed.y+' calls'}}},
         scales:{
-          x:{stacked:true,ticks:{font:{...chartFont,size:8},color:tickColor,maxRotation:45},grid:{display:false}},
-          y:{stacked:true,ticks:{font:chartFont,color:tickColor},grid:{color:gridColor},
+          x:{ticks:{font:{...chartFont,size:8},color:tickColor,maxRotation:45},grid:{display:false}},
+          y:{ticks:{font:chartFont,color:tickColor},grid:{color:gridColor},
             title:{display:true,text:'Call count',font:chartFont,color:tickColor}}
         }
       }
@@ -3430,12 +3447,7 @@ const BELLBIRD_GEO = [
   {region:'West Coast',recs:2,total:35,stutter:68.6,click:20.0,trill:0.0,complex:8.6,warble:0.0,pipe:2.9},
 ];
 
-const KAKA_GEO = [
-  {region:'Waikato',recs:12,total:476,snicker:93.1,bark:6.1,gurgle:0.8},
-  {region:'Southland',recs:8,total:404,snicker:60.1,bark:32.7,gurgle:7.2},
-  {region:'Wellington',recs:4,total:169,snicker:91.7,bark:8.3,gurgle:0.0},
-  {region:'Auckland',recs:1,total:50,snicker:96.0,bark:4.0,gurgle:0.0},
-];
+// KAKA_GEO removed with the rule-category dialect comparison (categories withdrawn 2026-09-03)
 
 function initGeoCharts() {
   if (window._geoChartsInit) return;
@@ -3505,31 +3517,8 @@ function initGeoCharts() {
     }
   });
 
-  // === KĀKĀ regional chart (species-specific: snicker/bark/gurgle) ===
-  const kakaColors = ['#7c5784','#8c4a2c','#2c6c8c'];
-  const kakaLabels = ['Snicker','Bark','Gurgle'];
-  const kakaKeys = ['snicker','bark','gurgle'];
+  // kaka regional chart removed with the rule-category dialect comparison (categories withdrawn 2026-09-03)
   
-  new Chart(document.getElementById('kakaDialectChart'), {
-    type:'bar',
-    data:{
-      labels: KAKA_GEO.map(r => `${r.region} (${r.recs})`),
-      datasets: kakaKeys.map((k,i) => ({
-        label: kakaLabels[i], data: KAKA_GEO.map(r => r[k]),
-        backgroundColor: kakaColors[i], borderRadius: i===kakaKeys.length-1?2:0
-      }))
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{labels:{font:chartFont,color:'#675e4f'},position:'bottom'},
-               tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+ctx.parsed.x+'%'}}},
-      scales:{
-        x:{stacked:true,max:100,ticks:{font:chartFont,color:tickColor,callback:v=>v+'%'},grid:{color:gridColor}},
-        y:{stacked:true,ticks:{font:chartFont,color:tickColor},grid:{display:false}}
-      }
-    }
-  });
-
   // === BELLBIRD regional chart (species-specific: stutter/click/trill/complex/warble/pipe) ===
   const bbColors = ['#b07d22','#5f7a3a','#bb4a33','#a99e89','#7c5784','#2c6c8c'];
   const bbLabels = ['Stutter','Click','Trill','Complex','Warble','Pipe'];
@@ -4503,7 +4492,6 @@ const GameEngine = {
   const wrap = canvas.parentElement;
 
   // -- palette (rule type colours match the call-type table on this page) --
-  const RULE_COLORS = { snicker:'#7c5784', bark:'#8c4a2c', gurgle:'#2c6c8c', shraak:'#bb4a33', 'shraak_woo':'#b07d22' };
   const CLUSTER_PALETTE = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#946d4f','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a','#3a4f7a','#4f7a3a','#7a3a5f','#3a5f5f','#5f7a3a','#6d4f94','#944f4f','#4f947a'];
   const REC_PALETTE = ['#b07d22','#5f7a3a','#7c5784','#2c6c8c','#bb4a33','#8c4a2c','#a99e89','#6d8a72','#94564f','#4f6d94','#7a3a5f','#3a7a6d','#5f5f3a','#3a5f7a','#7a5f3a','#4f3a7a','#7a3a3a','#3a7a4f','#5f3a7a','#7a7a3a'];
 
@@ -4531,7 +4519,6 @@ const GameEngine = {
   }
   function coords(p) { return view === 'raw' ? [p.x, p.y] : (p.x2 == null ? null : [p.x2, p.y2]); }
   function colorFor(p) {
-    if (colMode === 'rule') return RULE_COLORS[p.rule] || '#a99e89';
     if (colMode === 'rec') return REC_PALETTE[hashStr(p.rec_full) % REC_PALETTE.length];
     return p.cluster < 0 ? 'rgba(120,120,120,.35)' : CLUSTER_PALETTE[p.cluster % CLUSTER_PALETTE.length];
   }
@@ -4580,10 +4567,6 @@ const GameEngine = {
         label: k === 'noise' ? 'unclustered' : `${k} (n=${n})`,
         color: k === 'noise' ? 'rgba(120,120,120,.35)' : CLUSTER_PALETTE[+k.slice(1) % CLUSTER_PALETTE.length]
       }));
-    } else if (colMode === 'rule') {
-      const counts = {};
-      DATA.points.forEach(p => { counts[p.rule] = (counts[p.rule] || 0) + 1; });
-      items = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([k, n]) => ({ label: `${k} (n=${n})`, color: RULE_COLORS[k] || '#a99e89' }));
     } else {
       const counts = {};
       DATA.points.forEach(p => { counts[p.rec_full] = (counts[p.rec_full] || 0) + 1; });
@@ -4613,7 +4596,7 @@ const GameEngine = {
       const hint = document.getElementById('kakaUmapHint');
       if (hovered >= 0) {
         const p = DATA.points[hovered];
-        hint.textContent = `${p.id} · ${p.rule} · ${p.rec} · ${p.dur}ms · ${view === 'raw' ? ('C' + (p.cluster < 0 ? '?' : p.cluster)) : 'channel-removed view'}`;
+        hint.textContent = `${p.id} · ${p.rec} · ${p.dur}ms · ${view === 'raw' ? ('C' + (p.cluster < 0 ? '?' : p.cluster)) : 'channel-removed view'}`;
       } else hint.textContent = 'hover a dot · click to open call';
     }
   });
@@ -4632,7 +4615,6 @@ const GameEngine = {
         ${imgHtml}
         <div style="font-size:.84rem;font-family:var(--mono);line-height:1.7;min-width:180px">
           <div><b>${p.id}</b></div>
-          <div>rule label: <b style="color:${RULE_COLORS[p.rule] || '#333'}">${p.rule}</b> <span style="color:var(--ink-faint)">(unverified — rule classifier)</span></div>
           <div>cluster: <b>${p.cluster < 0 ? 'unclustered' : 'C' + p.cluster}</b></div>
           <div>recordist: ${p.rec_full}</div>
           <div>recording: <a href="https://xeno-canto.org/explore?query=${encodeURIComponent('nr:' + p.recording.slice(2))}" target="_blank" rel="noopener">${p.recording}</a></div>
@@ -4667,7 +4649,7 @@ const GameEngine = {
   };
   window.kakaMapSetCol = function(m) {
     colMode = m;
-    ['cluster', 'rule', 'rec'].forEach(k => {
+    ['cluster', 'rec'].forEach(k => {
       const b = document.getElementById('kmap-col-' + k), on = k === m;
       b.style.background = on ? 'var(--accent)' : ''; b.style.color = on ? '#fff' : '';
     });
