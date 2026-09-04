@@ -107,7 +107,6 @@ footer a{color:var(--accent)}
   <a href="#lightpulse">Light pulse</a>
   <a href="#clocks">Two clocks</a>
   <a href="#within">Same recording</a>
-  <a href="#relock">Re-locking</a>
   <a href="#qc">Quality control</a>
   <a href="#feedback">Running &amp; clock</a>
   <a href="#boutca">Bout calcium</a>
@@ -174,27 +173,13 @@ footer a{color:var(--accent)}
 <div class="wrap">
   <h2><span class="no">04</span>Two clocks, one pulse</h2>
   <p class="lede">Each animal carries two measurable oscillators: when it starts running (the wheel clock) and when SCN calcium reaches its daily minimum (the calcium clock). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
-  <div class="controls" style="margin-bottom:14px">
-    <div class="chips" id="sec4-ct-chips">
-      <span class="chip on" data-frame="wheel">CT frame: behavior clock</span>
-      <span class="chip" data-frame="caS">CT frame: calcium clock (S+6)</span>
-    </div>
-  </div>
   <div class="grid-2">
     <div class="card">
       <div class="chart-head">
-        <span class="chart-title" id="prc-title">Phase-reset points in each clock's CT frame</span>
-        <span class="badge">ΔCT h</span>
+        <span class="chart-title">Phase shift: wheel clock vs calcium clock</span>
+        <span class="badge">ΔCT hours</span>
       </div>
-      <div class="chart-box"><canvas id="prcDualChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="chart-head">
-        <span class="chart-title">Shift correlation: wheel vs calcium clock</span>
-        <span class="badge" id="corr-badge">—</span>
-      </div>
-      <div class="chart-box"><canvas id="clockShiftChart"></canvas>
-      </div>
+      <div class="chart-box"><canvas id="clockShiftChart"></canvas></div>
     </div>
     <div class="card">
       <div class="chart-head">
@@ -207,10 +192,10 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
       </div>
-      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the per-cycle sine acrophase + 6 h (CT12 marker, the S+6 convention); the previous daily-minimum (CT18) anchor is retained as a labeled diagnostic and for the published-number reproduction gates.</p>
+      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the daily ΔF/F minimum (CT18, night trough).</p>
     </div>
   </div>
-  <p class="footnote" id="sec4-foot">Correlation between the two clocks' shifts under the current calcium convention: <b id="clock-r">—</b>. Under the retired daily-minimum anchor the value was r = +0.53; an earlier ΔF-weighted circular-mean estimator gave a spurious −0.93. At n = 5 every value here is a lead, not a conclusion. 6978's advance is confirmed by its calcium clock (+2.0 vs wheel +4.1); 7390's wheel-clock advance (+4.3 CT) shrinks to +2.1 in the calcium frame — same sign, half the size, consistent with its wheel onsets pulling the behavioral estimate. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29%), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
+  <p class="footnote">Correlation between the two clocks' shifts: <b id="clock-r">—</b> — no reliable coupling at this sample size; a lead, not a conclusion. An earlier calcium-shift estimator (ΔF-weighted circular mean) produced r = −0.93; the corrected daily-minimum anchor flips two animals' calcium signs and gives the value shown. 6978's advance is confirmed by its calcium clock (+3.4 CT) — its noisy wheel data had <i>under</i>estimated it — while 7390's wheel-clock advance (+4.3 CT) vanishes in the calcium frame (−0.8): its wheel onsets drove that outlier. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29% for the others), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
 </div>
 </section>
 
@@ -245,7 +230,7 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
     </div>
-    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the section-04 numbers above. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is where the daily-minimum anchor fails: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h) and the argmin double-samples one plateau and misses another trough entirely, which is what pushed the checkpoint value to +6.62. The per-cycle sine-acrophase estimator (§10) is clean on this span — 0 wrap flips, even 23–24 h marker spacing, residual SD 0.64 h post-pulse — and gives −0.54 CT. So the +6.62 is an argmin artifact, not a windowing story: the fragmentation flag was real, but it indicts the estimator, not the animal. The corrected estimate rides in §04; the +6.62 stays in this table as the documented artifact it is.</p>
+    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the section-04 numbers above. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is the exception that isn't a windowing story: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h), matching the pilot's outlier-driven stability flag — neither calcium estimate for that animal is quotable.</p>
   </div>
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
@@ -279,55 +264,9 @@ footer a{color:var(--accent)}
 </div>
 </section>
 
-<section id="relock">
-<div class="wrap">
-  <h2><span class="no">06</span>Two clocks, re-locking</h2>
-  <p class="lede">The light pulse knocks the wheel clock and the calcium clock out of alignment. Do they find each other again? ψ (psi) is the per-cycle phase difference between the two clocks — sine-acrophase calcium anchor minus the paired wheel onset. Before the pulse the two clocks hold a stable offset; after it, ψ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. One panel per animal, never pooled across genotypes.</p>
-  <div class="controls" style="margin-bottom:14px">
-    <div class="ctrl"><label>Animal</label><select id="sel-relock-animal"></select></div>
-    <div class="chips" id="relock-chips">
-      <span class="chip on" data-layer="pre">pre-pulse ψ</span>
-      <span class="chip on" data-layer="post">post-pulse ψ</span>
-      <span class="chip on" data-layer="lp">light pulse</span>
-    </div>
-  </div>
-  <div class="card">
-    <div class="chart-head">
-      <span class="chart-title" id="relock-title">—</span>
-      <span class="badge" id="relock-badge">—</span>
-    </div>
-    <div class="chart-box tall"><canvas id="relockChart"></canvas></div>
-    <p class="footnote" style="margin-top:10px" id="relock-foot"></p>
-  </div>
-  <div class="grid-2" style="margin-top:20px">
-    <div class="card">
-      <div class="chart-head">
-        <span class="chart-title">Second pulse, within-animal (wheel-only)</span>
-        <span class="badge">n = 3 + 1 excluded</span>
-      </div>
-      <div class="chart-box"><canvas id="lp2Chart"></canvas></div>
-      <p class="footnote" style="margin-top:10px">Each pilot animal took a second, unlogged light pulse (photodiode-verified, DOY-288) one week after the first — but photometry ends 18–27 h before it for every animal, so this point is wheel-only. Post windows hold a single onset each (exploratory 1-point fits, not regression estimates). 6976 is excluded from this panel: its post-pulse wheel data lacks clean rest/onset structure for rhythm estimation (the same ~8 h suppression→re-onset is present, but the following ~34 h never settles into detectable onsets), and it is a single-span animal whose numbers are self-consistency-validated only. The exclusion is documented here rather than left as a silent absence. LP2 CT estimates carry a sensitivity caveat: over the fixed 168 h P1→P2 interval, post-P1 τ-drift moves the CT estimate by ~9.5 h for 6577 (τ 23.96→22.68 — real drift), ~4.2 h for 6977, ~2.4 h for 6978. The primary frame is the adjacent (pre-pulse) regression; the τ-swap bracket (23.96-h τ held fixed) clusters all three near midnight (~15/~22/~16 CT) instead of the diverse primary CTs (0.6/17.6/13.5). Both frames are shown in the tooltip; the spread is the τ-instability, worst where drift is largest.</p>
-    </div>
-    <div class="card">
-      <div class="chart-head">
-        <span class="chart-title">ψ re-locking read-out</span>
-        <span class="badge">per animal</span>
-      </div>
-      <div style="overflow-x:auto">
-      <table id="relock-table">
-        <thead><tr><th>Animal</th><th>Pre ψ (mean ± SD)</th><th>n pre/post</th><th>Dropped</th><th>Post points</th><th>Read</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      </div>
-      <p class="footnote" style="margin-top:12px">ψ = sine-acrophase calcium anchor − paired wheel onset (pairing window: the onset within [anchor−4, anchor+16] h closest to anchor+6 h). Cycles are LP1-relative. 6976 renders with its two standing flags: calcium-anchor fragmentation (3/16 inter-anchor gaps outside 18–30 h, pre-LP2 anchor quality) and single-span/self-consistency-only validation. Its pre-pulse record is good — the exclusion is post-LP2 only, per the 2026-09-03 ruling.</p>
-    </div>
-  </div>
-</div>
-</section>
-
 <section id="qc">
 <div class="wrap">
-  <h2><span class="no">07</span>Which animals count</h2>
+  <h2><span class="no">06</span>Which animals count</h2>
   <p class="lede">Two independent noise models — a 24-h sine fit and a circadian signal-to-noise ratio — screened all ten recordings before any physiology was interpreted. Five animals survived; the keep/exclude calls were then reviewed by the researcher who collected the data.</p>
   <div style="overflow-x:auto">
   <table id="qc-table">
@@ -341,14 +280,8 @@ footer a{color:var(--accent)}
 
 <section id="feedback">
 <div class="wrap">
-  <h2><span class="no">08</span>Running and the clock</h2>
+  <h2><span class="no">07</span>Running and the clock</h2>
   <p class="lede">Three questions asked of the wheel data: does a heavy night buy a quieter following day (the mice could be sleeping more soundly)? Does more running change the next cycle's length? And do the light shifts at recording start contaminate the first days?</p>
-  <div class="controls" style="margin-bottom:14px">
-    <div class="chips" id="sec8-ct-chips">
-      <span class="chip on" data-frame="wheel">CT frame: behavior clock</span>
-      <span class="chip" data-frame="caS">CT frame: calcium clock (S+6)</span>
-    </div>
-  </div>
   <div class="grid-2">
     <div class="card">
       <div class="chart-head">
@@ -380,14 +313,8 @@ footer a{color:var(--accent)}
 
 <section id="boutca">
 <div class="wrap">
-  <h2><span class="no">09</span>Calcium at the start of a run</h2>
+  <h2><span class="no">08</span>Calcium at the start of a run</h2>
   <p class="lede">When a mouse breaks a ≥10-min stillness and starts running, SCN calcium rises. The size of that rise depends on circadian time — and the pattern differs between animals.</p>
-  <div class="controls" style="margin-bottom:14px">
-    <div class="chips" id="sec9-ct-chips">
-      <span class="chip on" data-frame="wheel">CT frame: behavior clock</span>
-      <span class="chip" data-frame="caS">CT frame: calcium clock (S+6)</span>
-    </div>
-  </div>
   <div class="grid-2">
     <div class="card">
       <div class="chart-head">
@@ -416,7 +343,7 @@ footer a{color:var(--accent)}
 
 <section id="cohort">
   <div class="wrap">
-    <h2><span class="no">10</span>The cohort</h2>
+    <h2><span class="no">09</span>The cohort</h2>
     <p class="lede">Ten animals across two sessions. D1-Cre and VIP-Cre drivers target distinct SCN-relevant cell populations; GCaMP6s reports calcium, GFlamp1 is a faster green indicator, and GFP animals are the fluorescence control — any "signal" there is movement artifact, not biology.</p>
     <div style="overflow-x:auto">
     <table id="cohort-table">
@@ -433,7 +360,7 @@ footer a{color:var(--accent)}
 
 <section id="methods">
   <div class="wrap">
-    <h2><span class="no">11</span>Methods &amp; validation</h2>
+    <h2><span class="no">10</span>Methods &amp; validation</h2>
     <p class="lede">Everything on this page is computed by a Python port of the lab's MATLAB pipeline, checked against the lab's own MATLAB outputs to numerical exactness before being shown.</p>
     <div class="card" id="validation-card">
       <div class="chart-head">
@@ -448,16 +375,6 @@ footer a{color:var(--accent)}
       <p><b>Correction.</b> Signal = 470/415 (divide-by-isosbestic for all animals here), 30-s centered median filter, ΔF/F₀ with F₀ = mean over ZT 14–22 of the first cycle. Wheel events (ZT-hour timestamps of revolutions) are histogrammed into 10-min bins.</p>
       <p><b>Port validation.</b> The Python demux was compared sample-for-sample against the MATLAB <i>FullTrace.mat</i> outputs: raw channels matched to ~1e-16, corrected signal r = 0.9998, ΔF/F r = 1.0000 (max abs diff ≈ 1.4e-6) on the pilot animal; the cross-session check runs live below against a second-session animal.</p>
       <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window, computed separately pre/post light pulse.</p>
-      <p><b>How calcium circadian time (CT) is computed — the S+6 convention (updated 2026-09-03).</b> The calcium clock's phase marker is the <i>acrophase of a per-cycle least-squares sine fit</i> (fixed 24 h period, fitted on the same 30-min ΔF/F-weighted, 3-h-smoothed profile the published pipeline uses), with the CT12 marker placed at acrophase + 6 h. The shift is the pre-vs-post regression difference through the marker series evaluated at the pulse cycle, converted to circadian hours (×24/τ<sub>pre</sub>); the continuity unwrap (consecutive marker differences constrained to 12–36 h) is part of the estimator definition. <b>Why it changed:</b> the previous anchor — the daily ΔF/F minimum, labeled CT18 — degrades on these traces because the calcium trough is a 5.5–9.5 h plateau: the argmin lands anywhere on the plateau, and on 6977's span it double-sampled one physical trough and missed another entirely, pushing that animal's published shift to +6.62 CT where the clean estimate is −0.54. The sine acrophase is not artifact-immune in principle — it needed the unwrap on two spans — but its failure mode is repairable, while a double-sampled plateau cannot be un-double-sampled. <b>Numbers under the switch (canonical dashboard path, era-A cache):</b> 6577 +0.93 → +0.34, 6976 −1.32 → −0.91, 6977 −2.59 → −0.54 (the published +6.62 checkpoint value was argmin-artifact-corrupted; corrected here with the artifact documented in §05), 6978 +3.40 → +2.04, 7390 −0.75 → +2.07. The daily-minimum anchor is retained as a labeled diagnostic — S-vs-T disagreement is how the 6977 artifact was caught — and all published numbers reproduce exactly under it (parity gate: 5/5 animals, d = 0.0000). The sine fit is absent from the in-vivo photometry phase-extraction literature (the field uses threshold/midpoint markers on smoothed ΔF), so this choice rests on the benchmark below, not on precedent. <b>Path provenance:</b> an earlier benchmark run on the era-B re-cut files (30-min bins, different F₀ window) gave S shifts of +0.63 / −0.13 / +1.87 for the three pilots; the numbers above ride the era-A cache arrays that feed this dashboard, and the 0.2–0.7 h differences between the two sets are bin-grid and F₀ path effects, not biology — both sets are archived with the estimator suite.</p>
-      <p><b>Estimator comparison, rendered from the data.</b> The chart below overlays the three candidate calcium markers — daily-minimum argmin (T, the retired anchor), per-cycle sine acrophase (S, the current anchor), and a Brancaccio-style midrise crossing (M, diagnostic) — on the actual per-cycle series, per animal. The companion table gives the numbers: marker jitter (median interval deviation), wrap-flip counts, sine fit R², plateau occupancy, and the S-vs-T shift deltas. On clean spans T and S agree within 0.1–1.8 h; the divergence is exactly where the plateau artifacts live.</p>
-      <div class="chart-box" style="height:340px;margin-top:12px"><canvas id="estimatorChart"></canvas></div>
-      <div style="overflow-x:auto;margin-top:12px">
-      <table id="estimator-table">
-        <thead><tr><th>Animal</th><th>T shift (pub)</th><th>S shift</th><th>ΔCT S−T</th><th>Jitter T/S/M pre (h)</th><th>Flips S/M</th><th>Sine R²</th><th>Plateau h (10%)</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      </div>
-      <p class="footnote" style="margin-top:10px">Gate results for the switch: T-parity vs published exact (5/5); S-cleanliness zero flips (5/5) after unwrap; era-B reprocess deltas documented (S within ±0.66 CT except 6976's T-path +4.09, a known era-B F0/binning effect); DD free-run stability — S post-pulse residual SD 0.64–2.27 h vs T's 1.14–4.28 h, i.e. the sine acrophase does not degrade in long free-runs the way argmin degrades on plateaus (the fit-quality-vs-free-run check, now tested rather than asserted).</p>
     </details>
     <details>
       <summary>What this is and isn't</summary>
@@ -911,54 +828,11 @@ const C_VIPC='#2c6c8c', C_D1C='#7c5784';
 let ANA=null;
 function col(g){return g==='VIP'?C_VIPC:C_D1C;}
 
-let CT_FRAMES=null, SE=null, RL=null;
-let sec4Frame='wheel', sec8Frame='wheel', sec9Frame='wheel';
-let prcDualChart=null, clockShiftChart=null, compChart=null, boutCaChart=null;
-
-function frameChipHandler(chipsId, get, set, rerender){
-  document.querySelectorAll('#'+chipsId+' .chip').forEach(ch=>{
-    ch.onclick=()=>{
-      document.querySelectorAll('#'+chipsId+' .chip').forEach(c=>c.classList.remove('on'));
-      ch.classList.add('on');
-      set(ch.dataset.frame);
-      rerender();
-    };
-  });
-}
-
-function renderPRCDual(){
-  const c=CT_FRAMES.correlation;
-  const ds=[];
-  const animals=Object.keys(c.T.points);
-  const lpct=c.lp_in_ct;
-  for(const a of animals){
-    const g=ANA.dual_clock[a].group;
-    const X=(sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a];
-    const Y=(sec4Frame==='wheel')?c.T.points[a].wheel:c.T.points[a].ca;
-    ds.push({type:'scatter',label:`#${a} ${g}`,data:[{x:X,y:Y}],
-      backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
-  }
-  if(prcDualChart) prcDualChart.destroy();
-  prcDualChart=new Chart($('prcDualChart'),{type:'scatter',data:{datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'linear',min:0,max:24,title:{display:true,text:'CT of light pulse in this clock\'s frame (h)'},grid:{color:RULE}},
-              y:{title:{display:true,text:'phase shift (ΔCT h; + = advance)'},grid:{color:RULE}}},
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:it=>{
-          const a=animals[it.datasetIndex];
-          return `#${a}: LP at CT ${((sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a]).toFixed(1)}, shift ${((sec4Frame==='wheel')?c.T.points[a].wheel:c.T.points[a].ca).toFixed(2)} CT`;}}}}}});
-  $('prc-title').textContent=(sec4Frame==='wheel')
-    ?'Phase-reset points — behavioral (wheel) CT frame'
-    :'Phase-reset points — calcium (S+6) CT frame';
-}
-
 function renderClockShift(){
-  const c=CT_FRAMES.correlation;
-  const which=(sec4Frame==='wheel')?c.T:c.S;
-  $('corr-badge').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)}, perm p = ${which.p.toFixed(2)}, n = ${c.n}`;
-  $('clock-r').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)} (perm p = ${which.p.toFixed(2)}, n = ${c.n})`;
-  const ds=[]; const labels=[];
-  const pts=which.points;
+  const sc=ANA.shift_correlation, pts=sc.points;
+  $('clock-r').textContent=`r = ${sc.r>=0?'+':''}${sc.r.toFixed(2)}, permutation p = ${sc.p.toFixed(2)}, n = ${sc.n}`;
+  const ds=[];
+  const labels=[];
   for(const [a,p] of Object.entries(pts)){
     const g=ANA.dual_clock[a].group;
     ds.push({type:'scatter', label:`#${a} ${g}`, data:[{x:p.wheel,y:p.ca}],
@@ -970,269 +844,12 @@ function renderClockShift(){
   const b=np_polyfit(wv,cv);
   ds.push({type:'line', data:[{x:xs[0],y:np_polyval(b,xs[0])},{x:xs[1],y:np_polyval(b,xs[1])}],
     borderColor:'#a99e89', borderWidth:1, borderDash:[5,4], pointRadius:0, order:0, label:'fit'});
-  if(clockShiftChart) clockShiftChart.destroy();
-  clockShiftChart=new Chart($('clockShiftChart'),{type:'scatter',data:{datasets:ds},
+  new Chart($('clockShiftChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
       scales:{x:{title:{display:true,text:'wheel-clock shift (ΔCT h)'},grid:{color:RULE}},
               y:{title:{display:true,text:'calcium-clock shift (ΔCT h)'},grid:{color:RULE}}},
       plugins:{legend:{display:false},
         tooltip:{callbacks:{label:it=>{const a=labels[it.datasetIndex];return a?`#${a}: wheel ${pts[a].wheel.toFixed(2)}, calcium ${pts[a].ca.toFixed(2)} CT`:'';}}}}}});
-}
-
-function renderComp(){
-  const F=CT_FRAMES.compensation[sec8Frame];
-  $('comp-badge').textContent=`pooled r = ${F.pooled.r>=0?'+':''}${F.pooled.r.toFixed(2)}, p = ${F.pooled.p.toFixed(2)}, n = ${F.pooled.n} cycles`;
-  const groups={};
-  F.points.animal.forEach((a,i)=>{
-    const g=F.points.group[i];
-    (groups[g]=groups[g]||[]).push({x:F.points.night[i],y:F.points.day[i]});
-  });
-  const ds=Object.entries(groups).map(([g,pts])=>({type:'scatter',label:`${g}-Cre`,
-    data:pts, backgroundColor:col(g), pointRadius:3.5, pointHoverRadius:5, opacity:.8}));
-  const frameTxt=(sec8Frame==='wheel')?'behavior (wheel onsets = CT12)':'calcium (S+6 = CT12)';
-  const opts={
-    responsive:true, maintainAspectRatio:false, animation:false,
-    scales:{
-      x:{title:{display:true,text:`revolutions, subjective night (CT12–24, ${frameTxt})`},grid:{color:RULE}},
-      y:{title:{display:true,text:`revolutions, subjective day (CT0–12, ${frameTxt})`},grid:{color:RULE}}
-    },
-    plugins:{
-      legend:{display:false},
-      tooltip:{callbacks:{label:it=>`${it.parsed.x.toFixed(0)} → ${it.parsed.y.toFixed(0)} revs`}}
-    }
-  };
-  if(compChart) compChart.destroy();
-  compChart=new Chart($('compChart'),{type:'scatter',data:{datasets:ds},options:opts});
-}
-
-function renderBoutCa(){
-  const B=CT_FRAMES.bout_by_ct[sec9Frame];
-  const ds=[];
-  for(const [a,bins] of Object.entries(B)){
-    const g=ANA.dual_clock[a].group;
-    const xs=Object.keys(bins).map(k=>+k*6+3), ys=Object.values(bins);
-    ds.push({type:'line',label:`#${a}`,data:xs.map((x,i)=>({x,y:ys[i]})),
-      borderColor:col(g),borderWidth:1.5,pointRadius:4,pointBackgroundColor:col(g),
-      borderDash:a==='6577'?[4,3]:undefined});
-  }
-  if(boutCaChart) boutCaChart.destroy();
-  boutCaChart=new Chart($('boutCaChart'),{type:'scatter',data:{datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
-      scales:{x:{type:'linear',min:0,max:24,ticks:{stepSize:6,callback:v=>['CT0','CT6','CT12','CT18','CT24'][v/6]},
-              title:{display:true,text:`circadian time of bout onset (${
-                (sec9Frame==='wheel')?'behavior clock':'calcium clock, S+6'})`}},
-              y:{title:{display:true,text:'bout-onset ΔCa (z)'},grid:{color:RULE}}},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
-}
-
-// ---- re-locking section (06) -------------------------------------------
-let relockChart=null, relockCur=0, relockLayers={pre:true,post:true,lp:true};
-const RELOCK_ANIMALS=['6577','6976','6977','6978'];
-
-function renderRelock(){
-  const a=RELOCK_ANIMALS[relockCur];
-  const d=RL.psi_S[a];
-  const g=d.genotype.includes('VIP')?'VIP':'D1';
-  const ds=[];
-  if(relockLayers.pre && d.pre_points){
-    ds.push({type:'scatter',label:'pre-LP ψ',data:d.pre_points.map(p=>({x:p[0],y:p[1]})),
-      backgroundColor:'#8a8171',pointRadius:4,pointHoverRadius:6,opacity:.8});
-  }
-  if(d.pre_mean!==null){
-    ds.push({type:'line',label:'pre mean',data:[{x:-10,y:d.pre_mean},{x:6,y:d.pre_mean}],
-      borderColor:'#8a8171',borderWidth:1,borderDash:[5,4],pointRadius:0,order:0});
-    if(d.pre_sd){
-      ds.push({type:'line',label:'pre band +1SD',data:[{x:-10,y:d.pre_mean+d.pre_sd},{x:6,y:d.pre_mean+d.pre_sd}],
-        borderColor:'transparent',backgroundColor:'rgba(138,129,113,.15)',fill:'+1',pointRadius:0});
-      ds.push({type:'line',data:[{x:-10,y:d.pre_mean-d.pre_sd},{x:6,y:d.pre_mean-d.pre_sd}],
-        borderColor:'transparent',pointRadius:0,fill:false});
-    }
-  }
-  if(relockLayers.post && d.post_points){
-    ds.push({type:'scatter',label:'post-LP ψ',data:d.post_points.map(p=>({x:p[0],y:p[1]})),
-      backgroundColor:col(g),pointRadius:6,pointHoverRadius:8});
-  }
-  if(relockLayers.lp){
-    ds.push({type:'line',label:'light pulse',data:[{x:0,y:null},{x:0,y:null}],
-      borderColor:'#b07d22',borderWidth:0,pointRadius:0});
-  }
-  if(relockChart) relockChart.destroy();
-  relockChart=new Chart($('relockChart'),{type:'scatter',data:{datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'linear',title:{display:true,text:'cycles from LP1'},grid:{color:RULE}},
-              y:{title:{display:true,text:'ψ = Ca anchor − wheel onset (h)'},grid:{color:RULE}}},
-      plugins:{
-        legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
-        tooltip:{callbacks:{}},
-        lpLine06:{}
-      },
-      lpX:0
-    },
-    plugins:[{
-      id:'lpLine06',
-      afterDatasetsDraw(chart){
-        const x=chart.scales.x.getPixelForValue(0);
-        const {ctx,chartArea:{top,bottom}}=chart;
-        if(Number.isFinite(x)){
-          ctx.save();
-          ctx.strokeStyle='#b07d22'; ctx.lineWidth=1.6; ctx.setLineDash([4,3]);
-          ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x,bottom); ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle='#b07d22'; ctx.font='10px monospace';
-          ctx.fillText('LP1', x+4, top+12);
-          ctx.restore();
-        }
-      }
-    }]});
-  $('relock-title').textContent=`#${a} · ${d.genotype} · ψ re-locking`;
-  const flags=(a==='6976')?' · flagged: ca-anchor fragmentation; single-span, self-consistency only':'';
-  $('relock-badge').textContent=`pre ${d.pre_mean}±${d.pre_sd} h · n pre ${d.pre_n} / post ${d.post_points.length}${flags}`;
-  $('relock-foot').textContent=`ψ = sine-acrophase calcium anchor − paired wheel onset. ${
-    d.dropped?`${d.dropped} anchor(s) dropped (no paired onset in window). `:''}${
-    d.post_points.length<3?'Post window thin (n='+d.post_points.length+') — read as a trajectory, not a fit.':''}`;
-}
-
-function fillRelockControls(){
-  const as=$('sel-relock-animal');
-  as.innerHTML='';
-  RELOCK_ANIMALS.forEach((a,i)=>{
-    const o=document.createElement('option');
-    o.value=i;
-    const d=RL.psi_S[a];
-    o.textContent=`#${a} — ${d.genotype}`;
-    as.appendChild(o);
-  });
-  as.onchange=e=>{relockCur=+e.target.value;renderRelock();};
-  document.querySelectorAll('#relock-chips .chip').forEach(ch=>{
-    ch.onclick=()=>{
-      relockLayers[ch.dataset.layer]=!relockLayers[ch.dataset.layer];
-      ch.classList.toggle('on',relockLayers[ch.dataset.layer]);
-      renderRelock();
-    };
-  });
-}
-
-function renderLP2(){
-  const L=RL.lp2;
-  const br=RL.bracket;
-  const kept=Object.entries(L).filter(([a,p])=>!p.excluded);
-  const excl=Object.entries(L).filter(([a,p])=>p.excluded);
-  const ds=[];
-  for(const [a,p] of kept){
-    const g=ANA.dual_clock[a].group;
-    ds.push({type:'scatter',label:`#${a} P2`,data:[{x:p.lp2_in_ct,y:p.shift_CT}],
-      backgroundColor:col(g),pointRadius:8,pointHoverRadius:10});
-    const p1x=CT_FRAMES.correlation.lp_in_ct.wheel[a];
-    const p1y=CT_FRAMES.correlation.T.points[a].wheel;
-    ds.push({type:'scatter',label:`#${a} P1`,data:[{x:p1x,y:p1y}],
-      backgroundColor:col(g),pointRadius:5,pointHoverRadius:7,opacity:.55});
-    ds.push({type:'line',label:`#${a} path`,data:[{x:p1x,y:p1y},{x:p.lp2_in_ct,y:p.shift_CT}],
-      borderColor:col(g),borderWidth:1,borderDash:[3,2],pointRadius:0,order:1});
-  }
-  for(const [a,p] of excl){
-    ds.push({type:'scatter',label:`#${a} P2 (excluded)`,data:[{x:p.lp2_in_ct,y:p.shift_CT}],
-      backgroundColor:'transparent',borderColor:'#bb4a33',pointRadius:8,pointHoverRadius:10,
-      pointBorderWidth:2});
-  }
-  new Chart($('lp2Chart'),{type:'scatter',data:{datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'linear',min:0,max:24,title:{display:true,text:'CT of second pulse in the wheel clock\'s frame (h)'},grid:{color:RULE}},
-              y:{title:{display:true,text:'phase shift (ΔCT h)'},grid:{color:RULE}}},
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:it=>{
-          const lbl=it.dataset.label;
-          const m=lbl.match(/^#(\d+)/);
-          if(!m) return '';
-          const a=m[1]; const p=L[a];
-          if(lbl.includes('excluded')){
-            return `#${a} P2 (EXCLUDED): ${p.shift_CT.toFixed(2)} CT — ${p.exclusion_reason}`;
-          }
-          if(lbl.includes('P2')){
-            const sw=br.swing_h[a];
-            return `#${a} P2: ${p.shift_CT.toFixed(2)} CT at CT ${p.lp2_in_ct.toFixed(1)} · τ-swap bracket CT ${br.pre1_tau_swap_ct[a].toFixed(1)} (swing ${sw} h — τ-drift over 168 h)`;
-          }
-          return `#${a} P1: ${CT_FRAMES.correlation.T.points[a].wheel.toFixed(2)} CT`;
-        }}}}}});
-}
-
-function fillRelockTable(){
-  const tb=$('relock-table').querySelector('tbody');
-  tb.innerHTML='';
-  for(const a of RELOCK_ANIMALS){
-    const d=RL.psi_S[a];
-    const g=d.genotype.includes('VIP')?'VIP':'D1';
-    const post=d.post_points.map(p=>p[1]);
-    let read='';
-    const lo=d.pre_mean-d.pre_sd, hi=d.pre_mean+d.pre_sd;
-    const inBand=post.filter(v=>v>=lo&&v<=hi).length;
-    if(post.length===0) read='no post points';
-    else if(inBand===post.length) read=`re-locked (${inBand}/${post.length} in pre band)`;
-    else read=`${inBand}/${post.length} in pre band`;
-    const flags=(a==='6976')?' <span style="color:#bb4a33">⚑ flagged</span>':'';
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span>${flags}</td>
-      <td>${d.pre_mean} ± ${d.pre_sd} h</td>
-      <td>${d.pre_n} / ${d.post_points.length}</td>
-      <td>${d.dropped}</td>
-      <td style="font-size:11px">${d.post_points.map(p=>`${p[0].toFixed(1)}d:${p[1].toFixed(1)}h`).join(' ')}</td>
-      <td style="font-size:11px">${read}</td>`;
-    tb.appendChild(tr);
-  }
-}
-
-// ---- estimator comparison (methods §11) ---------------------------------
-function renderEstimatorChart(){
-  const ds=[];
-  const an=Object.keys(SE).filter(k=>k!=='_meta');
-  for(const a of an){
-    const r=SE[a];
-    const T=r.series_T, S=r.series_S, M=r.series_M;
-    const g=r.genotype;
-    // cycle index as x; y = marker time-of-day wrapped to [0,24).
-    // Break lines at wrap jumps (>12 h step) so daily wraparounds don't
-    // render as vertical zigzags — insert nulls at the transitions.
-    const wrapSeries=ser=>ser.map((x,i)=>{
-      const y=((x%24)+24)%24;
-      if(i>0){
-        const py=((ser[i-1]%24)+24)%24;
-        if(Math.abs(y-py)>12) return {x:i,y:null};
-      }
-      return {x:i,y};
-    });
-    ds.push({type:'line',label:`#${a} T (daily min)`,data:wrapSeries(T),
-      borderColor:'#8a8171',borderWidth:1,pointRadius:2,opacity:.7,tension:0,spanGaps:false});
-    ds.push({type:'line',label:`#${a} S (sine acrophase)`,data:wrapSeries(S),
-      borderColor:col(g),borderWidth:1.4,pointRadius:2.4,tension:0,spanGaps:false});
-    ds.push({type:'line',label:`#${a} M (midrise)`,data:wrapSeries(M),
-      borderColor:col(g),borderWidth:1,borderDash:[4,3],pointRadius:2,opacity:.7,tension:0,spanGaps:false});
-  }
-  new Chart($('estimatorChart'),{type:'scatter',data:{datasets:ds},
-    options:{responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
-      scales:{x:{type:'linear',title:{display:true,text:'cycle #'},grid:{color:RULE}},
-              y:{type:'linear',min:0,max:24,title:{display:true,text:'marker time-of-day (h, wrapped)'},grid:{color:RULE},
-                 ticks:{stepSize:6}}},
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:it=>`${it.dataset.label}: ${it.parsed.y.toFixed(2)} h (cycle ${it.parsed.x})`}}}}});
-}
-
-function fillEstimatorTable(){
-  const tb=$('estimator-table').querySelector('tbody');
-  tb.innerHTML='';
-  for(const a of Object.keys(SE).filter(k=>k!=='_meta')){
-    const r=SE[a];
-    const g=r.genotype;
-    const tr=document.createElement('tr');
-    const jT=r.jitter_T.pre, jS=r.jitter_S.pre, jM=r.jitter_M_pre;
-    tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span></td>
-      <td>${r.T.published_shift_CT>=0?'+':''}${r.T.published_shift_CT.toFixed(2)}</td>
-      <td>${r.S.shift_CT>=0?'+':''}${r.S.shift_CT.toFixed(2)}</td>
-      <td class="${(r.S.shift_CT-r.T.published_shift_CT)<0?'negv':'pos'}">${(r.S.shift_CT-r.T.published_shift_CT>=0?'+':'')}${(r.S.shift_CT-r.T.published_shift_CT).toFixed(2)}</td>
-      <td>${jT[0].toFixed(2)} / ${jS[0].toFixed(2)} / ${jM[0]?jM[0].toFixed(2):'—'}</td>
-      <td>${r.n_flips_S} / ${r.n_flips_M}</td>
-      <td>${r.r2.med.toFixed(2)}</td>
-      <td>${r.occ10_h.med.toFixed(1)}</td>`;
-    tb.appendChild(tr);
-  }
 }
 function np_polyfit(x,y){const n=x.length;const sx=x.reduce((a,b)=>a+b),sy=y.reduce((a,b)=>a+b);
   const sxy=x.reduce((a,b,i)=>a+b*y[i],0),sxx=x.reduce((a,b)=>a+b*b,0);
@@ -1268,6 +885,30 @@ function renderQC(){
   }
 }
 
+function renderComp(){
+  const p=ANA.compensation.pooled;
+  $('comp-badge').textContent=`pooled r = ${p.r>=0?'+':''}${p.r.toFixed(2)}, p = ${p.p.toFixed(2)}, n = ${p.n} cycles`;
+  const groups={};
+  ANA.compensation.points.animal.forEach((a,i)=>{
+    const g=ANA.compensation.points.group[i];
+    (groups[g]=groups[g]||[]).push({x:ANA.compensation.points.night[i],y:ANA.compensation.points.day[i]});
+  });
+  const ds=Object.entries(groups).map(([g,pts])=>({type:'scatter',label:`${g}-Cre`,
+    data:pts, backgroundColor:col(g), pointRadius:3.5, pointHoverRadius:5, opacity:.8}));
+  const opts={
+    responsive:true, maintainAspectRatio:false, animation:false,
+    scales:{
+      x:{title:{display:true,text:'revolutions, subjective night (CT12–24)'},grid:{color:RULE}},
+      y:{title:{display:true,text:'revolutions, subjective day (CT0–12)'},grid:{color:RULE}}
+    },
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:it=>`${it.parsed.x.toFixed(0)} → ${it.parsed.y.toFixed(0)} revs`}}
+    }
+  };
+  new Chart($('compChart'),{type:'scatter',data:{datasets:ds},options:opts});
+}
+
 function renderArtifact(){
   const sc=ANA.night_feedback.structural_control;
   const animals=Object.keys(sc);
@@ -1296,6 +937,23 @@ function renderFirstDays(){
       showLine:true,
       scales:{x:{type:'linear',ticks:{stepSize:1,callback:v=>['full','skip 1','skip 2','skip 3'][v]??''},grid:{color:RULE}},
               y:{title:{display:true,text:'phase shift (ΔCT h)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
+}
+
+function renderBoutCa(){
+  const ds=[];
+  for(const [a,bins] of Object.entries(ANA.bout_by_ct)){
+    const g=ANA.dual_clock[a].group;
+    const xs=Object.keys(bins).map(k=>+k*6+3), ys=Object.values(bins);
+    ds.push({type:'line',label:`#${a}`,data:xs.map((x,i)=>({x,y:ys[i]})),
+      borderColor:col(g),borderWidth:1.5,pointRadius:4,pointBackgroundColor:col(g),
+      borderDash:a==='6577'?[4,3]:undefined});
+  }
+  new Chart($('boutCaChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
+      scales:{x:{type:'linear',min:0,max:24,ticks:{stepSize:6,callback:v=>['CT0','CT6','CT12','CT18','CT24'][v/6]},
+              title:{display:true,text:'circadian time of bout onset'}},
+              y:{title:{display:true,text:'bout-onset ΔCa (z)'},grid:{color:RULE}}},
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
 }
 
@@ -1359,26 +1017,10 @@ function renderEarlyLate(){
 
 fetch('data/analyses.json').then(r=>r.json()).then(a=>{
   ANA=a;
-  renderStability(); renderQC(); renderArtifact(); renderFirstDays(); renderOnsetTrig(); renderEarlyLate();
+  renderClockShift(); renderStability(); renderQC(); renderComp();
+  renderArtifact(); renderFirstDays(); renderBoutCa(); renderOnsetTrig(); renderEarlyLate();
   renderWithin();
   loadRepeatRecordings();
-  // new S+6 surfaces
-  fetch('data/ct_frames.json').then(r=>r.json()).then(cf=>{
-    CT_FRAMES=cf;
-    fetch('data/s_estimator.json').then(r=>r.json()).then(se=>{
-      SE=se;
-      fetch('data/relock.json').then(r=>r.json()).then(rl=>{
-        RL=rl;
-        renderPRCDual(); renderClockShift(); renderComp(); renderBoutCa();
-        fillRelockControls(); renderRelock(); renderLP2(); fillRelockTable();
-        renderEstimatorChart(); fillEstimatorTable();
-        frameChipHandler('sec4-ct-chips', ()=>sec4Frame, v=>{sec4Frame=v;},
-          ()=>{renderPRCDual();renderClockShift();});
-        frameChipHandler('sec8-ct-chips', ()=>sec8Frame, v=>{sec8Frame=v;}, renderComp);
-        frameChipHandler('sec9-ct-chips', ()=>sec9Frame, v=>{sec9Frame=v;}, renderBoutCa);
-      }).catch(e=>{ $('#relock-foot').textContent='relock data unavailable: '+e; });
-    }).catch(e=>{ console.error('s_estimator load failed', e); });
-  }).catch(e=>{ console.error('ct_frames load failed', e); });
 }).catch(e=>{
   document.querySelectorAll('#clocks .card, #qc, #feedback, #boutca').forEach(el=>{
     el.insertAdjacentHTML('afterbegin',`<p class="loading">analysis data unavailable: ${e}</p>`);
