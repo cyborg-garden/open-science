@@ -1,0 +1,759 @@
+{
+ "6577": {
+  "genotype": "VIP",
+  "n_cyc": 17,
+  "series_T": [
+   31.0,
+   58.0,
+   92.5,
+   112.5,
+   137.5,
+   164.5,
+   184.5,
+   209.0,
+   235.5,
+   256.5,
+   282.0,
+   306.5,
+   330.5,
+   353.0,
+   379.5,
+   400.5,
+   417.5
+  ],
+  "series_S": [
+   20.884,
+   49.436,
+   78.907,
+   101.388,
+   126.034,
+   149.473,
+   172.665,
+   196.31,
+   220.163,
+   243.584,
+   266.962,
+   291.338,
+   315.138,
+   340.822,
+   364.028,
+   386.315,
+   406.666
+  ],
+  "series_M": [
+   34.062,
+   59.367,
+   72.783,
+   95.947,
+   120.107,
+   143.48,
+   167.099,
+   191.351,
+   214.982,
+   237.997,
+   261.7,
+   286.211,
+   309.77,
+   333.253,
+   357.414,
+   380.097,
+   393.771
+  ],
+  "T": {
+   "shift_CT": 0.925,
+   "published_shift_CT": 0.9250239693190498,
+   "parity_d": 0.0
+  },
+  "S": {
+   "shift_CT": 0.339,
+   "lp1_in_ct": 12.86
+  },
+  "n_flips_S": 0,
+  "n_flips_M": 3,
+  "raw_T_ioi_out": 3,
+  "raw_T_ioi_n": 16,
+  "r2": {
+   "med": 0.898,
+   "first_half": 0.915,
+   "second_half": 0.868
+  },
+  "occ10_h": {
+   "med": 5.0,
+   "first_half": 4.75,
+   "second_half": 5.0
+  },
+  "delta_S_circ": {
+   "med": -1.04,
+   "iqr": [
+    -2.0,
+    1.57
+   ],
+   "csd": 2.09
+  },
+  "jitter_T": {
+   "pre": [
+    2.0,
+    3.409,
+    10
+   ],
+   "post": [
+    1.75,
+    2.358,
+    7
+   ],
+   "post_h1": [
+    0.25,
+    0.118,
+    3
+   ],
+   "post_h2": [
+    4.0,
+    2.381,
+    4
+   ]
+  },
+  "jitter_S": {
+   "pre": [
+    0.331,
+    2.496,
+    11
+   ],
+   "post": [
+    0.919,
+    1.481,
+    6
+   ],
+   "post_h1": [
+    0.942,
+    0.444,
+    3
+   ],
+   "post_h2": [
+    0.967,
+    0.456,
+    3
+   ]
+  },
+  "jitter_M_pre": [
+   0.498,
+   2.788,
+   11
+  ],
+  "dd_verdict": "S holds: post SD 1.48 h vs pre 2.50 h, T post SD 2.36 h",
+  "era_b": {
+   "anchor_overlap_n": 14,
+   "anchor_diff_med_h": 0.5,
+   "anchor_diff_max_abs_h": 4.5,
+   "n_flips_S": 0,
+   "T_shift_CT": 0.868,
+   "T_delta_vs_cache_CT": -0.057,
+   "S_shift_CT": 0.625,
+   "S_delta_vs_cache_CT": 0.286
+  }
+ },
+ "6976": {
+  "genotype": "VIP",
+  "n_cyc": 17,
+  "series_T": [
+   31.0,
+   58.0,
+   87.5,
+   112.5,
+   132.0,
+   155.5,
+   181.5,
+   202.0,
+   227.0,
+   254.5,
+   271.0,
+   302.5,
+   322.5,
+   343.0,
+   370.0,
+   398.0,
+   417.5
+  ],
+  "series_S": [
+   23.997,
+   52.246,
+   77.187,
+   100.21,
+   123.425,
+   146.572,
+   170.163,
+   193.439,
+   216.358,
+   240.573,
+   263.439,
+   287.317,
+   311.061,
+   331.797,
+   357.74,
+   381.3,
+   404.131
+  ],
+  "series_M": [
+   34.201,
+   60.142,
+   72.653,
+   95.162,
+   118.492,
+   141.845,
+   165.377,
+   188.812,
+   211.555,
+   235.546,
+   258.85,
+   282.553,
+   305.894,
+   321.83,
+   352.775,
+   376.376,
+   393.84
+  ],
+  "T": {
+   "shift_CT": -1.321,
+   "published_shift_CT": -1.3208255159473918,
+   "parity_d": 0.0
+  },
+  "S": {
+   "shift_CT": -0.913,
+   "lp1_in_ct": 17.76
+  },
+  "n_flips_S": 0,
+  "n_flips_M": 7,
+  "raw_T_ioi_out": 6,
+  "raw_T_ioi_n": 16,
+  "r2": {
+   "med": 0.867,
+   "first_half": 0.919,
+   "second_half": 0.843
+  },
+  "occ10_h": {
+   "med": 5.5,
+   "first_half": 6.75,
+   "second_half": 5.5
+  },
+  "delta_S_circ": {
+   "med": 1.16,
+   "iqr": [
+    -1.45,
+    2.26
+   ],
+   "csd": 2.91
+  },
+  "jitter_T": {
+   "pre": [
+    2.0,
+    2.66,
+    10
+   ],
+   "post": [
+    1.0,
+    2.544,
+    6
+   ],
+   "post_h1": [
+    0.25,
+    0.118,
+    3
+   ],
+   "post_h2": [
+    4.25,
+    2.003,
+    3
+   ]
+  },
+  "jitter_S": {
+   "pre": [
+    0.336,
+    1.483,
+    11
+   ],
+   "post": [
+    0.729,
+    0.939,
+    6
+   ],
+   "post_h1": [
+    1.505,
+    0.709,
+    3
+   ],
+   "post_h2": [
+    0.365,
+    0.172,
+    3
+   ]
+  },
+  "jitter_M_pre": [
+   0.395,
+   2.974,
+   11
+  ],
+  "dd_verdict": "S holds: post SD 0.94 h vs pre 1.48 h, T post SD 2.54 h",
+  "era_b": {
+   "anchor_overlap_n": 12,
+   "anchor_diff_med_h": 0.75,
+   "anchor_diff_max_abs_h": 5.5,
+   "n_flips_S": 0,
+   "T_shift_CT": 2.768,
+   "T_delta_vs_cache_CT": 4.089,
+   "S_shift_CT": -0.25,
+   "S_delta_vs_cache_CT": 0.663
+  }
+ },
+ "6977": {
+  "genotype": "D1",
+  "n_cyc": 17,
+  "series_T": [
+   31.0,
+   58.0,
+   86.0,
+   112.0,
+   140.5,
+   163.0,
+   187.5,
+   210.5,
+   226.5,
+   255.5,
+   282.0,
+   297.0,
+   330.0,
+   344.0,
+   378.0,
+   400.0,
+   417.5
+  ],
+  "series_S": [
+   23.034,
+   51.076,
+   76.758,
+   100.7,
+   124.849,
+   148.227,
+   171.79,
+   195.064,
+   218.246,
+   242.147,
+   265.734,
+   289.642,
+   314.202,
+   337.126,
+   362.041,
+   385.629,
+   407.766
+  ],
+  "series_M": [
+   34.77,
+   60.146,
+   72.152,
+   95.888,
+   120.039,
+   143.689,
+   167.093,
+   190.912,
+   214.232,
+   237.981,
+   260.925,
+   285.698,
+   310.173,
+   322.559,
+   357.595,
+   380.513,
+   393.826
+  ],
+  "T": {
+   "shift_CT": -2.589,
+   "published_shift_CT": -2.5894282556447896,
+   "parity_d": 0.0
+  },
+  "S": {
+   "shift_CT": -0.543,
+   "lp1_in_ct": 15.02
+  },
+  "n_flips_S": 0,
+  "n_flips_M": 7,
+  "raw_T_ioi_out": 7,
+  "raw_T_ioi_n": 16,
+  "r2": {
+   "med": 0.793,
+   "first_half": 0.883,
+   "second_half": 0.757
+  },
+  "occ10_h": {
+   "med": 5.0,
+   "first_half": 7.75,
+   "second_half": 3.0
+  },
+  "delta_S_circ": {
+   "med": -0.24,
+   "iqr": [
+    -3.41,
+    3.98
+   ],
+   "csd": 3.86
+  },
+  "jitter_T": {
+   "pre": [
+    2.5,
+    3.906,
+    10
+   ],
+   "post": [
+    5.25,
+    4.28,
+    7
+   ],
+   "post_h1": [
+    9.0,
+    4.243,
+    3
+   ],
+   "post_h2": [
+    4.5,
+    4.209,
+    4
+   ]
+  },
+  "jitter_S": {
+   "pre": [
+    0.386,
+    1.654,
+    11
+   ],
+   "post": [
+    0.971,
+    0.636,
+    6
+   ],
+   "post_h1": [
+    0.818,
+    0.385,
+    3
+   ],
+   "post_h2": [
+    0.726,
+    0.342,
+    3
+   ]
+  },
+  "jitter_M_pre": [
+   0.332,
+   3.021,
+   11
+  ],
+  "dd_verdict": "S holds: post SD 0.64 h vs pre 1.65 h, T post SD 4.28 h",
+  "era_b": {
+   "anchor_overlap_n": 10,
+   "anchor_diff_med_h": 1.75,
+   "anchor_diff_max_abs_h": 4.5,
+   "n_flips_S": 0,
+   "T_shift_CT": -2.512,
+   "T_delta_vs_cache_CT": 0.077,
+   "S_shift_CT": -0.312,
+   "S_delta_vs_cache_CT": 0.231
+  }
+ },
+ "6978": {
+  "genotype": "D1",
+  "n_cyc": 17,
+  "series_T": [
+   31.0,
+   58.0,
+   89.0,
+   112.5,
+   137.5,
+   161.5,
+   184.5,
+   207.0,
+   233.5,
+   256.5,
+   278.0,
+   305.0,
+   331.0,
+   354.0,
+   377.5,
+   400.5,
+   417.5
+  ],
+  "series_S": [
+   21.786,
+   50.429,
+   76.479,
+   101.395,
+   125.189,
+   149.159,
+   173.155,
+   197.553,
+   221.491,
+   244.94,
+   269.088,
+   294.062,
+   317.994,
+   345.418,
+   368.741,
+   389.282,
+   409.912
+  ],
+  "series_M": [
+   34.332,
+   59.629,
+   95.28,
+   120.103,
+   144.284,
+   167.87,
+   192.274,
+   216.228,
+   240.777,
+   264.376,
+   288.751,
+   314.559,
+   338.505,
+   369.634,
+   391.726,
+   409.633,
+   441.781
+  ],
+  "T": {
+   "shift_CT": 3.399,
+   "published_shift_CT": 3.399217221135131,
+   "parity_d": 0.0
+  },
+  "S": {
+   "shift_CT": 2.044,
+   "lp1_in_ct": 11.36
+  },
+  "n_flips_S": 0,
+  "n_flips_M": 1,
+  "raw_T_ioi_out": 3,
+  "raw_T_ioi_n": 16,
+  "r2": {
+   "med": 0.876,
+   "first_half": 0.942,
+   "second_half": 0.846
+  },
+  "occ10_h": {
+   "med": 7.0,
+   "first_half": 6.0,
+   "second_half": 8.0
+  },
+  "delta_S_circ": {
+   "med": 1.49,
+   "iqr": [
+    -1.49,
+    1.6
+   ],
+   "csd": 1.76
+  },
+  "jitter_T": {
+   "pre": [
+    1.0,
+    2.622,
+    10
+   ],
+   "post": [
+    0.5,
+    2.191,
+    6
+   ],
+   "post_h1": [
+    1.5,
+    0.707,
+    3
+   ],
+   "post_h2": [
+    3.0,
+    1.414,
+    3
+   ]
+  },
+  "jitter_S": {
+   "pre": [
+    0.302,
+    1.673,
+    11
+   ],
+   "post": [
+    2.693,
+    2.166,
+    6
+   ],
+   "post_h1": [
+    1.746,
+    0.823,
+    3
+   ],
+   "post_h2": [
+    0.044,
+    0.021,
+    3
+   ]
+  },
+  "jitter_M_pre": [
+   0.435,
+   3.575,
+   11
+  ],
+  "dd_verdict": "S holds: post SD 2.17 h vs pre 1.67 h, T post SD 2.19 h",
+  "era_b": {
+   "anchor_overlap_n": 14,
+   "anchor_diff_med_h": -1.0,
+   "anchor_diff_max_abs_h": 3.0,
+   "n_flips_S": 0,
+   "T_shift_CT": 4.795,
+   "T_delta_vs_cache_CT": 1.396,
+   "S_shift_CT": 1.654,
+   "S_delta_vs_cache_CT": -0.39
+  }
+ },
+ "7390": {
+  "genotype": "D1",
+  "n_cyc": 14,
+  "series_T": [
+   6.0,
+   32.5,
+   56.5,
+   80.5,
+   104.0,
+   127.5,
+   151.0,
+   174.5,
+   197.5,
+   224.5,
+   247.0,
+   270.5,
+   296.0,
+   317.5
+  ],
+  "series_S": [
+   24.143,
+   48.646,
+   72.414,
+   95.567,
+   119.028,
+   142.595,
+   166.74,
+   190.809,
+   216.015,
+   239.33,
+   262.043,
+   285.863,
+   309.157,
+   331.333
+  ],
+  "series_M": [
+   9.994,
+   43.657,
+   68.829,
+   90.401,
+   113.466,
+   136.779,
+   160.229,
+   185.761,
+   212.639,
+   233.393,
+   256.77,
+   280.9,
+   303.552,
+   318.961
+  ],
+  "T": {
+   "shift_CT": -0.752,
+   "published_shift_CT": -0.7518215613383407,
+   "parity_d": 0.0
+  },
+  "S": {
+   "shift_CT": 2.072,
+   "lp1_in_ct": 15.63
+  },
+  "n_flips_S": 0,
+  "n_flips_M": 3,
+  "raw_T_ioi_out": 3,
+  "raw_T_ioi_n": 13,
+  "r2": {
+   "med": 0.87,
+   "first_half": 0.87,
+   "second_half": 0.917
+  },
+  "occ10_h": {
+   "med": 3.5,
+   "first_half": 2.5,
+   "second_half": 4.5
+  },
+  "delta_S_circ": {
+   "med": 3.57,
+   "iqr": [
+    -0.53,
+    0.52
+   ],
+   "csd": 1.38
+  },
+  "jitter_T": {
+   "pre": [
+    0.25,
+    0.88,
+    7
+   ],
+   "post": [
+    2.0,
+    1.138,
+    6
+   ],
+   "post_h1": [
+    2.25,
+    1.061,
+    3
+   ],
+   "post_h2": [
+    2.0,
+    0.943,
+    3
+   ]
+  },
+  "jitter_S": {
+   "pre": [
+    0.342,
+    0.332,
+    7
+   ],
+   "post": [
+    0.554,
+    0.677,
+    7
+   ],
+   "post_h1": [
+    0.945,
+    0.446,
+    3
+   ],
+   "post_h2": [
+    0.527,
+    0.416,
+    4
+   ]
+  },
+  "jitter_M_pre": [
+   1.053,
+   3.17,
+   7
+  ],
+  "dd_verdict": "S holds: post SD 0.68 h vs pre 0.33 h, T post SD 1.14 h",
+  "era_b": "cache-only animal (no era-B extended mat on this path)"
+ },
+ "_meta": {
+  "date": "2026-09-03",
+  "script": "/opt/data/scn_photometry/inventory/s_estimator_suite.py",
+  "helpers": "exec prefix of /opt/data/scn_photometry/prc_and_relock.py (verbatim published: ca_anchors, fit_shift, lp_in_ct_frame, load_pilot); unwrap_marker/circ stats from dd_ct12_transfer_v2",
+  "data": "era-A cache npz (t_zt, dF), /opt/data/scn_photometry/cache; era-B extended mats for pilots, /opt/data/scn_photometry/DataFolders/221017_concat/6577_6976_6977_6978_6546_6681_7119_6542",
+  "published": "/opt/data/scn_photometry/analysis_out/analyses.json dual_clock ca (LP1, CT hours, own-tau)",
+  "frames": "cum-ZT hours; LP1=275.970 (photodiode DOY-281); LP1_7390=176.041 (cache/7390.json); LP2=443.976 beyond photometry end for every pilot (no post-LP2 calcium by construction)",
+  "conventions": "T: daily-min anchor = CT18 (CT12 marker T-6); S: per-cycle sine acrophase = CT6 (CT12 marker S+6, the approved switch). delta_S_circ = wrap12((S-T)-12); 0 = identical CT12 placement",
+  "gates": {
+   "G1_T_parity_tol_005": true,
+   "G2_S_zero_flips": true,
+   "G3_eraB_documented": true,
+   "G4_S_degrades_animals": []
+  }
+ }
+}
