@@ -1,0 +1,1424 @@
+{
+ "_meta": {
+  "purpose": "QC screen for the Oct-2022 SCN fiber-photometry campaign (Track B, round 11): identity audit of sibling .mat files, CSV census reconciliation, wheel-chain tau reads, and LD->DD condition assessment. Data-only artifact - no page edit in this PR; presentation follows review.",
+  "generated": "2026-09-14T22:02:35.596504+00:00",
+  "source": "scn_photometry/r11_trackb_screen.py (in-container analysis tree); raw campaign data via Dropbox share pull, receipt in trackb_pull_summary.json (same directory)"
+ },
+ "generated": "2026-09-14T22:02:35.596504+00:00",
+ "scope": "SCN photometry Oct-2022 campaign, days 221021-221104",
+ "method": "shipped QC conventions (r11_track_a_screen lineage); documented deviations: cross-folder true-time wheel chaining",
+ "gates": {
+  "ca_snr_min": 3.0,
+  "tau_window_h": [
+   23.0,
+   24.5
+  ]
+ },
+ "fiber_roster": {
+  "1": "0001",
+  "2": "0002",
+  "3": "7142",
+  "4": "7381",
+  "5": "7199",
+  "6": "7143",
+  "7": "7200",
+  "8": "6646",
+  "9": "7176",
+  "10": "6647"
+ },
+ "fiber6_split": {
+  "owner_before": "7177",
+  "owner_from": "7143",
+  "boundary": [
+   "221022",
+   "221024"
+  ]
+ },
+ "dummy_note": "0001/0002 are camera-test dummy channels (params.number confirms); excluded from aggregates",
+ "shared_payload_note": "221021 mats carry one shared photometry payload (byte-identical signal across 7 mats, distinct wheelrevs); per-animal attribution impossible -> excluded from ca screens",
+ "ld_dd_note": "LD->DD switch is LOG-SOURCED (experiment log row 221022->221024 \"DD test / LD-->DD\"), corroborated by the 221024 session-open roomPhotodiode sample. The photodiode files carry no light-STATE evidence (session-open point samples only; LightPulse CSVs empty). KEY FINDING: post-switch wheel onsets stay pinned at dusk (drift < 0.05 h/day, 12 nights) -- inconsistent with free-run tau~23.6 (which would drift 4-6 h over the span); the campaign wheel rhythm reads as 24 h-locked, so \"DD\" in the log is not behaviorally supported for the wheel clock.",
+ "pull_receipt": {
+  "ok": [
+   "221024/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-10-22T13_27_54.csv",
+   "221024/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-10-22T13_27_53.csv",
+   "221027/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-10-24T14_31_22.csv",
+   "221027/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-10-24T14_31_20.csv",
+   "221028/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-10-27T10_08_47.csv",
+   "221028/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-10-27T10_08_46.csv",
+   "221031/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-10-28T11_09_39.csv",
+   "221031/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-10-28T11_09_37.csv",
+   "221101/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-10-31T12_43_00.csv",
+   "221101/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-10-31T12_42_59.csv",
+   "221102/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-11-01T12_23_17.csv",
+   "221102/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-11-01T12_23_15.csv",
+   "221103/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-11-02T11_47_15.csv",
+   "221103/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-11-02T11_47_13.csv",
+   "221104/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoData2022-11-03T10_33_44.csv",
+   "221104/0001_0002_7142_7381_7199_7143_7200_6646_7176_6647/photoTimestamp2022-11-03T10_33_43.csv"
+  ],
+  "size_mismatch": [],
+  "failed": [],
+  "skipped_existing": [],
+  "no_url": []
+ },
+ "census": {
+  "csvs_on_disk": 212,
+  "total_mb": 432.6,
+  "missing": [],
+  "expected_csvs": 196,
+  "reconciliation": "212 CSVs on disk = 196 manifest-tracked (wheel+photo) + 8 roomPhotodiode + 8 LightPulsePhotodiode session logs; all size-verified against manifest"
+ },
+ "mats": {
+  "221021/0001": {
+   "day": "221021",
+   "animal": "0001",
+   "file": "221021_0001_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 1,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221021/0002": {
+   "day": "221021",
+   "animal": "0002",
+   "file": "221021_0002_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 2,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221021/7142": {
+   "day": "221021",
+   "animal": "7142",
+   "file": "221021_7142_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 3,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221021/7177": {
+   "day": "221021",
+   "animal": "7177",
+   "file": "221021_7177_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221021/7199": {
+   "day": "221021",
+   "animal": "7199",
+   "file": "221021_7199_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 5,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221021/7200": {
+   "day": "221021",
+   "animal": "7200",
+   "file": "221021_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221021/7381": {
+   "day": "221021",
+   "animal": "7381",
+   "file": "221021_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221021",
+   "doy": [
+    270,
+    270
+   ],
+   "era": "era-B",
+   "n_samples": 1263408,
+   "dur_d": 17.32,
+   "signal_hash": "bb52ecd001",
+   "status": "excluded: shared-payload session (photometry byte-identical across mats; wheelrevs distinct)"
+  },
+  "221024/0001": {
+   "day": "221024",
+   "animal": "0001",
+   "file": "221024_0001_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 1,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-A",
+   "status": "degenerate (no dFsignal/time)"
+  },
+  "221024/6646": {
+   "day": "221024",
+   "animal": "6646",
+   "file": "221024_6646_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 8,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221024/6647": {
+   "day": "221024",
+   "animal": "6647",
+   "file": "221024_6647_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 10,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221024/7142": {
+   "day": "221024",
+   "animal": "7142",
+   "file": "221024_7142_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 3,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-B",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221024/7143": {
+   "day": "221024",
+   "animal": "7143",
+   "file": "221024_7143_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221024/7176": {
+   "day": "221024",
+   "animal": "7176",
+   "file": "221024_7176_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 9,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221024/7200": {
+   "day": "221024",
+   "animal": "7200",
+   "file": "221024_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221024/7381": {
+   "day": "221024",
+   "animal": "7381",
+   "file": "221024_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221024",
+   "doy": null,
+   "era": "era-B",
+   "n_samples": 3786,
+   "dur_d": 0.44,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221027/6646": {
+   "day": "221027",
+   "animal": "6646",
+   "file": "221027_6646_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 8,
+   "lightcondition": "DD",
+   "date_param": "221027",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 2757,
+   "dur_d": 0.37,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221027/6647": {
+   "day": "221027",
+   "animal": "6647",
+   "file": "221027_6647_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 10,
+   "lightcondition": "DD",
+   "date_param": "221027",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 2757,
+   "dur_d": 0.37,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221027/7143": {
+   "day": "221027",
+   "animal": "7143",
+   "file": "221027_7143_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221027",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 2757,
+   "dur_d": 0.37,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221027/7176": {
+   "day": "221027",
+   "animal": "7176",
+   "file": "221027_7176_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 9,
+   "lightcondition": "DD",
+   "date_param": "221027",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 2757,
+   "dur_d": 0.37,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221027/7200": {
+   "day": "221027",
+   "animal": "7200",
+   "file": "221027_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221027",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 2757,
+   "dur_d": 0.37,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/6646": {
+   "day": "221028",
+   "animal": "6646",
+   "file": "221028_6646_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 8,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/6647": {
+   "day": "221028",
+   "animal": "6647",
+   "file": "221028_6647_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 10,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/7142": {
+   "day": "221028",
+   "animal": "7142",
+   "file": "221028_7142_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 3,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/7143": {
+   "day": "221028",
+   "animal": "7143",
+   "file": "221028_7143_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/7176": {
+   "day": "221028",
+   "animal": "7176",
+   "file": "221028_7176_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 9,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/7199": {
+   "day": "221028",
+   "animal": "7199",
+   "file": "221028_7199_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 5,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/7200": {
+   "day": "221028",
+   "animal": "7200",
+   "file": "221028_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221028/7381": {
+   "day": "221028",
+   "animal": "7381",
+   "file": "221028_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221028",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4978,
+   "dur_d": 0.58,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/0001": {
+   "day": "221031",
+   "animal": "0001",
+   "file": "221031_0001_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 1,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "status": "degenerate (no dFsignal/time)"
+  },
+  "221031/0002": {
+   "day": "221031",
+   "animal": "0002",
+   "file": "221031_0002_FullTrace.mat",
+   "genotype": "PV-Cre",
+   "fibernum": 2,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "status": "degenerate (no dFsignal/time)"
+  },
+  "221031/6646": {
+   "day": "221031",
+   "animal": "6646",
+   "file": "221031_6646_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 8,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/6647": {
+   "day": "221031",
+   "animal": "6647",
+   "file": "221031_6647_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 10,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/7142": {
+   "day": "221031",
+   "animal": "7142",
+   "file": "221031_7142_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 3,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/7143": {
+   "day": "221031",
+   "animal": "7143",
+   "file": "221031_7143_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/7176": {
+   "day": "221031",
+   "animal": "7176",
+   "file": "221031_7176_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 9,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/7199": {
+   "day": "221031",
+   "animal": "7199",
+   "file": "221031_7199_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 5,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/7200": {
+   "day": "221031",
+   "animal": "7200",
+   "file": "221031_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221031/7381": {
+   "day": "221031",
+   "animal": "7381",
+   "file": "221031_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221031",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4614,
+   "dur_d": 0.53,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/6646": {
+   "day": "221101",
+   "animal": "6646",
+   "file": "221101_6646_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 8,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/6647": {
+   "day": "221101",
+   "animal": "6647",
+   "file": "221101_6647_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 10,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/7143": {
+   "day": "221101",
+   "animal": "7143",
+   "file": "221101_7143_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/7176": {
+   "day": "221101",
+   "animal": "7176",
+   "file": "221101_7176_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 9,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/7199": {
+   "day": "221101",
+   "animal": "7199",
+   "file": "221101_7199_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 5,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/7200": {
+   "day": "221101",
+   "animal": "7200",
+   "file": "221101_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221101/7381": {
+   "day": "221101",
+   "animal": "7381",
+   "file": "221101_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221101",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4055,
+   "dur_d": 0.47,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221102/7142": {
+   "day": "221102",
+   "animal": "7142",
+   "file": "221102_7142_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 3,
+   "lightcondition": "DD",
+   "date_param": "221102",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 446,
+   "dur_d": 0.48,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221102/7381": {
+   "day": "221102",
+   "animal": "7381",
+   "file": "221102_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221102",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 446,
+   "dur_d": 0.48,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/0001": {
+   "day": "221103",
+   "animal": "0001",
+   "file": "221103_0001_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 1,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "status": "degenerate (no dFsignal/time)"
+  },
+  "221103/0002": {
+   "day": "221103",
+   "animal": "0002",
+   "file": "221103_0002_FullTrace.mat",
+   "genotype": "PV-Cre",
+   "fibernum": 2,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "status": "degenerate (no dFsignal/time)"
+  },
+  "221103/6646": {
+   "day": "221103",
+   "animal": "6646",
+   "file": "221103_6646_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 8,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/6647": {
+   "day": "221103",
+   "animal": "6647",
+   "file": "221103_6647_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 10,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/7142": {
+   "day": "221103",
+   "animal": "7142",
+   "file": "221103_7142_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 3,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/7143": {
+   "day": "221103",
+   "animal": "7143",
+   "file": "221103_7143_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 6,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/7176": {
+   "day": "221103",
+   "animal": "7176",
+   "file": "221103_7176_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 9,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/7199": {
+   "day": "221103",
+   "animal": "7199",
+   "file": "221103_7199_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 5,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/7200": {
+   "day": "221103",
+   "animal": "7200",
+   "file": "221103_7200_FullTrace.mat",
+   "genotype": "WT",
+   "fibernum": 7,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  },
+  "221103/7381": {
+   "day": "221103",
+   "animal": "7381",
+   "file": "221103_7381_FullTrace.mat",
+   "genotype": "D1-Cre",
+   "fibernum": 4,
+   "lightcondition": "DD",
+   "date_param": "221103",
+   "doy": null,
+   "era": "era-A",
+   "n_samples": 4389,
+   "dur_d": 0.51,
+   "status": "fragment: <2 cycles, ca gates n/a (recorded)"
+  }
+ },
+ "shared_payload_hashes": [
+  {
+   "animal": "0001",
+   "hash": "bb52ecd001"
+  },
+  {
+   "animal": "0002",
+   "hash": "bb52ecd001"
+  },
+  {
+   "animal": "7142",
+   "hash": "bb52ecd001"
+  },
+  {
+   "animal": "7177",
+   "hash": "bb52ecd001"
+  },
+  {
+   "animal": "7199",
+   "hash": "bb52ecd001"
+  },
+  {
+   "animal": "7200",
+   "hash": "bb52ecd001"
+  },
+  {
+   "animal": "7381",
+   "hash": "bb52ecd001"
+  }
+ ],
+ "wheel_chains": {
+  "7142": {
+   "n_events_kept": 518130,
+   "n_events_raw": 615850,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221027",
+    "221028",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 16.42,
+   "coverage_gaps": [],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 24.0,
+   "tau_wheel_dd_conf": 1.0,
+   "span_d_dd": 12.46,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024",
+      "221027",
+      "221028",
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 10,
+     "span_d": 12.46,
+     "n_events": 246014,
+     "tau": 24.0,
+     "conf": 1.0
+    }
+   ],
+   "tau_wheel_dd_longest_run": 24.0,
+   "tau_wheel_dd_longest_run_conf": 1.0,
+   "onset_drift_h_per_day_dd": 0.043,
+   "wheel_gate": "pass"
+  },
+  "7381": {
+   "n_events_kept": 259877,
+   "n_events_raw": 396073,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221027",
+    "221028",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 16.47,
+   "coverage_gaps": [],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 23.8,
+   "tau_wheel_dd_conf": 1.1,
+   "span_d_dd": 12.49,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024",
+      "221027",
+      "221028",
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 10,
+     "span_d": 12.49,
+     "n_events": 91428,
+     "tau": 23.8,
+     "conf": 1.1
+    }
+   ],
+   "tau_wheel_dd_longest_run": 23.8,
+   "tau_wheel_dd_longest_run_conf": 1.1,
+   "onset_drift_h_per_day_dd": 0.035,
+   "wheel_gate": "pass"
+  },
+  "7199": {
+   "n_events_kept": 324140,
+   "n_events_raw": 424015,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221027",
+    "221028",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 16.47,
+   "coverage_gaps": [],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 24.1,
+   "tau_wheel_dd_conf": 1.12,
+   "span_d_dd": 12.49,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024",
+      "221027",
+      "221028",
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 10,
+     "span_d": 12.49,
+     "n_events": 236729,
+     "tau": 24.1,
+     "conf": 1.12
+    }
+   ],
+   "tau_wheel_dd_longest_run": 24.1,
+   "tau_wheel_dd_longest_run_conf": 1.12,
+   "onset_drift_h_per_day_dd": -0.006,
+   "wheel_gate": "pass"
+  },
+  "7143": {
+   "n_events_kept": 56112,
+   "n_events_raw": 106760,
+   "folders": [
+    "221024",
+    "221027",
+    "221028",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 12.48,
+   "coverage_gaps": [
+    "221021",
+    "221022"
+   ],
+   "tau_wheel_full_chain": 24.1,
+   "tau_wheel_full_chain_conf": 1.01,
+   "tau_wheel_dd": 24.1,
+   "tau_wheel_dd_conf": 1.01,
+   "span_d_dd": 12.48,
+   "session_runs": [
+    {
+     "sessions": [
+      "221024",
+      "221027",
+      "221028",
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 8,
+     "span_d": 12.48,
+     "n_events": 56112,
+     "tau": 24.1,
+     "conf": 1.01
+    }
+   ],
+   "tau_wheel_dd_longest_run": 24.1,
+   "tau_wheel_dd_longest_run_conf": 1.01,
+   "onset_drift_h_per_day_dd": -0.027,
+   "wheel_gate": "pass"
+  },
+  "7200": {
+   "n_events_kept": 171095,
+   "n_events_raw": 233370,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 16.48,
+   "coverage_gaps": [
+    "221027",
+    "221028"
+   ],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 24.0,
+   "tau_wheel_dd_conf": 1.0,
+   "span_d_dd": 12.5,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024"
+     ],
+     "n_nights": 3,
+     "span_d": 1.49,
+     "n_events": 11411,
+     "tau": null,
+     "conf": null
+    },
+    {
+     "sessions": [
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 5,
+     "span_d": 6.5,
+     "n_events": 114855,
+     "tau": 22.1,
+     "conf": 1.35
+    }
+   ],
+   "tau_wheel_dd_longest_run": 22.1,
+   "tau_wheel_dd_longest_run_conf": 1.35,
+   "onset_drift_h_per_day_dd": 0.012,
+   "wheel_gate": "unresolved (tau=22.10, shallow peak q-ratio 1.35; <2 not distinguishable from 24 h)"
+  },
+  "6646": {
+   "n_events_kept": 484186,
+   "n_events_raw": 529878,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221031",
+    "221101",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 16.47,
+   "coverage_gaps": [
+    "221027",
+    "221028",
+    "221102"
+   ],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 24.0,
+   "tau_wheel_dd_conf": 1.0,
+   "span_d_dd": 12.49,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024"
+     ],
+     "n_nights": 3,
+     "span_d": 1.49,
+     "n_events": 76083,
+     "tau": null,
+     "conf": null
+    },
+    {
+     "sessions": [
+      "221031",
+      "221101"
+     ],
+     "n_nights": 2,
+     "span_d": 3.49,
+     "n_events": 198814,
+     "tau": 24.1,
+     "conf": 1.1
+    },
+    {
+     "sessions": [
+      "221103",
+      "221104"
+     ],
+     "n_nights": 2,
+     "span_d": 1.49,
+     "n_events": 78054,
+     "tau": null,
+     "conf": null
+    }
+   ],
+   "tau_wheel_dd_longest_run": 24.1,
+   "tau_wheel_dd_longest_run_conf": 1.1,
+   "onset_drift_h_per_day_dd": 0.002,
+   "wheel_gate": "pass"
+  },
+  "7176": {
+   "n_events_kept": 64171,
+   "n_events_raw": 80585,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 1,
+   "span_d_full": 16.25,
+   "coverage_gaps": [
+    "221027",
+    "221028"
+   ],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 22.8,
+   "tau_wheel_dd_conf": 1.15,
+   "span_d_dd": 12.27,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024"
+     ],
+     "n_nights": 3,
+     "span_d": 1.46,
+     "n_events": 2581,
+     "tau": null,
+     "conf": null
+    },
+    {
+     "sessions": [
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 5,
+     "span_d": 6.27,
+     "n_events": 12417,
+     "tau": 22.8,
+     "conf": 1.2
+    }
+   ],
+   "tau_wheel_dd_longest_run": 22.8,
+   "tau_wheel_dd_longest_run_conf": 1.2,
+   "onset_drift_h_per_day_dd": 0.023,
+   "wheel_gate": "unresolved (tau=22.80, shallow peak q-ratio 1.2; <2 not distinguishable from 24 h)"
+  },
+  "6647": {
+   "n_events_kept": 313333,
+   "n_events_raw": 390847,
+   "folders": [
+    "221021",
+    "221022",
+    "221024",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 16.45,
+   "coverage_gaps": [
+    "221027",
+    "221028"
+   ],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": 24.1,
+   "tau_wheel_dd_conf": 1.12,
+   "span_d_dd": 12.46,
+   "session_runs": [
+    {
+     "sessions": [
+      "221021",
+      "221022",
+      "221024"
+     ],
+     "n_nights": 3,
+     "span_d": 1.49,
+     "n_events": 13330,
+     "tau": null,
+     "conf": null
+    },
+    {
+     "sessions": [
+      "221031",
+      "221101",
+      "221102",
+      "221103",
+      "221104"
+     ],
+     "n_nights": 5,
+     "span_d": 6.46,
+     "n_events": 253218,
+     "tau": 24.0,
+     "conf": 1.0
+    }
+   ],
+   "tau_wheel_dd_longest_run": 24.0,
+   "tau_wheel_dd_longest_run_conf": 1.0,
+   "onset_drift_h_per_day_dd": 0.01,
+   "wheel_gate": "pass"
+  },
+  "7177": {
+   "n_events_kept": 30701,
+   "n_events_raw": 35330,
+   "folders": [
+    "221021",
+    "221022"
+   ],
+   "n_empty_wheel_csvs": 0,
+   "span_d_full": 3.48,
+   "coverage_gaps": [
+    "221024",
+    "221027",
+    "221028",
+    "221031",
+    "221101",
+    "221102",
+    "221103",
+    "221104"
+   ],
+   "tau_wheel_full_chain": 24.0,
+   "tau_wheel_full_chain_conf": 1.0,
+   "tau_wheel_dd": null,
+   "span_d_dd": null,
+   "status_note": "LD-only wheel coverage (pre LD->DD switch)",
+   "session_runs": [],
+   "tau_wheel_dd_longest_run": null,
+   "tau_wheel_dd_longest_run_conf": null,
+   "onset_drift_h_per_day_dd": null,
+   "wheel_gate": "n/a"
+  }
+ },
+ "photo_csvs": {
+  "221024": {
+   "photoData_rows": 15144,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221027": {
+   "photoData_rows": 76565,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221028": {
+   "photoData_rows": 19912,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221031": {
+   "photoData_rows": 18456,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221101": {
+   "photoData_rows": 16220,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221102": {
+   "photoData_rows": 591569,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221103": {
+   "photoData_rows": 17556,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  },
+  "221104": {
+   "photoData_rows": 19316,
+   "n_region_cols": 20,
+   "has_timestamp_csv": true
+  }
+ }
+}
