@@ -26,10 +26,10 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:18px;line-height:1.6}
-.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.wrap{max-width:820px;margin:0 auto;padding:0 24px}
 header{padding:72px 0 40px;border-bottom:2px solid var(--ink)}
 .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:18px}
-h1{font-family:var(--display);font-weight:900;font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-.01em;max-width:820px}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(34px,5.4vw,58px);line-height:1.04;letter-spacing:-.01em;max-width:720px}
 .dek{font-size:20px;color:var(--ink-soft);max-width:640px;margin-top:20px;font-style:italic}
 .meta-row{display:flex;flex-wrap:wrap;gap:24px;margin-top:32px;font-family:var(--mono);font-size:12.5px;color:var(--ink-soft)}
 .meta-row b{color:var(--ink);font-weight:600}
@@ -60,8 +60,7 @@ p+p{margin-top:14px}
 .badge.gc{border-color:var(--pos);color:var(--pos)}
 .badge.gf{border-color:var(--accent-2);color:var(--accent-2)}
 .badge.gfp{border-color:var(--ink-faint);color:var(--ink-faint)}
-.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-@media(max-width:860px){.grid-2{grid-template-columns:1fr}}
+.grid-2{display:grid;grid-template-columns:1fr;gap:20px}
 .act-box{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:22px;overflow-x:auto}
 canvas.actogram{display:block;image-rendering:pixelated;width:100%}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:24px}
@@ -746,11 +745,11 @@ function renderCycle(){
   for(const g of sel){
     const G=CYC.groups[g];
     if(!G) continue;
-    ds.push({type:'line',label:`${g}-Cre calcium (n=${G.n_animals} animals)`,
-      data:t0.map((t,i)=>({x:t,y:G.ca_mean[i]})),borderColor:col(g),borderWidth:2,pointRadius:0,yAxisID:'y'});
-    ds.push({type:'line',data:t0.map((t,i)=>({x:t,y:G.ca_mean[i]+G.ca_sem[i]})),
+    ds.push({type:'line',label:`${g==='GFP'?'GFP control (movement artifact, not biology)':g+'-Cre calcium'} (n=${G.n_animals} animals)`,
+      data:t0.map((t,i)=>({x:t,y:G.ca_mean_mc[i]})),borderColor:col(g),borderWidth:2,pointRadius:0,yAxisID:'y'});
+    ds.push({type:'line',data:t0.map((t,i)=>({x:t,y:G.ca_mean_mc[i]+G.ca_sem_mc[i]})),
       borderColor:'transparent',backgroundColor:col(g)+'22',fill:'+1',pointRadius:0,yAxisID:'y'});
-    ds.push({type:'line',data:t0.map((t,i)=>({x:t,y:G.ca_mean[i]-G.ca_sem[i]})),
+    ds.push({type:'line',data:t0.map((t,i)=>({x:t,y:G.ca_mean_mc[i]-G.ca_sem_mc[i]})),
       borderColor:'transparent',pointRadius:0,fill:false,yAxisID:'y'});
     ds.push({type:'bar',label:`${g} wheel rate (events/30 min)`,
       data:t0.map((t,i)=>({x:t,y:G.wh_rate_mean[i]})),backgroundColor:col(g)+'33',
@@ -768,7 +767,7 @@ function renderCycle(){
                callback:v=>v===0?'CT 0':(v<0||v>24)?'':String(v)},
                title:{display:true,text:'Within-Day Average Cycle (hrs), native cycle lengths'},
                grid:{color:RULE}},
-              y:{type:'linear',position:'left',title:{display:true,text:'ΔF/F (mean ± SEM across animals)'},
+              y:{type:'linear',position:'left',title:{display:true,text:'ΔF/F₀ excursion, mean-centered per animal (mean ± SEM)'},
                  grid:{color:RULE}},
               y1:{type:'linear',position:'right',min:0,
                   suggestedMax:barHeadroom(sel.flatMap(g=>CYC.groups[g].wh_rate_mean)),
@@ -778,7 +777,9 @@ function renderCycle(){
   $('cycle-title').textContent=`Average cycle — ${sel.map(g=>g+'-Cre').join(' & ')}`;
   const tail=sel.map(g=>{const G=CYC.groups[g];
     return `${G.animals.join('/')} reach 23.5–24 h: ${G.n_reach[47]}/${G.n_reach[0]} cycles`;}).join(' · ');
-  $('cycle-foot').textContent=`Each cycle at its native length (18–30 h guard): no stretching, no resampling. `+
+  const lv=sel.map(g=>`${g} ${CYC.groups[g].ca_level.toFixed(2)}`).join(', ');
+  $('cycle-foot').textContent=`Scale: each animal's calcium curve is mean-centered — zero = that animal's own cycle-averaged ΔF/F₀ (excursion units). The raw lab "ΔF/F" keeps the +1 of F/F₀ over each animal's own day-1 F₀ (ZT 14–22), so absolute levels are not comparable across sensors — the GFP pair sits higher in level (drift + motion artifact, not biology) while its modulation depth is comparable. Removed levels: ${lv} F/F₀. `+
+    `Each cycle at its native length (18–30 h guard): no stretching, no resampling. `+
     `Wheel shown as rate (events per 30-min bin) — the ≥1-event probability saturated (day bins carry ~170–230 events, so P(≥1)≈1 all day); the rate contrast is ~5× night/day. `+
     `Calcium is anchored to the wheel clock; the calcium acrophase follows ~19 h after wheel onset (ψ circ-SD 2.2–2.5 h for 4/5 GCaMP), so cross-cycle calcium averaging carries that bound of smearing — re-anchoring to the calcium clock moves group amplitude only 19.0→16.7% (VIP) / 16.6→18.9% (D1). `+
     `Bins past a cycle's end are excluded from that cycle — the thinning tail is real. ${tail}. `+
