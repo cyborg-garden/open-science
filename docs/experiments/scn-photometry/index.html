@@ -528,6 +528,7 @@ footer a{color:var(--accent)}
     </div>
     <div class="chart-box tall"><canvas id="rpChart"></canvas></div>
     <p class="footnote" id="rp-foot" style="margin-top:10px"></p>
+    <p class="footnote" style="margin-top:2px">Round-11 addition: #6976's 220829 span is a recon find — the Aug 19–29 campaign's second half, present on disk but never QC-screened (6976 was a main-cohort animal, not a within-animal candidate) and absent from every shipped artifact until this round; it screens as the strongest span in this explorer (circadian SNR 21.55, 9.7 d DD with wheel). Its same-campaign companion, #6577's 220829 span, was already in the explorer — the campaign's two halves now both live here. QC screen = circadian SNR + τ sanity, the shipped convention; both repeat spans pass.</p>
   </div>
     </details>
 
@@ -1789,6 +1790,12 @@ function renderTau(){
       backgroundColor:col(g),pointRadius:8,pointHoverRadius:10});
     ds.push({type:'scatter',label:`#${a} ${g} (series slope)`,data:[{x:r.tau_wheel_pre,y:r.tau_ca_slope_pre}],
       backgroundColor:'transparent',borderColor:col(g),pointRadius:6,pointHoverRadius:8,pointBorderWidth:2});
+    if(r.spans) for(const [d,sp] of Object.entries(r.spans)){
+      if(sp.tau_wheel==null||sp.tau_ca_sine==null) continue;
+      ds.push({type:'scatter',label:`#${a} ${g} repeat ${d} (no pulse)`,data:[{x:sp.tau_wheel,y:sp.tau_ca_sine}],
+        backgroundColor:col(g),pointStyle:'rectRot',pointRadius:7,pointHoverRadius:9,
+        borderColor:col(g),borderWidth:1.5});
+    }
   }
   ds.push({type:'line',label:'identity (τca = τwheel)',data:[{x:23,y:23},{x:24.6,y:24.6}],
     borderColor:'#a99e89',borderWidth:1,borderDash:[5,4],pointRadius:0,order:0});
@@ -1802,8 +1809,9 @@ function renderTau(){
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
         filter:it=>!!it.text}},
         tooltip:{callbacks:{label:it=>`${it.dataset.label}: wheel ${it.parsed.x.toFixed(2)} → calcium ${it.parsed.y.toFixed(2)} h`}}}}});
-  $('tau-badge').textContent=`r = +${C.r_sine.toFixed(2)} (sine) / +${C.r_slope.toFixed(2)} (slope), n = ${C.n} animals`;
-  $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); the periodogram scans trial periods on a 0.1 h grid across 20–28 h, so wheel τ is an estimate at 0.1 h resolution — the three animals reading 23.6 h are independent estimates that share a grid point, and differences smaller than 0.1 h are not resolvable. Calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points; both continuous fits, so no grid quantization on the calcium side). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land.`;
+  const nSpan=Object.values(A).reduce((n,r)=>n+(r.spans?Object.values(r.spans).filter(sp=>sp.tau_wheel!=null&&sp.tau_ca_sine!=null).length:0),0);
+  $('tau-badge').textContent=`r = +${C.r_sine.toFixed(2)} (sine) / +${C.r_slope.toFixed(2)} (slope), n = ${C.n} animals`+(nSpan?` + ${nSpan} repeat-span τ read${nSpan>1?'s':''} (no pulse)`:'');
+  $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); the periodogram scans trial periods on a 0.1 h grid across 20–28 h, so wheel τ is an estimate at 0.1 h resolution — the three animals reading 23.6 h are independent estimates that share a grid point, and differences smaller than 0.1 h are not resolvable. Calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points; both continuous fits, so no grid quantization on the calcium side). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land. Repeat-span reads (rotated squares, added 2026-09-14): the Aug 19–29 campaign's second half — #6976's 9.7-d no-pulse span, the strongest QC pass of the screened spans (circadian SNR 21.55) — reads τwheel = 23.8 h vs its pilot pre-pulse 23.3 h, and τca = 23.80 h vs pilot 23.75 h; #6577's same-campaign span reads τwheel = 23.6 h (pilot 23.6) and τca = 23.85 h vs pilot 24.9 h. Same-estimator, same-animal, independent-span: the calcium side of #6577 moves −1.05 h span-to-span while #6976 holds within 0.05 h — at these n the honest read is that short-record calcium τ carries span-to-span scatter comparable to the estimator spread, so single-span τ differences under ~1 h are not resolvable per animal. Both repeat spans are QC-screened (circadian SNR + τ sanity) and live in the individual-recordings explorer with full traces.`;
 }
 fetch('data/tau_correlation.json').then(r=>r.json()).then(d=>{TAUC=d;renderTau();}).catch(e=>{console.error('tau correlation load failed',e);});
 
