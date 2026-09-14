@@ -9,7 +9,16 @@
    "tau_ca_sine_post": 23.05,
    "tau_ca_sine_full": 24.4,
    "tau_ca_slope_pre": 24.252,
-   "global_fit_r2": 0.0507
+   "global_fit_r2": 0.0507,
+   "spans": {
+    "220829": {
+     "tau_wheel": 23.6,
+     "tau_ca_sine": 23.85,
+     "dur_d": 9.7,
+     "ca_snr": 13.85,
+     "qc": "qc-pass; tau-ok; wheel-ok"
+    }
+   }
   },
   "6976": {
    "genotype": "VIP",
@@ -20,7 +29,16 @@
    "tau_ca_sine_post": 23.4,
    "tau_ca_sine_full": 23.55,
    "tau_ca_slope_pre": 23.652,
-   "global_fit_r2": 0.3225
+   "global_fit_r2": 0.3225,
+   "spans": {
+    "220829": {
+     "tau_wheel": 23.8,
+     "tau_ca_sine": 23.8,
+     "dur_d": 9.7,
+     "ca_snr": 21.55,
+     "qc": "qc-pass; tau-ok; wheel-ok"
+    }
+   }
   },
   "6977": {
    "genotype": "D1",
@@ -66,7 +84,8 @@
  },
  "_meta": {
   "built": "2026-09-14",
-  "purpose": "\u00a703 tau-correlation plot (round 8)",
-  "source": "analysis_out/tau_fit_results.json (G0-gated)"
+  "purpose": "\u00a703 tau-correlation plot (round 8); repeat-span \u03c4 reads (round 11)",
+  "source": "analysis_out/tau_fit_results.json (G0-gated)",
+  "span_source": "analysis_out/r11_track_a_screen.json \u2014 repeat-span \u03c4 computed with the shipped estimators verbatim (wheel: \u03c7\u00b2 periodogram 0.1 h grid on 10-min bit-exact-CSV histograms; calcium: global free-period sine fit on the dF-weighted 30-min 3-h-smoothed profile); QC screen per span (circadian SNR + \u03c4 sanity), values cross-checked digit-exact vs shipped qc_mats where shipped"
  }
 }
