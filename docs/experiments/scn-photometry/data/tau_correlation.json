@@ -1,0 +1,72 @@
+{
+ "animals": {
+  "6577": {
+   "genotype": "VIP",
+   "sensor": "GCaMP6s",
+   "tau_wheel_pre": 23.6,
+   "tau_wheel_post": 23.5,
+   "tau_ca_sine_pre": 24.9,
+   "tau_ca_sine_post": 23.05,
+   "tau_ca_sine_full": 24.4,
+   "tau_ca_slope_pre": 24.252,
+   "global_fit_r2": 0.0507
+  },
+  "6976": {
+   "genotype": "VIP",
+   "sensor": "GCaMP6s",
+   "tau_wheel_pre": 23.3,
+   "tau_wheel_post": 23.3,
+   "tau_ca_sine_pre": 23.75,
+   "tau_ca_sine_post": 23.4,
+   "tau_ca_sine_full": 23.55,
+   "tau_ca_slope_pre": 23.652,
+   "global_fit_r2": 0.3225
+  },
+  "6977": {
+   "genotype": "D1",
+   "sensor": "GCaMP6s",
+   "tau_wheel_pre": 23.5,
+   "tau_wheel_post": 23.5,
+   "tau_ca_sine_pre": 24.15,
+   "tau_ca_sine_post": 23.55,
+   "tau_ca_sine_full": 23.9,
+   "tau_ca_slope_pre": 23.981,
+   "global_fit_r2": 0.3011
+  },
+  "6978": {
+   "genotype": "D1",
+   "sensor": "GCaMP6s",
+   "tau_wheel_pre": 23.6,
+   "tau_wheel_post": 24.0,
+   "tau_ca_sine_pre": 24.7,
+   "tau_ca_sine_post": 23.4,
+   "tau_ca_sine_full": 24.5,
+   "tau_ca_slope_pre": 24.472,
+   "global_fit_r2": 0.1824
+  },
+  "7390": {
+   "genotype": "D1",
+   "sensor": "GCaMP6s",
+   "tau_wheel_pre": 23.6,
+   "tau_wheel_post": 23.1,
+   "tau_ca_sine_pre": 23.85,
+   "tau_ca_sine_post": 23.3,
+   "tau_ca_sine_full": 23.75,
+   "tau_ca_slope_pre": 23.657,
+   "global_fit_r2": 0.3278
+  }
+ },
+ "correlation": {
+  "n": 5,
+  "r_sine": 0.631,
+  "r_slope": 0.568,
+  "mean_delta_sine": 0.75,
+  "mean_delta_slope": 0.483,
+  "note": "pre-LP windows both sides (the pulse perturbs both clocks); wheel tau = chi2 periodogram (shipped cohort method), calcium tau = global free-period sine fit (primary) + acrophase-series slope (robustness). n=5: consistency plot, not a powered correlation."
+ },
+ "_meta": {
+  "built": "2026-09-14",
+  "purpose": "\u00a703 tau-correlation plot (round 8)",
+  "source": "analysis_out/tau_fit_results.json (G0-gated)"
+ }
+}
