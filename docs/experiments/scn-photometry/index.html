@@ -176,7 +176,7 @@ footer a{color:var(--accent)}
 <section id="tau">
   <div class="wrap">
     <h2><span class="no">03</span>Two clocks, one period</h2>
-    <p class="lede">The wheel clock and the calcium clock each free-run with their own period. If SCN calcium is a faithful readout of the oscillator the wheel reports, the two periods should agree per animal — and they nearly do: calcium τ runs longer than wheel τ in all five animals, consistently across two independent estimators. Same direction everywhere; the magnitude depends on the estimator, which is the honest reading at n = 5.</p>
+    <p class="lede">The behavioral clock and the calcium clock each free-run with their own period. If SCN calcium is a faithful readout of the oscillator the wheel reports, the two periods should agree per animal — and they nearly do: calcium τ runs longer than wheel τ in all five animals, consistently across two independent estimators. Same direction everywhere; the magnitude depends on the estimator, which is the honest reading at n = 5.</p>
     <div class="card">
       <div class="chart-head">
         <span class="chart-title">Free-running period: wheel vs calcium</span>
@@ -224,7 +224,7 @@ footer a{color:var(--accent)}
 <section id="clocks">
 <div class="wrap">
   <h2><span class="no">05</span>Two clocks, one pulse</h2>
-  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the wheel clock) and when SCN calcium reaches its daily minimum (the calcium clock). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
+  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the behavioral clock) and the phase of its SCN calcium rhythm (the calcium clock — the S+6 sine-acrophase anchor defined in Methods). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
   <div class="controls" style="margin-bottom:14px">
     <div class="chips" id="sec4-ct-chips">
       <span class="chip on" data-frame="wheel">CT frame: behavior clock</span>
@@ -241,7 +241,7 @@ footer a{color:var(--accent)}
     </div>
     <div class="card">
       <div class="chart-head">
-        <span class="chart-title">Shift correlation: wheel vs calcium clock</span>
+        <span class="chart-title">Shift correlation: behavioral vs calcium clock</span>
         <span class="badge" id="corr-badge">—</span>
       </div>
       <div class="chart-box"><canvas id="clockShiftChart"></canvas>
@@ -261,7 +261,7 @@ footer a{color:var(--accent)}
       <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the per-cycle sine acrophase + 6 h (CT12 marker, the S+6 convention); the previous daily-minimum (CT18) anchor is retained as a labeled diagnostic and for the published-number reproduction gates.</p>
     </div>
   </div>
-  <p class="footnote" id="sec4-foot">Correlation between the two clocks' shifts under the current calcium convention: <b id="clock-r">—</b>. Under the retired daily-minimum anchor the value was r = +0.53; an earlier ΔF-weighted circular-mean estimator gave a spurious −0.93. At n = 5 every value here is a lead, not a conclusion. 6978's advance is confirmed by its calcium clock (+2.0 vs wheel +4.1); 7390's wheel-clock advance (+4.3 CT) shrinks to +2.1 in the calcium frame — same sign, half the size, consistent with its wheel onsets pulling the behavioral estimate. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29%), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
+  <p class="footnote" id="sec4-foot">The chart pairs each animal's behavioral-clock shift with its calcium-clock shift under the current S+6 sine-acrophase convention — the same convention the Methods and the estimator comparison use: <b id="clock-r">—</b>. The retired daily-minimum (CT18) anchor gave r = +0.53 on these same animals, and an earlier ΔF-weighted circular-mean estimator gave a spurious −0.93; each is a different quantity — a different calcium-clock definition, not a competing measurement of one number — and the retired anchor survives only as a labeled diagnostic in Methods. At n = 5 every value here is a lead, not a conclusion. 6978's advance is confirmed by its calcium clock (+2.16 vs behavioral +4.11); 7390's behavioral-clock advance (+4.32 CT) shrinks to +2.05 in the calcium frame — same sign, half the size, consistent with its wheel onsets pulling the behavioral estimate. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29%), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
 </div>
 </section>
 
@@ -269,7 +269,7 @@ footer a{color:var(--accent)}
 <section id="relock">
 <div class="wrap">
   <h2><span class="no">06</span>Two clocks, re-locking</h2>
-  <p class="lede">The light pulse knocks the wheel clock and the calcium clock out of alignment. Do they find each other again? ψ (psi) is the per-cycle phase difference between the two clocks — sine-acrophase calcium anchor minus the paired wheel onset. Before the pulse the two clocks hold a stable offset; after it, ψ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. One panel per animal, never pooled across genotypes. φ (phi) is the same difference with the clocks' ~6 h offset removed — calcium CT12 minus behavioral CT12 — so 0 means the two CT12s coincide; the toggle switches convention.</p>
+  <p class="lede">The light pulse knocks the behavioral clock and the calcium clock out of alignment. Do they find each other again? ψ (psi) is the per-cycle phase difference between the two clocks — sine-acrophase calcium anchor minus the paired wheel onset. Before the pulse the two clocks hold a stable offset; after it, ψ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. One panel per animal, never pooled across genotypes. φ (phi) is the same difference with the clocks' ~6 h offset removed — calcium CT12 minus behavioral CT12 — so 0 means the two CT12s coincide; the toggle switches convention.</p>
   <div class="controls" style="margin-bottom:14px">
     <div class="ctrl"><label>Animal</label><select id="sel-relock-animal"></select></div>
     <div class="chips" id="relock-chips">
@@ -336,7 +336,7 @@ footer a{color:var(--accent)}
         <span class="badge" id="comp-badge">—</span>
       </div>
       <div class="chart-box"><canvas id="compChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px">Per circadian cycle, wheel clock. No compensation: heavy nights do not buy detectably quieter days in this cohort.</p>
+      <p class="footnote" style="margin-top:10px">Per circadian cycle, behavioral clock. No compensation: heavy nights do not buy detectably quieter days in this cohort.</p>
     </div>
     <div class="card">
       <div class="chart-head">
@@ -350,7 +350,7 @@ footer a{color:var(--accent)}
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
       <span class="chart-title">Phase shift vs leading-days exclusion</span>
-      <span class="badge">wheel clock</span>
+      <span class="badge">behavioral clock</span>
     </div>
     <div class="chart-box"><canvas id="firstDaysChart"></canvas></div>
     <p class="footnote" style="margin-top:10px">Dropping the first 1–3 days (light-shift transient at recording start) does not shrink the two large advances — if anything it grows them. But the pre-pulse onset count shrinks with each skip (7390: 6 → 3), so the growing values increasingly rest on thin fits. The <i>sign</i> of every animal's conclusion is stable; magnitudes beyond skip-1 are fragile.</p>
@@ -455,7 +455,7 @@ footer a{color:var(--accent)}
       <p><b>Average cycle (§02).</b> Cycles are consecutive activity onsets (the shipped 18–30 h guard); the pulse-containing cycle is excluded and all others kept. The axis is elapsed hours from onset (CT12) — cycles occupy their native length; no resampling. Per-bin calcium = mean ΔF/F over the cycles that reach the bin (animal-first, then group mean ± SEM across animals). Wheel-running probability = fraction of reaching cycles with ≥1 event in the bin; cycles that end before the bin never enter its denominator. The 23–24 h tail thins because τ < 24 h in most animals — the count is on the badge, not smoothed away.</p>
       <p><b>GFP controls (§04, §08).</b> #7382 and #7386 express GFP/tdTomato (no GCaMP); their ΔF/F is movement artifact by the §11 QC screen — that is exactly what makes them the right control. A light-evoked deflection in a triggered GFP average indicts movement artifact in the GCaMP response; a bout-onset deflection is the expected movement signature; absence certifies signal. GFP appears as its own labeled n=2 series in every triggered average, never pooled into D1 despite the D1-Cre genotype. The calcium-clock (S+6) frame never ran on GFP calcium (QC-excluded), so GFP bout bins are behavior-frame only.</p>
       <p><b>Light-pulse-triggered traces (§04).</b> Group means are per-animal curves from the native 15-s ΔF/F (1-min rebin, per-animal baseline = mean over the 2 h to 30 min before pulse onset); the peak/trough readouts use an 8-min rolling mean (8×1-min bins) over the first 40 min from pulse onset (the 30-min pulse + 10 min after), latency measured from onset. Each animal contributes one pulse — ZT12 for the four 221014 animals, ZT8 for 7390 and the GFP pair (7382/7386, second session) — so the group curves are displays, not statistics.</p>
-    <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window, computed separately pre/post light pulse.</p>
+    <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window (trial periods on a 0.1 h grid), computed separately pre/post light pulse.</p>
       <p><b>How calcium circadian time (CT) is computed — the S+6 convention (updated 2026-09-03).</b> The calcium clock's phase marker is the <i>acrophase of a per-cycle least-squares sine fit</i> (period fitted per animal — a global free-period sine fit on the same 30-min ΔF/F-weighted, 3-h-smoothed profile the published pipeline uses), with the CT12 marker placed at acrophase + 6 h. The shift is the pre-vs-post regression difference through the marker series evaluated at the pulse cycle, converted to circadian hours (×24/τ<sub>pre</sub>); the continuity unwrap (consecutive marker differences constrained to 12–36 h) is part of the estimator definition. <b>Why it changed:</b> the previous anchor — the daily ΔF/F minimum, labeled CT18 — degrades on these traces because the calcium trough is a 5.5–9.5 h plateau: the argmin lands anywhere on the plateau, and on 6977's span it double-sampled one physical trough and missed another entirely, pushing that animal's published shift to +6.62 CT where the clean estimate is −0.54. The sine acrophase is not artifact-immune in principle — it needed the unwrap on two spans — but its failure mode is repairable, while a double-sampled plateau cannot be un-double-sampled. <b>Numbers under the switch (canonical dashboard path, era-A cache):</b> 6577 +0.93 → +0.40, 6976 −1.32 → −0.87, 6977 −2.59 → −0.54 (the published +6.62 checkpoint value was argmin-artifact-corrupted; corrected here with the artifact documented in the repeat-recordings appendix below), 6978 +3.40 → +2.16, 7390 −0.75 → +2.05. <b>Fitted-period update (2026-09-14):</b> the per-cycle acrophase fits now carry each animal's fitted τ rather than a fixed 24 h — the swap moved every published S-basis number by ≤0.12 CT h (shifts), ≤0.003 z (bout bins), +0.0004 (compensation pooled r), and ≤0.13 h (relock ψ). No reading changes. The daily-minimum anchor is retained as a labeled diagnostic — S-vs-T disagreement is how the 6977 artifact was caught — and all published numbers reproduce exactly under it (parity gate: 5/5 animals, d = 0.0000). The sine fit is absent from the in-vivo photometry phase-extraction literature (the field uses threshold/midpoint markers on smoothed ΔF), so this choice rests on the benchmark below, not on precedent. <b>Path provenance:</b> an earlier benchmark run on the era-B re-cut files (30-min bins, different F₀ window) gave S shifts of +0.63 / −0.13 / +1.87 for the three pilots; the numbers above ride the era-A cache arrays that feed this dashboard, and the 0.2–0.7 h differences between the two sets are bin-grid and F₀ path effects, not biology — both sets are archived with the estimator suite.</p>
       <p><b>Estimator comparison, rendered from the data.</b> The chart below overlays the three candidate calcium markers — daily-minimum argmin (T, the retired anchor), per-cycle sine acrophase (S, the current anchor), and a Brancaccio-style midrise crossing (M, diagnostic) — on the actual per-cycle series, per animal. The companion table gives the numbers: marker jitter (median interval deviation), wrap-flip counts, sine fit R², plateau occupancy, and the S-vs-T shift deltas. On clean spans T and S agree within 0.1–1.8 h; the divergence is exactly where the plateau artifacts live.</p>
       <div class="chart-box" style="height:340px;margin-top:12px"><canvas id="estimatorChart"></canvas></div>
@@ -781,7 +781,7 @@ function renderCycle(){
   $('cycle-foot').textContent=`Scale: each animal's calcium curve is mean-centered — zero = that animal's own cycle-averaged ΔF/F₀ (excursion units). The raw lab "ΔF/F" keeps the +1 of F/F₀ over each animal's own day-1 F₀ (ZT 14–22), so absolute levels are not comparable across sensors — the GFP pair sits higher in level (drift + motion artifact, not biology) while its modulation depth is comparable. Removed levels: ${lv} F/F₀. `+
     `Each cycle at its native length (18–30 h guard): no stretching, no resampling. `+
     `Wheel shown as rate (events per 30-min bin) — the ≥1-event probability saturated (day bins carry ~170–230 events, so P(≥1)≈1 all day); the rate contrast is ~5× night/day. `+
-    `Calcium is anchored to the wheel clock; the calcium acrophase follows ~19 h after wheel onset (ψ circ-SD 2.2–2.5 h for 4/5 GCaMP), so cross-cycle calcium averaging carries that bound of smearing — re-anchoring to the calcium clock moves group amplitude only 19.0→16.7% (VIP) / 16.6→18.9% (D1). `+
+    `Calcium is anchored to the behavioral clock; the calcium acrophase follows ~19 h after wheel onset (ψ circ-SD 2.2–2.5 h for 4/5 GCaMP), so cross-cycle calcium averaging carries that bound of smearing — re-anchoring to the calcium clock moves group amplitude only 19.0→16.7% (VIP) / 16.6→18.9% (D1). `+
     `Bins past a cycle's end are excluded from that cycle — the thinning tail is real. ${tail}. `+
     `Pulse-containing cycles excluded; first post-pulse cycle kept (7%–12% of each animal's average; 6977's `+
     `17-h post-pulse interval fails the guard so it has none). Non-reach cycles are excluded, not counted as rest.`+
@@ -1195,12 +1195,12 @@ function frameChipHandler(chipsId, get, set, rerender){
 function renderPRCDual(){
   const c=CT_FRAMES.correlation;
   const ds=[];
-  const animals=Object.keys(c.T.points);
+  const animals=Object.keys(c.S.points);
   const lpct=c.lp_in_ct;
   for(const a of animals){
     const g=ANA.dual_clock[a].group;
     const X=(sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a];
-    const Y=(sec4Frame==='wheel')?c.T.points[a].wheel:c.T.points[a].ca;
+    const Y=(sec4Frame==='wheel')?c.S.points[a].wheel:c.S.points[a].ca;
     ds.push({type:'scatter',label:`#${a} ${g}`,data:[{x:X,y:Y}],
       backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
   }
@@ -1213,7 +1213,7 @@ function renderPRCDual(){
       plugins:{legend:{display:false},
         tooltip:{callbacks:{label:it=>{
           const a=animals[it.datasetIndex];
-          return `#${a}: LP at CT ${((sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a]).toFixed(1)}, shift ${((sec4Frame==='wheel')?c.T.points[a].wheel:c.T.points[a].ca).toFixed(2)} CT`;}}}}}});
+          return `#${a}: LP at CT ${((sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a]).toFixed(1)}, shift ${((sec4Frame==='wheel')?c.S.points[a].wheel:c.S.points[a].ca).toFixed(2)} CT`;}}}}}});
   $('prc-title').textContent=(sec4Frame==='wheel')
     ?'Phase-reset points — behavioral (wheel) CT frame'
     :'Phase-reset points — calcium (S+6) CT frame';
@@ -1221,8 +1221,8 @@ function renderPRCDual(){
 
 function renderClockShift(){
   const c=CT_FRAMES.correlation;
-  const which=(sec4Frame==='wheel')?c.T:c.S;
-  $('corr-badge').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)}, perm p = ${which.p.toFixed(2)}, n = ${c.n}`;
+  const which=c.S;
+  $('corr-badge').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)} (S+6), perm p = ${which.p.toFixed(2)}, n = ${c.n}`;
   $('clock-r').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)} (perm p = ${which.p.toFixed(2)}, n = ${c.n})`;
   const ds=[]; const labels=[];
   const pts=which.points;
@@ -1240,7 +1240,7 @@ function renderClockShift(){
   if(clockShiftChart) clockShiftChart.destroy();
   clockShiftChart=new Chart($('clockShiftChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{min:-6,max:6,ticks:{stepSize:6},title:{display:true,text:'wheel-clock shift (ΔCT h)'},grid:{color:RULE}},
+      scales:{x:{min:-6,max:6,ticks:{stepSize:6},title:{display:true,text:'behavioral-clock shift (ΔCT h)'},grid:{color:RULE}},
               y:{min:-6,max:6,ticks:{stepSize:6},title:{display:true,text:'calcium-clock shift (ΔCT h)'},grid:{color:RULE}}},
       plugins:{legend:{display:false},
         tooltip:{callbacks:{label:it=>{const a=labels[it.datasetIndex];return a?`#${a}: wheel ${pts[a].wheel.toFixed(2)}, calcium ${pts[a].ca.toFixed(2)} CT`:'';}}}}}});
@@ -1803,7 +1803,7 @@ function renderTau(){
         filter:it=>!!it.text}},
         tooltip:{callbacks:{label:it=>`${it.dataset.label}: wheel ${it.parsed.x.toFixed(2)} → calcium ${it.parsed.y.toFixed(2)} h`}}}}});
   $('tau-badge').textContent=`r = +${C.r_sine.toFixed(2)} (sine) / +${C.r_slope.toFixed(2)} (slope), n = ${C.n} animals`;
-  $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land.`;
+  $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); the periodogram scans trial periods on a 0.1 h grid across 20–28 h, so wheel τ is an estimate at 0.1 h resolution — the three animals reading 23.6 h are independent estimates that share a grid point, and differences smaller than 0.1 h are not resolvable. Calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points; both continuous fits, so no grid quantization on the calcium side). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land.`;
 }
 fetch('data/tau_correlation.json').then(r=>r.json()).then(d=>{TAUC=d;renderTau();}).catch(e=>{console.error('tau correlation load failed',e);});
 
