@@ -1926,7 +1926,7 @@ function renderRoomControl(){
       <td>${r.q_session_run==null?'—':r.q_session_run.toFixed(2)}</td>
       <td>${r.night_frac_ld_week==null?'—':r.night_frac_ld_week.toFixed(2)}</td>
       <td>${r.night_frac_dd_span==null?'—':r.night_frac_dd_span.toFixed(2)}</td>
-      <td style="font-family:var(--body);font-size:12.5px">${read}${r.note?` <span style="color:var(--ink-faint)">(${r.note})</span>`:''}</td>`;
+      <td style="font-family:var(--body);font-size:12.5px">${read}${(r.note&&!r.hole)?` <span style="color:var(--ink-faint)">(${r.note})</span>`:''}</td>`;
     tb.appendChild(tr);
   }
   $('rc-cohort-foot').textContent=`Unmasked χ² periodogram reads on the longest hole-free session run of each chain, added 2026-09-15 (round 12). Every chain sits below the house confidence floor (q-ratio 2.0 against the 24 h peak): these are heterogeneous, low-confidence reads — several τ ≈ 24.0–24.1 h where a ~24 h free-run read cannot be told apart from an externally timed 24 h rhythm by wheel data alone, three reads short of 24 h. Per the τ-scatter ruling recorded in the public QC artifact: ${RC.tau_scatter.ruling} No uniform locking; these animals do not join the §03 free-run τ plot (no calcium τ exists for the era-A fragments, and their behavioral state is unresolved). The r11 masked-method reads ("8/9 chains entrained, drift < 0.05 h/day") are withdrawn as mask-clamp artifacts — see the method note.`;
