@@ -111,6 +111,7 @@ footer a{color:var(--accent)}
   <a href="#feedback">Running &amp; clock</a>
   <a href="#boutca">Bout calcium</a>
   <a href="#lddd">LD → DD</a>
+  <a href="#roomcontrol">Room control</a>
   <a href="#cohort">Cohort</a>
   <a href="#methods">Methods &amp; validation</a>
 </div></nav>
@@ -191,7 +192,7 @@ footer a{color:var(--accent)}
 <section id="lightpulse">
   <div class="wrap">
     <h2><span class="no">04</span>The light pulse</h2>
-    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). The GFP controls (#7382, #7386 — ΔF/F is movement artifact, not biology, per the Methods §11 QC screen) join every triggered average as their own n=2 series: a light-evoked deflection in GFP indicts movement artifact in the GCaMP response; its absence certifies signal. And the deflection is here: GFP 7382's pulse-triggered peak is +15.2% above baseline at +22 min — larger than any GCaMP animal (cohort max: 7390 at +13.7%), the movement-artifact signature the control exists to expose. This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
+    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). The GFP controls (#7382, #7386 — ΔF/F is movement artifact, not biology, per the Methods §12 QC screen) join every triggered average as their own n=2 series: a light-evoked deflection in GFP indicts movement artifact in the GCaMP response; its absence certifies signal. And the deflection is here: GFP 7382's pulse-triggered peak is +15.2% above baseline at +22 min — larger than any GCaMP animal (cohort max: 7390 at +13.7%), the movement-artifact signature the control exists to expose. This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
     <div class="card">
       <div class="chart-head">
         <span class="chart-title" id="lp-title">—</span>
@@ -419,9 +420,54 @@ footer a{color:var(--accent)}
   </div>
 </section>
 
+<section id="roomcontrol">
+  <div class="wrap">
+    <h2><span class="no">10</span>Room control: was it really dark?</h2>
+    <p class="lede">The Oct-24 campaign records were labeled DD, but the room photodiode had been disabled since Sep 28 — its silence proves nothing. Two independent behavioral controls answer the question instead: reference animals with known endogenous periods free-ran through the week before the campaign (the room was standing-DD), and light-masking released in all eight campaign animals across the DD span (lights-on would have suppressed their daytime running). The same analysis caught a method artifact: the night mask used for τ estimation clamps free-run onsets and reads certified free-runners as 24 h-locked — the earlier "entrained" headline is withdrawn.</p>
+
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">τ repeatability: same animals, same room, six weeks apart</span>
+        <span id="rc-badge" class="badge">—</span>
+      </div>
+      <div class="chart-box"><canvas id="rcTauChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px" id="rc-tau-foot">—</p>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="chart-head">
+        <span class="chart-title">Masking release across the campaign span</span>
+      </div>
+      <p style="font-size:14.5px;color:var(--ink-soft);margin:4px 0 10px">Fraction of wheel running in the night window (ZT18–6), each animal's own logged-LD week (Oct 18–22) vs the DD span (Oct 24–Nov 4). Under LD, lights-on suppresses daytime running — night-only is the signature. If the "DD" span had actually been LD, these fractions would stay pinned at the top of the range. Instead daytime activity emerges in 8/8 animals.</p>
+      <div class="chart-box"><canvas id="rcMaskChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px" id="rc-mask-foot">—</p>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="chart-head">
+        <span class="chart-title">Campaign wheel reads (unmasked χ², context only)</span>
+      </div>
+      <div style="overflow-x:auto">
+      <table id="rc-cohort-table">
+        <thead><tr>
+          <th>Animal</th><th>τ (session-run)</th><th>q-ratio</th><th>LD-week night frac.</th><th>DD-span night frac.</th><th>Read</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p class="footnote" style="margin-top:10px" id="rc-cohort-foot">—</p>
+    </div>
+
+    <details style="margin-top:14px">
+      <summary>Method artifact: why the night mask reads free-runners as 24 h-locked</summary>
+      <div id="rc-method-body" style="font-size:14px;color:var(--ink-soft);line-height:1.6"></div>
+    </details>
+  </div>
+</section>
+
 <section id="cohort">
   <div class="wrap">
-    <h2><span class="no">10</span>The cohort</h2>
+    <h2><span class="no">11</span>The cohort</h2>
     <p class="lede">Ten animals across two sessions. D1-Cre and VIP-Cre drivers target distinct SCN-relevant cell populations; GCaMP6s reports calcium, GFlamp1 is a faster green indicator, and GFP animals are the fluorescence control — any "signal" there is movement artifact, not biology.</p>
     <div style="overflow-x:auto">
     <table id="cohort-table">
@@ -438,7 +484,7 @@ footer a{color:var(--accent)}
 
 <section id="methods">
   <div class="wrap">
-    <h2><span class="no">11</span>Methods &amp; validation</h2>
+    <h2><span class="no">12</span>Methods &amp; validation</h2>
     <p class="lede">Everything on this page is computed by a Python port of the lab's MATLAB pipeline, checked against the lab's own MATLAB outputs to numerical exactness before being shown.</p>
     <div class="card" id="validation-card">
       <div class="chart-head">
@@ -453,7 +499,7 @@ footer a{color:var(--accent)}
       <p><b>Correction.</b> Signal = 470/415 (divide-by-isosbestic for all animals here), 30-s centered median filter, ΔF/F₀ with F₀ = mean over ZT 14–22 of the first cycle. Wheel events (ZT-hour timestamps of revolutions) are histogrammed into 10-min bins.</p>
       <p><b>Port validation.</b> The Python demux was compared sample-for-sample against the MATLAB <i>FullTrace.mat</i> outputs: raw channels matched to ~1e-16, corrected signal r = 0.9998, ΔF/F r = 1.0000 (max abs diff ≈ 1.4e-6) on the pilot animal; the cross-session check runs live below against a second-session animal.</p>
       <p><b>Average cycle (§02).</b> Cycles are consecutive activity onsets (the shipped 18–30 h guard); the pulse-containing cycle is excluded and all others kept. The axis is elapsed hours from onset (CT12) — cycles occupy their native length; no resampling. Per-bin calcium = mean ΔF/F over the cycles that reach the bin (animal-first, then group mean ± SEM across animals). Wheel-running probability = fraction of reaching cycles with ≥1 event in the bin; cycles that end before the bin never enter its denominator. The 23–24 h tail thins because τ < 24 h in most animals — the count is on the badge, not smoothed away.</p>
-      <p><b>GFP controls (§04, §08).</b> #7382 and #7386 express GFP/tdTomato (no GCaMP); their ΔF/F is movement artifact by the §11 QC screen — that is exactly what makes them the right control. A light-evoked deflection in a triggered GFP average indicts movement artifact in the GCaMP response; a bout-onset deflection is the expected movement signature; absence certifies signal. GFP appears as its own labeled n=2 series in every triggered average, never pooled into D1 despite the D1-Cre genotype. The calcium-clock (S+6) frame never ran on GFP calcium (QC-excluded), so GFP bout bins are behavior-frame only.</p>
+      <p><b>GFP controls (§04, §08).</b> #7382 and #7386 express GFP/tdTomato (no GCaMP); their ΔF/F is movement artifact by the §12 QC screen — that is exactly what makes them the right control. A light-evoked deflection in a triggered GFP average indicts movement artifact in the GCaMP response; a bout-onset deflection is the expected movement signature; absence certifies signal. GFP appears as its own labeled n=2 series in every triggered average, never pooled into D1 despite the D1-Cre genotype. The calcium-clock (S+6) frame never ran on GFP calcium (QC-excluded), so GFP bout bins are behavior-frame only.</p>
       <p><b>Light-pulse-triggered traces (§04).</b> Group means are per-animal curves from the native 15-s ΔF/F (1-min rebin, per-animal baseline = mean over the 2 h to 30 min before pulse onset); the peak/trough readouts use an 8-min rolling mean (8×1-min bins) over the first 40 min from pulse onset (the 30-min pulse + 10 min after), latency measured from onset. Each animal contributes one pulse — ZT12 for the four 221014 animals, ZT8 for 7390 and the GFP pair (7382/7386, second session) — so the group curves are displays, not statistics.</p>
     <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window (trial periods on a 0.1 h grid), computed separately pre/post light pulse.</p>
       <p><b>How calcium circadian time (CT) is computed — the S+6 convention (updated 2026-09-03).</b> The calcium clock's phase marker is the <i>acrophase of a per-cycle least-squares sine fit</i> (period fitted per animal — a global free-period sine fit on the same 30-min ΔF/F-weighted, 3-h-smoothed profile the published pipeline uses), with the CT12 marker placed at acrophase + 6 h. The shift is the pre-vs-post regression difference through the marker series evaluated at the pulse cycle, converted to circadian hours (×24/τ<sub>pre</sub>); the continuity unwrap (consecutive marker differences constrained to 12–36 h) is part of the estimator definition. <b>Why it changed:</b> the previous anchor — the daily ΔF/F minimum, labeled CT18 — degrades on these traces because the calcium trough is a 5.5–9.5 h plateau: the argmin lands anywhere on the plateau, and on 6977's span it double-sampled one physical trough and missed another entirely, pushing that animal's published shift to +6.62 CT where the clean estimate is −0.54. The sine acrophase is not artifact-immune in principle — it needed the unwrap on two spans — but its failure mode is repairable, while a double-sampled plateau cannot be un-double-sampled. <b>Numbers under the switch (canonical dashboard path, era-A cache):</b> 6577 +0.93 → +0.40, 6976 −1.32 → −0.87, 6977 −2.59 → −0.54 (the published +6.62 checkpoint value was argmin-artifact-corrupted; corrected here with the artifact documented in the repeat-recordings appendix below), 6978 +3.40 → +2.16, 7390 −0.75 → +2.05. <b>Fitted-period update (2026-09-14):</b> the per-cycle acrophase fits now carry each animal's fitted τ rather than a fixed 24 h — the swap moved every published S-basis number by ≤0.12 CT h (shifts), ≤0.003 z (bout bins), +0.0004 (compensation pooled r), and ≤0.13 h (relock ψ). No reading changes. The daily-minimum anchor is retained as a labeled diagnostic — S-vs-T disagreement is how the 6977 artifact was caught — and all published numbers reproduce exactly under it (parity gate: 5/5 animals, d = 0.0000). The sine fit is absent from the in-vivo photometry phase-extraction literature (the field uses threshold/midpoint markers on smoothed ΔF), so this choice rests on the benchmark below, not on precedent. <b>Path provenance:</b> an earlier benchmark run on the era-B re-cut files (30-min bins, different F₀ window) gave S shifts of +0.63 / −0.13 / +1.87 for the three pilots; the numbers above ride the era-A cache arrays that feed this dashboard, and the 0.2–0.7 h differences between the two sets are bin-grid and F₀ path effects, not biology — both sets are archived with the estimator suite.</p>
@@ -498,7 +544,7 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
     </div>
-    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the §05 numbers. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is where the daily-minimum anchor fails: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h) and the argmin double-samples one plateau and misses another trough entirely, which is what pushed the checkpoint value to +6.62. The per-cycle sine-acrophase estimator (§11) is clean on this span — 0 wrap flips, even 23–24 h marker spacing, residual SD 0.64 h post-pulse — and gives −0.54 CT. So the +6.62 is an argmin artifact, not a windowing story: the fragmentation flag was real, but it indicts the estimator, not the animal. The corrected estimate rides in §05; the +6.62 stays in this table as the documented artifact it is.</p>
+    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the §05 numbers. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is where the daily-minimum anchor fails: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h) and the argmin double-samples one plateau and misses another trough entirely, which is what pushed the checkpoint value to +6.62. The per-cycle sine-acrophase estimator (§12) is clean on this span — 0 wrap flips, even 23–24 h marker spacing, residual SD 0.64 h post-pulse — and gives −0.54 CT. So the +6.62 is an argmin artifact, not a windowing story: the fragmentation flag was real, but it indicts the estimator, not the animal. The corrected estimate rides in §05; the +6.62 stays in this table as the documented artifact it is.</p>
   </div>
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
@@ -1476,7 +1522,7 @@ function fillRelockTable(){
   }
 }
 
-// ---- estimator comparison (methods §11) ---------------------------------
+// ---- estimator comparison (methods §12) ---------------------------------
 function renderEstimatorChart(){
   const ds=[];
   const an=Object.keys(SE).filter(k=>k!=='_meta');
@@ -1813,6 +1859,83 @@ function renderTau(){
   $('tau-badge').textContent=`r = +${C.r_sine.toFixed(2)} (sine) / +${C.r_slope.toFixed(2)} (slope), n = ${C.n} animals`+(nSpan?` + ${nSpan} repeat-span τ read${nSpan>1?'s':''} (no pulse)`:'');
   $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); the periodogram scans trial periods on a 0.1 h grid across 20–28 h, so wheel τ is an estimate at 0.1 h resolution — the three animals reading 23.6 h are independent estimates that share a grid point, and differences smaller than 0.1 h are not resolvable. Calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points; both continuous fits, so no grid quantization on the calcium side). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land. Repeat-span reads (rotated squares, added 2026-09-14): the Aug 19–29 campaign's second half — #6976's 9.7-d no-pulse span, the strongest QC pass of the screened spans (circadian SNR 21.55) — reads τwheel = 23.8 h vs its pilot pre-pulse 23.3 h, and τca = 23.80 h vs pilot 23.75 h; #6577's same-campaign span reads τwheel = 23.6 h (pilot 23.6) and τca = 23.85 h vs pilot 24.9 h. Same-estimator, same-animal, independent-span: the calcium side of #6577 moves −1.05 h span-to-span while #6976 holds within 0.05 h — at these n the honest read is that short-record calcium τ carries span-to-span scatter comparable to the estimator spread, so single-span τ differences under ~1 h are not resolvable per animal. Both repeat spans are QC-screened (circadian SNR + τ sanity) and live in the individual-recordings explorer with full traces.`;
 }
+
+// ---- section 10: room control (r12) ---------------------------------------
+let RC=null, rcTauChart=null, rcMaskChart=null;
+function renderRoomControl(){
+  if(!RC) return;
+  const R=RC.repeatability, G={ '6577':col('VIP'), '6976':col('VIP') };
+  // (a) tau timeline: Aug certified vs Oct unmasked, per animal
+  const ds=[];
+  for(const [aid,r] of Object.entries(R)){
+    const c=G[aid];
+    ds.push({type:'line',label:`#${aid} span-to-span`,data:[
+      {x:0,y:r.aug_certified_tau},{x:1,y:r.oct_tau_unmasked}],
+      borderColor:c,borderWidth:2,pointRadius:0,order:2});
+    ds.push({type:'scatter',label:`#${aid} certified τ (Aug)`,data:[{x:0,y:r.aug_certified_tau}],
+      backgroundColor:c,pointRadius:7,pointHoverRadius:9,order:1});
+    ds.push({type:'scatter',label:`#${aid} unmasked χ² τ (Oct)`,data:[{x:1,y:r.oct_tau_unmasked}],
+      backgroundColor:c,pointStyle:'rectRot',pointRadius:7,pointHoverRadius:9,borderColor:c,borderWidth:1.5,order:1});
+    ds.push({type:'scatter',label:`#${aid} masked-method τ (method test)`,data:[{x:1,y:r.oct_masked_method_test_tau}],
+      backgroundColor:'transparent',borderColor:c,borderDash:[4,3],pointRadius:6,pointHoverRadius:8,pointBorderWidth:1.5,order:1});
+  }
+  if(rcTauChart) rcTauChart.destroy();
+  rcTauChart=new Chart($('rcTauChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      scales:{x:{type:'linear',min:-0.35,max:1.35,ticks:{stepSize:1,
+          callback:v=>['Aug 19–29\n(certified)','Sep 28 – Oct 17\n(logged DD)'][v]||''},
+              title:{display:true,text:'recording span'},grid:{color:RULE}},
+        y:{type:'linear',min:22.8,max:24.4,ticks:{stepSize:.4},
+              title:{display:true,text:'wheel τ (h)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+          filter:(it,cd)=>{const d=cd.datasets[it.datasetIndex];return d.pointRadius!==0&&!!it.text;}}},
+        tooltip:{callbacks:{label:it=>`${it.dataset.label}: τ ${it.parsed.y.toFixed(2)} h`}}}}});
+  $('rc-badge').textContent=`#6577: ${R['6577'].aug_certified_tau.toFixed(1)} → ${R['6577'].oct_tau_unmasked.toFixed(1)} h · #6976: ${R['6976'].aug_certified_tau.toFixed(1)} → ${R['6976'].oct_tau_unmasked.toFixed(1)} h`;
+  $('rc-tau-foot').textContent=`Free-running period of the two reference animals (VIP-Cre, GCaMP6s) across two independent spans in the same room, ~6 weeks apart: Aug 19–29 certified free-run (χ² periodogram) vs the logged-DD Sep 28 – Oct 17 chain, estimated with the unmasked method (see the method note below for why the mask matters). #6577 holds 23.6 → 23.6 h; #6976 reads 23.8 → 23.3 h (q-ratio 1.4 / 3.14 on the Oct chain). Rotated squares: the unmasked χ² reads on the Oct chain. Open dashed circles: what the SHIPPED masked method reads on the same Oct data — τ 24.0, q 1.0, drift 0.0/0.026 h/day — the mask-clamp artifact that reads certified free-runners as 24 h-locked. τ repeatability within ~0.1–0.5 h across six weeks is the expected behavior of a stable endogenous oscillator in a room that stayed dark; a room on an LD cycle would have pinned both animals at 24.0 (their masked-method reads).`;
+
+  // (b) masking release: LD-week vs DD-span night fraction per animal
+  const C=RC.campaign, ds2=[];
+  const ids=C.map(r=>r.id);
+  ds2.push({type:'bar',label:'logged-LD week (Oct 18–22)',data:C.map(r=>r.night_frac_ld_week),
+    backgroundColor:'#b9a26b',borderRadius:2});
+  ds2.push({type:'bar',label:'DD span (Oct 24–Nov 4)',data:C.map(r=>r.night_frac_dd_span==null?null:r.night_frac_dd_span),
+    backgroundColor:'#4d7f9c',borderRadius:2});
+  if(rcMaskChart) rcMaskChart.destroy();
+  rcMaskChart=new Chart($('rcMaskChart'),{type:'bar',data:{labels:ids,datasets:ds2},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      scales:{x:{ticks:{font:{size:10}},grid:{display:false}},
+        y:{type:'linear',min:0,max:1,ticks:{stepSize:.25,format:{precision:2}},
+              title:{display:true,text:'night-window fraction of wheel running (ZT18–6)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
+        tooltip:{callbacks:{label:it=>`${it.dataset.label}: ${it.parsed.y==null?'—':it.parsed.y.toFixed(3)}`}}}}});
+  $('rc-mask-foot').textContent=`Night fraction of wheel running per campaign animal, own logged-LD week vs the DD span. LD week: 0.87–1.00 (daytime ~zero — light-masked). DD span: 0.43–0.93, daytime activity emerges in 8/8 animals (Δ −0.05 to −0.57). Sustained LD is inconsistent with the data: lights-on suppresses daytime running. Caveats: release is weak in #6646/#6647; the verdict is behavioral, not lux-measured. #7143 has no LD-week baseline on this chain (fiber-6 swap at the 221022→221024 boundary); #7177 ran the LD week on the pre-split fiber-6 channel and has no DD wheel coverage. 8/8 release with 7 comparable pairs is the count — those two rows carry no DD-side or no LD-side evidence respectively.`;
+
+  // (c) cohort table: honest reads, context only
+  const tb=$('rc-cohort-table').querySelector('tbody');
+  tb.innerHTML='';
+  for(const r of C){
+    const tr=document.createElement('tr');
+    let read;
+    if(r.ld_only) read='LD week only — no DD wheel coverage';
+    else if(r.hole) read=`${r.tau_session_run_unmasked.toFixed(1)} h (session-run; full-span hole-limited)`;
+    else if(r.tau_session_run_unmasked>=23.9&&r.tau_session_run_unmasked<=24.2)
+      read=`${r.tau_session_run_unmasked.toFixed(1)} h — a ~24 h free-run read; wheel data alone cannot tell it apart from any externally timed 24 h rhythm`;
+    else read=`${r.tau_session_run_unmasked.toFixed(1)} h free-run read`;
+    tr.innerHTML=`<td><b>#${r.id}</b></td>
+      <td>${r.tau_session_run_unmasked==null?'—':r.tau_session_run_unmasked.toFixed(1)+' h'}</td>
+      <td>${r.q_session_run==null?'—':r.q_session_run.toFixed(2)}</td>
+      <td>${r.night_frac_ld_week==null?'—':r.night_frac_ld_week.toFixed(2)}</td>
+      <td>${r.night_frac_dd_span==null?'—':r.night_frac_dd_span.toFixed(2)}</td>
+      <td style="font-family:var(--body);font-size:12.5px">${read}${r.note?` <span style="color:var(--ink-faint)">(${r.note})</span>`:''}</td>`;
+    tb.appendChild(tr);
+  }
+  $('rc-cohort-foot').textContent=`Unmasked χ² periodogram reads on the longest hole-free session run of each chain, added 2026-09-15 (round 12). Every chain sits below the house confidence floor (q-ratio 2.0 against the 24 h peak): these are heterogeneous, low-confidence reads — several τ ≈ 24.0–24.1 h where a ~24 h free-run read cannot be told apart from an externally timed 24 h rhythm by wheel data alone, three reads short of 24 h. Per the τ-scatter ruling recorded in the public QC artifact: ${RC.tau_scatter.ruling} No uniform locking; these animals do not join the §03 free-run τ plot (no calcium τ exists for the era-A fragments, and their behavioral state is unresolved). The r11 masked-method reads ("8/9 chains entrained, drift < 0.05 h/day") are withdrawn as mask-clamp artifacts — see the method note.`;
+
+  // (d) method note
+  $('rc-method-body').innerHTML=`<p style="margin-top:8px">${RC.method.mask_clamp}</p><p>${RC.method.photodiode}</p><p><b>DD start:</b> ${RC.method.dd_start.note} (day ${Math.floor(RC.method.dd_start.h/24)} of the chain, ${(RC.method.dd_start.h%24).toFixed(1)} h). <b>Light pulses inside the Oct chain:</b> ${Object.entries(RC.method.pulses).map(([k,v])=>`day ${k.replace('doy','')} (${v})`).join('; ')} — the pulse detector out-recorded the logbook.</p>`;
+}
+fetch('data/room_control.json').then(r=>r.json()).then(d=>{RC=d;renderRoomControl();}).catch(e=>{console.error('room control load failed',e);});
+
 fetch('data/tau_correlation.json').then(r=>r.json()).then(d=>{TAUC=d;renderTau();}).catch(e=>{console.error('tau correlation load failed',e);});
 
 fetch('data/sessions.json').then(r=>r.json()).then(d=>{
