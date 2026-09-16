@@ -1,0 +1,165 @@
+{
+ "_meta": {
+  "purpose": "Round-12 room-condition control for the Oct-2022 campaign: 6577/6976 Oct free-run certification (tau repeatability), campaign masking-release table, and the mask-clamp method test. Presentation data for dashboard section 10.",
+  "generated": "2026-09-15",
+  "source": "scn_photometry/r12_roomlight_control_final.py -> analysis_out/r12_roomlight_control.json; builder scn_photometry/build_room_control_json.py; every campaign read cross-checked against the shipped trackb_qc_screen.json ld_dd_note (PR #47, merge 5e782486)",
+  "q_semantics": "'q' is the chi2 periodogram peak-to-24h-peak q-ratio (house confidence floor 2.0), not a CI"
+ },
+ "spans": {
+  "aug": "Aug 19–29, 2022 — certified free-run spans (220829)",
+  "oct": "Sep 28 – Oct 17, 2022 — logged-DD chain (221017_concat)"
+ },
+ "spans_short": {
+  "aug": "Aug 19–29 (certified)",
+  "oct": "Sep 28 – Oct 17 (logged DD)"
+ },
+ "repeatability": {
+  "6577": {
+   "aug_certified_tau": 23.6,
+   "aug_r12_reproduction_tau": 23.5,
+   "aug_r12_reproduction_q": 1.25,
+   "oct_tau_unmasked": 23.6,
+   "oct_q_unmasked": 1.4,
+   "oct_masked_method_test_tau": 24.0,
+   "oct_masked_method_test_q": 1.0,
+   "oct_masked_method_test_drift": 0.0,
+   "oct_span_d": 17.33,
+   "oct_n_events": 725379
+  },
+  "6976": {
+   "aug_certified_tau": 23.8,
+   "aug_r12_reproduction_tau": 23.8,
+   "aug_r12_reproduction_q": 1.2,
+   "oct_tau_unmasked": 23.3,
+   "oct_q_unmasked": 3.14,
+   "oct_masked_method_test_tau": 24.0,
+   "oct_masked_method_test_q": 1.0,
+   "oct_masked_method_test_drift": 0.026,
+   "oct_span_d": 17.28,
+   "oct_n_events": 1217724
+  }
+ },
+ "campaign": [
+  {
+   "id": "7142",
+   "night_frac_ld_week": 1.0,
+   "n_ld": 272187,
+   "night_frac_dd_span": 0.746,
+   "n_dd": 329635,
+   "delta": -0.254,
+   "tau_session_run_unmasked": 24.0,
+   "q_session_run": 1.0,
+   "note": ""
+  },
+  {
+   "id": "6646",
+   "night_frac_ld_week": 0.974,
+   "n_ld": 134753,
+   "night_frac_dd_span": 0.928,
+   "n_dd": 380203,
+   "delta": -0.046,
+   "tau_session_run_unmasked": 24.1,
+   "q_session_run": 1.04,
+   "note": "weak masking release"
+  },
+  {
+   "id": "6647",
+   "night_frac_ld_week": 0.867,
+   "n_ld": 53966,
+   "night_frac_dd_span": 0.818,
+   "n_dd": 325905,
+   "delta": -0.049,
+   "tau_session_run_unmasked": 24.0,
+   "q_session_run": 1.0,
+   "note": "weak masking release"
+  },
+  {
+   "id": "7199",
+   "night_frac_ld_week": 1.0,
+   "n_ld": 87425,
+   "night_frac_dd_span": 0.744,
+   "n_dd": 318081,
+   "delta": -0.256,
+   "tau_session_run_unmasked": 24.1,
+   "q_session_run": 1.13,
+   "note": ""
+  },
+  {
+   "id": "7143",
+   "night_frac_ld_week": null,
+   "n_ld": 0,
+   "night_frac_dd_span": 0.595,
+   "n_dd": 94227,
+   "delta": null,
+   "tau_session_run_unmasked": 23.8,
+   "q_session_run": 1.07,
+   "note": "no LD-week baseline on this chain (fiber-6 swap at the 221022→221024 boundary)"
+  },
+  {
+   "id": "7381",
+   "night_frac_ld_week": 0.996,
+   "n_ld": 169043,
+   "night_frac_dd_span": 0.43,
+   "n_dd": 212489,
+   "delta": -0.566,
+   "tau_session_run_unmasked": 23.3,
+   "q_session_run": 1.9,
+   "note": ""
+  },
+  {
+   "id": "7200",
+   "night_frac_ld_week": 1.0,
+   "n_ld": 44834,
+   "night_frac_dd_span": 0.752,
+   "n_dd": 167996,
+   "delta": -0.248,
+   "tau_session_run_unmasked": 22.3,
+   "q_session_run": 1.5,
+   "note": "session-run read; full-span read hole-corrupted",
+   "hole": true
+  },
+  {
+   "id": "7176",
+   "night_frac_ld_week": 0.993,
+   "n_ld": 49496,
+   "night_frac_dd_span": 0.627,
+   "n_dd": 23914,
+   "delta": -0.366,
+   "tau_session_run_unmasked": 20.1,
+   "q_session_run": 1.39,
+   "note": "session-run read; full-span read hole-limited",
+   "hole": true
+  },
+  {
+   "id": "7177",
+   "night_frac_ld_week": 0.997,
+   "n_ld": 30789,
+   "ld_only": true,
+   "note": "fiber-6 pre-split; LD week only, no DD wheel coverage"
+  }
+ ],
+ "tau_scatter": {
+  "corpus_range": [
+   23.3,
+   24.1
+  ],
+  "ruling": "Per Jules's ruling (2026-09-15): ~24 h endogenous tau is within the ordinary scatter of mouse free-run periods (this corpus: 23.3-24.1), so no external cue is required to explain the ~24 h reads."
+ },
+ "verdict": {
+  "through_oct17": "DARK/zeitgeber-free CERTIFIED: 6577/6976 free-ran (tau 23.6/23.3 unmasked chi2, matching Aug 23.6/23.8) through their logged-DD Sep 28-Oct 17 chain in the same rig",
+  "campaign_dd_span_oct22_nov4": "Supports DD: masking released in 8/8 campaign animals (daytime activity emerges vs their own zero-daytime LD week; deltas -0.046 to -0.566). Sustained LD is contradicted; 6577/6976 free-run 5 days pre-switch shows the room was DD-capable and standing-DD.",
+  "caveat": "No instrument evidence (photodiodes off from Sep 28); verdict is behavioral (masking + free-run), not measured lux."
+ },
+ "method": {
+  "mask_clamp": "Masking wheel events to the ZT18–6 night window before period estimation clamps left-marching free-run onsets at the 18:00 window edge and injects a structural 24 h component: certified free-runners 6577/6976 read tau 24.0 (q 1.0), drift 0.0/0.026 h/day under the masked method vs unmasked 23.6/23.3. The r11 drift-based '24 h-locked' claim was withdrawn 2026-09-15 (CORRECTION in trackb_qc_screen.json ld_dd_note).",
+  "photodiode": "Through Sep 27 the room photodiode tracked the LD cycle; from Sep 28 logging was disabled in the rig config (plotparams.doRoomPhotodiode=0) and every file is a session-open point sample — the campaign's own logged-LD camera-test sessions carry the same single-point files, so Oct-era photodiode silence carries no light-state information either way.",
+  "dd_start": {
+   "h": 6560.2,
+   "note": "Sep 30 08:12 (221003 session open, first DD mat); log LD->DD row 220928->220930, 220930 mats still read LD"
+  },
+  "pulses": {
+   "doy281": "17.97-18.48 logged LP@6pm (LPDays=281)",
+   "doy288": "17.98-18.49 photodiode-verified, unlogged"
+  }
+ }
+}
