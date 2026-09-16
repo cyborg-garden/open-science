@@ -259,7 +259,7 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
       </div>
-      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the per-cycle sine acrophase + 6 h (CT12 marker, the S+6 convention); the previous daily-minimum (CT18) anchor is retained as a labeled diagnostic and for the published-number reproduction gates.</p>
+      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Recomputed 2026-09-15 under the same CT metric as the scatter above (raw-ZT values superseded; per-animal superseded values retained in the data file). Calcium clock anchored on the per-cycle sine acrophase + 6 h (CT12 marker, the S+6 convention); the previous daily-minimum (CT18) anchor is retained as a labeled diagnostic and for the published-number reproduction gates.</p>
     </div>
   </div>
   <p class="footnote" id="sec4-foot">The chart pairs each animal's behavioral-clock shift with its calcium-clock shift under the current S+6 sine-acrophase convention — the same convention the Methods and the estimator comparison use: <b id="clock-r">—</b>. The retired daily-minimum (CT18) anchor gave r = +0.53 on these same animals, and an earlier ΔF-weighted circular-mean estimator gave a spurious −0.93; each is a different quantity — a different calcium-clock definition, not a competing measurement of one number — and the retired anchor survives only as a labeled diagnostic in Methods. At n = 5 every value here is a lead, not a conclusion. 6978's advance is confirmed by its calcium clock (+2.16 vs behavioral +4.11); 7390's behavioral-clock advance (+4.32 CT) shrinks to +2.05 in the calcium frame — same sign, half the size, consistent with its wheel onsets pulling the behavioral estimate. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29%), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
@@ -1589,8 +1589,8 @@ function renderStability(){
     const g=ANA.dual_clock[a].group;
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span></td>
-      <td class="${s.full<0?'negv':'pos'}">${s.full>=0?'+':''}${s.full.toFixed(2)}</td>
-      <td>${s.loo_min.toFixed(1)} … ${s.loo_max.toFixed(1)}</td>
+      <td class="${s.full_CT<0?'negv':'pos'}">${s.full_CT>=0?'+':''}${s.full_CT.toFixed(2)}</td>
+      <td>${s.loo_min_CT.toFixed(1)} … ${s.loo_max_CT.toFixed(1)}</td>
       <td>${reads[a]??''}</td>`;
     tb.appendChild(tr);
   }
