@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daylight Saving in Aotearoa: Three Clock Futures</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,900&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+:root {
+  --bg: #f5f0e6; --bg-warm: #ede5d4; --bg-card: #fffdf7;
+  --ink: #2a2520; --ink-soft: #6b5d50; --ink-faint: #a0937f;
+  --accent: #8b3a3a; --accent-light: #b85555; --accent-bg: #f2e8e8;
+  --green: #4a6b3a; --green-light: #7a9e5e; --green-bg: #ecf2e6;
+  --gold: #9c7c2f; --gold-bg: #f5edda;
+  --blue: #3a5a7a; --blue-bg: #e8edf3;
+  --border: #d8cdb8; --border-soft: #e8dfd0;
+  --mono: 'JetBrains Mono', monospace; --serif: 'Fraunces', serif; --body: 'Newsreader', serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: var(--body); background: var(--bg); color: var(--ink); line-height: 1.7; font-size: 16px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+header { background: var(--bg-warm); border-bottom: 1px solid var(--border); padding: 48px 0 36px; }
+header h1 { font-family: var(--serif); font-weight: 900; font-size: 2.6rem; line-height: 1.15; letter-spacing: -0.01em; }
+header .sub { font-family: var(--body); font-size: 1.1rem; color: var(--ink-soft); max-width: 760px; margin-top: 12px; }
+.badges { margin-top: 16px; display: flex; gap: 8px; flex-wrap: wrap; }
+.badge { font-family: var(--mono); font-size: 0.72rem; padding: 3px 10px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-card); color: var(--ink-soft); }
+.badge.verified { border-color: var(--green-light); color: var(--green); background: var(--green-bg); }
+section { padding: 36px 0; border-bottom: 1px solid var(--border-soft); }
+h2 { font-family: var(--serif); font-weight: 700; font-size: 1.55rem; margin-bottom: 14px; }
+h3 { font-family: var(--serif); font-weight: 700; font-size: 1.15rem; margin-bottom: 8px; }
+p { margin-bottom: 12px; max-width: 820px; }
+.note { font-size: 0.85rem; color: var(--ink-soft); background: var(--bg-card); border: 1px solid var(--border-soft); border-left: 3px solid var(--gold); padding: 12px 16px; border-radius: 4px; margin: 14px 0; max-width: 820px; }
+.note.red { border-left-color: var(--accent); }
+.note.green { border-left-color: var(--green); }
+.card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; padding: 20px; }
+.grid { display: grid; gap: 14px; }
+.grid.two { grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); }
+.grid.three { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.cite { font-family: var(--body); font-size: 0.8rem; color: var(--ink-faint); display: block; margin-top: 6px; }
+.cite a { color: var(--blue); text-decoration: none; }
+.cite a:hover { text-decoration: underline; }
+.stat { font-family: var(--mono); font-weight: 600; font-size: 1.5rem; color: var(--accent); }
+.stat.good { color: var(--green); }
+.stat-label { font-size: 0.8rem; color: var(--ink-soft); }
+
+/* Map controls */
+#map-wrap { display: grid; grid-template-columns: 1fr 320px; gap: 14px; margin-top: 16px; }
+@media (max-width: 900px) { #map-wrap { grid-template-columns: 1fr; } }
+#map { height: 560px; border-radius: 6px; border: 1px solid var(--border); background: #e8e4da; z-index: 1; }
+.controls { display: flex; flex-direction: column; gap: 10px; margin: 14px 0 0; flex-wrap: wrap; }
+.seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; font-family: var(--mono); font-size: 0.78rem; }
+.seg button { padding: 7px 14px; border: none; background: var(--bg-card); color: var(--ink-soft); cursor: pointer; font-family: inherit; font-size: inherit; border-right: 1px solid var(--border-soft); }
+.seg button:last-child { border-right: none; }
+.seg button.active { background: var(--ink); color: var(--bg-card); font-weight: 600; }
+#detail { padding: 16px; font-size: 0.9rem; }
+#detail h3 { margin-bottom: 4px; font-size: 1.05rem; }
+#detail .city { font-family: var(--mono); font-size: 0.72rem; color: var(--ink-faint); margin-bottom: 10px; }
+#detail table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.74rem; }
+#detail td, #detail th { padding: 4px 6px; border-bottom: 1px solid var(--border-soft); text-align: left; }
+#detail th { color: var(--ink-faint); font-weight: 500; }
+#detail td.num { text-align: right; }
+.legend { background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 8px 10px; font-family: var(--mono); font-size: 0.7rem; box-shadow: 0 1px 3px rgba(42,37,32,.08); }
+.legend .ramp { display: flex; height: 10px; border-radius: 2px; margin: 4px 0; }
+.legend .lbl { display: flex; justify-content: space-between; color: var(--ink-soft); }
+.leaflet-popup-content { font-family: var(--body); font-size: 0.85rem; }
+.leaflet-popup-content .r { font-family: var(--mono); font-size: 0.75rem; }
+
+/* timeline */
+.timeline { border-left: 2px solid var(--border); margin-left: 8px; padding-left: 20px; }
+.timeline .ev { margin-bottom: 14px; position: relative; }
+.timeline .ev:before { content: ''; position: absolute; left: -26px; top: 7px; width: 10px; height: 10px; border-radius: 50%; background: var(--gold); border: 2px solid var(--bg); }
+.timeline .yr { font-family: var(--mono); font-weight: 600; color: var(--accent); font-size: 0.85rem; }
+
+details { margin: 10px 0; }
+details summary { cursor: pointer; font-family: var(--mono); font-size: 0.78rem; color: var(--blue); }
+details[open] summary { margin-bottom: 8px; }
+footer { padding: 28px 0 48px; color: var(--ink-faint); font-size: 0.78rem; font-family: var(--mono); }
+a { color: var(--blue); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Daylight Saving in Aotearoa:<br>Three Clock Futures</h1>
+    <p class="sub">Is New Zealand really scrapping daylight saving? No — but the question is live. This map lets you see what each option actually does to your mornings and evenings, region by region, with the health, safety, and energy evidence weighed honestly.</p>
+    <div class="badges">
+      <span class="badge verified">✓ 14 citations verified, none retracted</span>
+      <span class="badge">NOAA solar algorithm</span>
+      <span class="badge">Stats NZ regional data</span>
+      <span class="badge">computed 2026-09-16</span>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+<section id="premise">
+  <h2>First: is DST being scrapped?</h2>
+  <p><strong>No.</strong> The official schedule (govt.nz, updated Aug 2026) runs through 2029: clocks forward at 2am on the last Sunday of September, back at 3am on the first Sunday of April. What exists is two live petition streams at Parliament — one to <em>abolish</em> DST (PET_125604), one from the lobby group Take Back the Clocks for <em>permanent</em> DST — and neither has been adopted. There has been no select committee inquiry, referendum, or government review, unlike the US (Sunshine Protection Act, passed the House, stalled in the Senate) or the EU (2018 vote to end clock changes, never implemented).</p>
+  <div class="note red"><strong>⚠️ Misinformation flag:</strong> blog posts claiming "the government has cancelled daylight saving from 2026" are false and circulating. The official schedule stands. If you've seen that claim, this is your debunking.</div>
+  <div class="note"><strong>Why a map?</strong> Because geography does most of the talking. All of New Zealand sits <em>west</em> of the 180° meridian that anchors NZST (UTC+12) — the country's populated east coast is effectively "west-of-zone," the mirror image of the US, where the worst clock-change effects cluster. Latitude compounds it: at 46°S, Southland's winter days are short enough that either permanent option bites hard.</div>
+</section>
+
+<section id="map-section">
+  <h2>The map: three futures, your region</h2>
+  <p>Pick a clock policy and a measure. Darker red means more of the thing you probably don't want; green means less of it. Click any region for its full profile.</p>
+  <div class="controls">
+    <div class="seg" id="scenario-seg">
+      <button data-sc="keep" class="active">Keep (status quo)</button>
+      <button data-sc="abolish">Abolish → permanent NZST</button>
+      <button data-sc="permanent">Permanent NZDT</button>
+    </div>
+    <div class="seg" id="metric-seg">
+      <button data-m="days_sunrise_after_7" class="active">Days with sunrise ≥ 7am</button>
+      <button data-m="days_sunset_before_6">Days with sunset &lt; 6pm</button>
+      <button data-m="winter_sunrise">Winter-solstice sunrise</button>
+    </div>
+  </div>
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div class="card" id="detail"><h3>Click a region</h3><div class="city">or hover to preview</div></div>
+  </div>
+  <p style="font-size:0.78rem; color: var(--ink-faint); margin-top:8px;">Chatham Islands (not shown — a territory, not a region) run 45 minutes ahead of the mainland: UTC+12:45 standard, UTC+13:45 daylight.</p>
+</section>
+
+<section id="national">
+  <h2>What it means nationally</h2>
+  <p>Population-weighted days per year, across all 16 regions (Stats NZ subnational estimates, ~2024 vintage):</p>
+  <div class="grid three">
+    <div class="card"><div class="stat" id="nat-keep-a7"></div><div class="stat-label">days with sunrise ≥ 7am — status quo</div></div>
+    <div class="card"><div class="stat" id="nat-abolish-a7"></div><div class="stat-label">days with sunrise ≥ 7am — permanent NZST</div></div>
+    <div class="card"><div class="stat" id="nat-perm-a7"></div><div class="stat-label">days with sunrise ≥ 7am — permanent NZDT</div></div>
+  </div>
+  <div class="grid three" style="margin-top:10px;">
+    <div class="card"><div class="stat" id="nat-keep-b6"></div><div class="stat-label">days with sunset &lt; 6pm — status quo</div></div>
+    <div class="card"><div class="stat" id="nat-abolish-b6"></div><div class="stat-label">days with sunset &lt; 6pm — permanent NZST</div></div>
+    <div class="card"><div class="stat good" id="nat-perm-b6"></div><div class="stat-label">days with sunset &lt; 6pm — permanent NZDT</div></div>
+  </div>
+  <p style="margin-top:14px;">The trade in one sentence: <strong>permanent NZDT buys light evenings (sunset stays past 6pm nearly all year) at the price of ~57 extra pre-7am-dark mornings per person per year</strong>; permanent NZST does the reverse; the status quo splits the difference by paying for it with two clock-change jolts a year. Whether the jolts or the dark mornings cost more is exactly what the evidence below is about.</p>
+  <details><summary>Regional extremes (computed)</summary>
+    <p>Under the status quo, days with sunrise ≥ 7am range from <strong>116 (Gisborne)</strong> to <strong>222 (Southland)</strong>. Under permanent NZDT, every region gets more of them: from 195 (Gisborne) to <strong>238 (Southland)</strong>, whose winter-solstice sunrise slides to <strong>09:31</strong>. Under permanent NZST, Auckland keeps its <strong>20:40</strong> midsummer sunset — the country's latest — while losing nothing it doesn't already have in winter.</p>
+  </details>
+</section>
+
+<section id="evidence">
+  <h2>The evidence — spikes are real, so are the counterweights</h2>
+
+  <h3>Measured in New Zealand</h3>
+  <div class="card" style="margin-bottom:14px;">
+    <p><strong>Road accidents rise at spring clock-onset.</strong> The first southern-hemisphere study — 12.6 million ACC accident claims, 2005–2016 — found the spring start of DST associated with <span class="stat">+16%</span> road accidents on the first day (Sunday) and <span class="stat">+12%</span> on Monday. Falls and home/community accidents shifted <em>before</em> the transitions, suggesting people anticipate the change. Work accidents showed limited impact.</p>
+    <span class="cite">Robb &amp; Barnes (2018). <em>Accident Analysis &amp; Prevention</em> 111:193–201. <a href="https://doi.org/10.1016/j.aap.2017.11.029">doi:10.1016/j.aap.2017.11.029</a> ✓ verified</span>
+  </div>
+
+  <div class="grid two">
+    <div class="card">
+      <h3>Health &amp; safety spikes (international)</h3>
+      <p style="margin-bottom:8px;">• <strong>Heart attacks:</strong> meta-analysis of 7 studies (&gt;115,000 subjects): AMI risk <span class="stat">+5%</span> (OR 1.05, 1.02–1.07) in the two weeks after <em>spring</em> onset; no significant change after autumn. <span class="cite">Manfredini et al. (2019). <em>J Clin Med</em> 8(3):404. <a href="https://doi.org/10.3390/jcm8030404">doi:10.3390/jcm8030404</a> ✓</span></p>
+      <p style="margin-bottom:8px;">• <strong>Stroke:</strong> Finnish nationwide registry: ischemic-stroke hospitalizations <span class="stat">RR 1.08</span> (1.01–1.15) in the first two days after either transition. <span class="cite">Sipilä, Ruuskanen, Rautava, Kytö (2016). <em>Sleep Medicine</em> 27–28:20–24. <a href="https://doi.org/10.1016/j.sleep.2016.10.009">doi:10.1016/j.sleep.2016.10.009</a> ✓</span></p>
+      <p style="margin-bottom:8px;">• <strong>Fatal crashes:</strong> 732,835 US fatal crashes 1996–2017: <span class="stat">+6%</span> in the week after spring onset — worse in the <em>west</em> of each time zone, the same "west-of-zone" geometry NZ's populated east coast has. <span class="cite">Fritz, VoPham, Wright, Vetter (2020). <em>Current Biology</em> 30:438–443. <a href="https://doi.org/10.1016/j.cub.2019.12.045">doi:10.1016/j.cub.2019.12.045</a> ✓</span></p>
+      <p style="margin-bottom:8px;">• <strong>Sleep → injuries:</strong> on the Monday after spring onset, US workers sleep <span class="stat">40 min</span> less and sustain more, and more severe, workplace injuries. <span class="cite">Barnes &amp; Wagner (2009). <em>J Applied Psychology</em> 94(5):1305–1317. <a href="https://doi.org/10.1037/a0015320">doi:10.1037/a0015320</a> ✓</span></p>
+      <p>• <strong>The one clear benefit:</strong> the autumn clock-back extends sleep; German hospital data (160M admissions) show cardiovascular admissions fall by <span class="stat good">~10 per day per million</span> for about four days after fall-back. <span class="cite">Jin &amp; Ziebarth (2020). <em>J Econ Behavior &amp; Organization</em> 170:174–192. <a href="https://doi.org/10.1016/j.jebo.2019.12.003">doi:10.1016/j.jebo.2019.12.003</a> ✓</span></p>
+    </div>
+    <div class="card">
+      <h3>The counterweights (why this isn't settled)</h3>
+      <p style="margin-bottom:8px;">• The largest review to date — <strong>157 studies, 36 countries</strong> (Steponenaite et al. 2026, <em>Eur J Epidemiol</em>) — concludes the "uniformly detrimental" framing <strong>is not supported</strong>: onset transitions associate with more acute MI and fatal accidents but <em>fewer</em> crimes of physical harm; offset transitions with <em>lower</em> all-cause mortality and fewer workplace accidents. <a href="https://doi.org/10.1007/s10654-026-01372-8" style="font-size:0.8rem;">doi:10.1007/s10654-026-01372-8</a> ✓</p>
+      <p style="margin-bottom:8px;">• Spring onset <strong>cuts robberies ~7%</strong> (ambient-light mechanism; the 2007 US extension ≈ $59M/yr in avoided social cost). <span class="cite">Doleac &amp; Sanders (2015). <em>Rev Econ &amp; Statistics</em> 97(5):1093–1103. <a href="https://doi.org/10.1162/REST_a_00547">doi:10.1162/REST_a_00547</a> ✓</span></p>
+      <p style="margin-bottom:8px;">• A Dutch PCI registry found <strong>no association</strong> between DST transitions and heart-attack interventions at all — the null result the headlines skip. <span class="cite">Derks et al. (2021). <em>Netherlands Heart Journal</em> 29:427–432. <a href="https://doi.org/10.1007/s12471-021-01566-7">doi:10.1007/s12471-021-01566-7</a> ✓</span></p>
+      <p>• The sleep-medicine position (AASM: permanent <em>standard</em> time) and the recreation/economics case (NZ's 2007 extension was justified on evening use) are <strong>a values question, not a settled fact</strong> — which is precisely what a toggleable map should let you explore.</p>
+    </div>
+  </div>
+
+  <h3 style="margin-top:22px;">Energy — the original rationale, dead or dying</h3>
+  <div class="card">
+    <p style="margin-bottom:8px;">The Indiana natural experiment (counties switching to DST for the first time): residential electricity <em>rose</em> ~<span class="stat">1%</span> overall, 2–4% in autumn — heating/lighting in dark mornings outweighed evening savings. <span class="cite">Kotchen &amp; Grant (2011). <em>Rev Econ &amp; Statistics</em> 93(4):1172–1185. <a href="https://doi.org/10.1162/REST_a_00131">doi:10.1162/REST_a_00131</a> ✓</span></p>
+    <p style="margin-bottom:8px;">Australia's Sydney-Olympics DST extension: <strong>no conservation</strong>, and a prominent simulation model overstated savings. <span class="cite">Kellogg &amp; Wolff (2008). <em>J Env Econ &amp; Management</em> 54(1):49–66. <a href="https://doi.org/10.1016/j.jeem.2008.02.003">doi:10.1016/j.jeem.2008.02.003</a> ✓</span></p>
+    <p>Meta-analysis of 44 studies (162 estimates): mean <span class="stat">0.34%</span> savings, only meaningful at high latitudes — NZ qualifies geographically, but no NZ-specific estimate exists. <span class="cite">Havranek, Herman, Irsova (2018). <em>The Energy Journal</em> 39(2):157–174. <a href="https://doi.org/10.5547/01956574.39.2.thav">doi:10.5547/01956574.39.2.thav</a> ✓</span></p>
+  </div>
+
+  <div class="note" style="margin-top:18px;"><strong>What we could not do (and won't fake):</strong> public Waka Kotahi CAS crash data carries year-level granularity only (no day-level dates), so we could not re-derive the NZ accident spike from open data — the +16%/+12% figures are Robb &amp; Barnes' published results, quoted from their abstract. And <strong>no NZ-specific myocardial-infarction or stroke study exists</strong>; cardiovascular claims ride on international evidence and are labeled as such.</div>
+</section>
+
+<section id="history">
+  <h2>A brief history (it's more interesting than you'd think)</h2>
+  <div class="timeline">
+    <div class="ev"><span class="yr">1895</span> — Entomologist <strong>George Hudson</strong> proposes shifting clocks to get more after-work daylight for insect collecting. The idea is New Zealand's own.</div>
+    <div class="ev"><span class="yr">1927</span> — Sir Thomas Sidey's Summer Time Act passes: clocks forward one hour. Public reaction is so hostile it's cut to <strong>half an hour in 1928</strong>.</div>
+    <div class="ev"><span class="yr">1941–45</span> — Wartime regulations keep "summer time" year-round; the Standard Time Act 1945 locks UTC+12 permanently — meaning <strong>NZ's current standard time is its former summer time</strong>.</div>
+    <div class="ev"><span class="yr">1974</span> — Time Act re-establishes the modern DST hour, after decades of half-hour experiments.</div>
+    <div class="ev"><span class="yr">2007</span> — Extended to today's 27 weeks after a petition and public consultation; a 2008 survey found <strong>82% approval</strong>. The stated rationale: evening recreation and retail — not energy.</div>
+    <div class="ev"><span class="yr">2023–26</span> — Two live Parliament petitions (abolish vs. permanent-DST). Neither adopted; the 2008 approval level suggests abolition is the harder sell.</div>
+  </div>
+</section>
+
+<section id="methods">
+  <h2>Methods, data &amp; provenance</h2>
+  <div class="card">
+    <p style="margin-bottom:8px;"><strong>Sun times:</strong> NOAA solar-calculator spreadsheet algorithm (implemented in Python, validated against timeanddate.com within ±3 min), computed per day over calendar 2026 for each region's largest city. Scenarios: <em>keep</em> (NZST/NZDT per the Time Act 1974 calendar — last Sunday September to first Sunday April), <em>abolish</em> (UTC+12 year-round), <em>permanent</em> (UTC+13 year-round).</p>
+    <p style="margin-bottom:8px;"><strong>Boundaries:</strong> Stats NZ Regional Council 2023 (Generalised), CC-BY 4.0, simplified (Douglas-Peucker, ~0.005° tolerance) for the web. <strong>Populations:</strong> Stats NZ subnational estimates (~2024 vintage, as retrieved Oct 2025) — used for the population-weighted national means only. <strong>Representative-city caveat:</strong> a region's largest city doesn't capture intra-regional spread (e.g. Queenstown vs Dunedin); the map is indicative, not a per-address forecast.</p>
+    <p><strong>Citations:</strong> all 14 references verified via Crossref/OpenAlex structured checks on 2026-09-16; none retracted. Effect sizes quoted only from primary abstracts or authors' own pages, never from memory.</p>
+  </div>
+  <details><summary>Full citation ledger (verified 2026-09-16)</summary>
+    <div style="font-size:0.8rem; line-height:1.9;">
+      1. Robb &amp; Barnes (2018) <em>Accid Anal Prev</em> — <a href="https://doi.org/10.1016/j.aap.2017.11.029">10.1016/j.aap.2017.11.029</a> ✓<br>
+      2. Sipilä, Ruuskanen, Rautava, Kytö (2016) <em>Sleep Med</em> — <a href="https://doi.org/10.1016/j.sleep.2016.10.009">10.1016/j.sleep.2016.10.009</a> ✓<br>
+      3. Barnes &amp; Wagner (2009) <em>J Appl Psychol</em> — <a href="https://doi.org/10.1037/a0015320">10.1037/a0015320</a> ✓<br>
+      4. Smith (2016) <em>AEJ: Applied</em> — <a href="https://doi.org/10.1257/app.20140100">10.1257/app.20140100</a> ✓<br>
+      5. Fritz, VoPham, Wright, Vetter (2020) <em>Curr Biol</em> — <a href="https://doi.org/10.1016/j.cub.2019.12.045">10.1016/j.cub.2019.12.045</a> ✓<br>
+      6. Manfredini et al. (2019) <em>J Clin Med</em> — <a href="https://doi.org/10.3390/jcm8030404">10.3390/jcm8030404</a> ✓<br>
+      7. Jin &amp; Ziebarth (2020) <em>J Econ Behav Organ</em> — <a href="https://doi.org/10.1016/j.jebo.2019.12.003">10.1016/j.jebo.2019.12.003</a> ✓<br>
+      8. Kotchen &amp; Grant (2011) <em>Rev Econ Stat</em> — <a href="https://doi.org/10.1162/REST_a_00131">10.1162/REST_a_00131</a> ✓<br>
+      9. Kellogg &amp; Wolff (2008) <em>JEEM</em> — <a href="https://doi.org/10.1016/j.jeem.2008.02.003">10.1016/j.jeem.2008.02.003</a> ✓<br>
+      10. Havranek, Herman, Irsova (2018) <em>Energy J</em> — <a href="https://doi.org/10.5547/01956574.39.2.thav">10.5547/01956574.39.2.thav</a> ✓<br>
+      11. Doleac &amp; Sanders (2015) <em>Rev Econ Stat</em> — <a href="https://doi.org/10.1162/REST_a_00547">10.1162/REST_a_00547</a> ✓<br>
+      12. Derks et al. (2021) <em>Neth Heart J</em> — <a href="https://doi.org/10.1007/s12471-021-01566-7">10.1007/s12471-021-01566-7</a> ✓<br>
+      13. Steponenaite, Wallraff, Wild, Brown (2026) <em>Eur J Epidemiol</em> — <a href="https://doi.org/10.1007/s10654-026-01372-8">10.1007/s10654-026-01372-8</a> ✓<br>
+      14. Hurst, Morfeld, Lewis, Erren (2024) <em>Dtsch Arztebl Int</em> — <a href="https://doi.org/10.3238/arztebl.m2024.0078">10.3238/arztebl.m2024.0078</a> ✓<br>
+      Smith (2016) is cited for the fatal-crash sleep mechanism (+30 deaths/yr, $275M social cost); the +6% figure on the page is Fritz et al.'s, not Smith's.
+    </div>
+  </details>
+</section>
+
+<footer>
+  <div class="container">
+    Built by <a href="https://github.com/NimbleCoAI/Matilde">Matilde</a> (NimbleCo) · data computed 2026-09-16 · sources: Stats NZ (CC-BY 4.0), NOAA · all citations verified via Crossref/OpenAlex · part of the <a href="../">open-science experiments</a>
+  </div>
+</footer>
+
+</div><!-- /container -->
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let DATA = null, GEO = null, layer = null;
+let SC = 'keep', M = 'days_sunrise_after_7';
+
+const fmtPop = n => n >= 1e6 ? (n/1e6).toFixed(2)+'M' : Math.round(n/1000)+'k';
+const hm2min = s => { if (!s) return null; const [h,m] = s.split(':').map(Number); return h*60+m; };
+
+function metricValue(name) {
+  const r = DATA.regions[name];
+  if (!r) return null;
+  const v = r.scenarios[SC][M];
+  return M === 'winter_sunrise' ? hm2min(v) : v;
+}
+function metricLabel(v) {
+  if (M === 'winter_sunrise') { const h=Math.floor(v/60), m=v%60; return `${h}:${String(m).padStart(2,'0')}`; }
+  return v + ' days';
+}
+
+// colour ramp: green -> gold -> accent
+const STOPS = [[74,107,58],[156,124,47],[139,58,58]];
+function ramp(t) {
+  const seg = t < 0.5 ? 0 : 1, f = t < 0.5 ? t*2 : (t-0.5)*2;
+  const a = STOPS[seg], b = STOPS[seg+1];
+  const c = a.map((v,i) => Math.round(v + f*(b[i]-v)));
+  return `rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+function styleFn() {
+  const vals = Object.keys(DATA.regions).map(metricValue).filter(v => v !== null);
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  return feature => {
+    const v = metricValue(feature.properties.name);
+    const t = (v - mn) / (mx - mn || 1);
+    return { fillColor: ramp(t) /* more of metric = warmer/red */, weight: 1,
+             color: '#f5f0e6', fillOpacity: 0.85, opacity: 0.9 };
+  };
+}
+
+function legendRamp() {
+  const el = document.createElement('div');
+  el.className = 'legend';
+  const vals = Object.keys(DATA.regions).map(metricValue).filter(v => v !== null);
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const sw = [];
+  for (let i = 0; i <= 10; i++) sw.push(ramp(i/10));
+  el.innerHTML = `<div class="ramp" style="background:linear-gradient(90deg, ${sw.join(',')})"></div>
+    <div class="lbl"><span>${metricLabel(Math.round(mn))}</span><span>${metricLabel(Math.round(mx))}</span></div>`;
+  return el;
+}
+
+function updateMap() {
+  if (layer) { map.removeLayer(layer); }
+  layer = L.geoJSON(GEO, { style: styleFn() }).addTo(map);
+  layer.bindTooltip(f => {
+    const r = DATA.regions[f.feature.properties.name];
+    const v = metricValue(f.feature.properties.name);
+    return `<b>${f.feature.properties.name}</b><br><span class="r">${metricLabel(v)}</span>`;
+  }, { sticky: true });
+  layer.on('click', e => showDetail(e.layer.feature.properties.name));
+}
+
+function showDetail(name) {
+  const r = DATA.regions[name];
+  const el = document.getElementById('detail');
+  const rows = ['keep','abolish','permanent'].map(sc => {
+    const s = r.scenarios[sc];
+    const label = sc === 'keep' ? 'Status quo' : sc === 'abolish' ? 'Permanent NZST' : 'Permanent NZDT';
+    let v;
+    if (M === 'winter_sunrise') v = s.winter_sunrise;
+    else if (M === 'days_sunset_before_6') v = s.days_sunset_before_6 + ' d';
+    else v = s.days_sunrise_after_7 + ' d';
+    return `<tr><th>${label}</th><td class="num"><b>${v}</b></td></tr>`;
+  }).join('');
+  const k = r.scenarios.keep, p = r.scenarios.permanent, a = r.scenarios.abolish;
+  el.innerHTML = `<h3>${name}</h3><div class="city">${r.city} · pop ${fmtPop(r.pop)} · ${r.lat.toFixed(2)}°S</div>
+    <table>
+      <tr><th colspan="2" style="color:var(--gold-bg)">${M === 'winter_sunrise' ? 'Winter-solstice sunrise' : M === 'days_sunset_before_6' ? 'Days with sunset &lt; 6pm' : 'Days with sunrise ≥ 7am'}</th></tr>
+      ${rows}
+    </table>
+    <table style="margin-top:10px;">
+      <tr><th>Winter sunrise (now → perm NZDT)</th><td class="num">${k.winter_sunrise} → ${p.winter_sunrise}</td></tr>
+      <tr><th>Winter sunset (now)</th><td class="num">${k.winter_sunset}</td></tr>
+      <tr><th>Midsummer sunset (now → perm NZST)</th><td class="num">${k.summer_sunset} → ${a.summer_sunset}</td></tr>
+      <tr><th>Days sunrise ≥ 7am (abolish)</th><td class="num">${a.days_sunrise_after_7}</td></tr>
+    </table>`;
+}
+
+function updateNational() {
+  const n = DATA.national;
+  document.getElementById('nat-keep-a7').textContent = n.keep.pop_weighted_days_sunrise_after_7 + ' d';
+  document.getElementById('nat-abolish-a7').textContent = n.abolish.pop_weighted_days_sunrise_after_7 + ' d';
+  document.getElementById('nat-perm-a7').textContent = n.permanent.pop_weighted_days_sunrise_after_7 + ' d';
+  document.getElementById('nat-keep-b6').textContent = n.keep.pop_weighted_days_sunset_before_6 + ' d';
+  document.getElementById('nat-abolish-b6').textContent = n.abolish.pop_weighted_days_sunset_before_6 + ' d';
+  document.getElementById('nat-perm-b6').textContent = n.permanent.pop_weighted_days_sunset_before_6 + ' d';
+}
+
+const map = L.map('map', { scrollWheelZoom: true }).setView([-41.3, 173.5], 5);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '© Esri, OpenStreetMap contributors', maxZoom: 12
+}).addTo(map);
+
+let legendCtl = null;
+function refreshLegend() {
+  if (legendCtl) map.removeControl(legendCtl);
+  legendCtl = L.control({ position: 'bottomright' });
+  legendCtl.onAdd = () => legendRamp();
+  legendCtl.addTo(map);
+}
+
+function applyState(fromHash) {
+  if (fromHash) {
+    const h = new URLSearchParams(location.hash.slice(1));
+    if (h.get('sc')) SC = h.get('sc');
+    if (h.get('m')) M = h.get('m');
+  }
+  document.querySelectorAll('#scenario-seg button').forEach(b => b.classList.toggle('active', b.dataset.sc === SC));
+  document.querySelectorAll('#metric-seg button').forEach(b => b.classList.toggle('active', b.dataset.m === M));
+  if (!fromHash) {
+    const h = new URLSearchParams();
+    h.set('sc', SC); h.set('m', M);
+    history.replaceState(null, '', '#' + h.toString());
+  }
+  updateMap(); refreshLegend();
+}
+
+document.querySelectorAll('#scenario-seg button').forEach(b =>
+  b.addEventListener('click', () => { SC = b.dataset.sc; applyState(false); }));
+document.querySelectorAll('#metric-seg button').forEach(b =>
+  b.addEventListener('click', () => { M = b.dataset.m; applyState(false); }));
+
+(async () => {
+  const [dRes, gRes] = await Promise.all([
+    fetch('dst_data.json'), fetch('regions.geojson')
+  ]);
+  DATA = await dRes.json(); GEO = await gRes.json();
+  updateNational();
+  applyState(true);
+})();
+</script>
+</body>
+</html>
