@@ -240,10 +240,10 @@ footer a{color:var(--accent)}
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
       <span class="chart-title">Peak response, per animal</span>
-      <span class="badge">ΔF/F₀ % · first 60 s</span>
+      <span class="badge">ΔF/F₀ % · first minute</span>
     </div>
     <div class="chart-box"><canvas id="lpPeakChart"></canvas></div>
-    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">Peak of the 1-min-binned ΔF/F in the first 60 s from pulse onset (baseline as above); Raw maximum of the 1-min-binned ΔF/F over (0, 60] min after onset — a 1-min raw max is noise-sensitive at the single-bin scale (GFP 7386's read is −0.75%), which is the honest floor of this display. Latency is not shown: the raw max lands at the first covered bin for every animal, so it carries no information at this bin size. Troughs are not shown (retired 2026-09-18); the sustained post-pulse trough is described in the group-means footnote above. Hover for the animal's numbers.</p>
+    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">First-minute ΔF/F: the single 1-min bin after pulse onset (baseline as above). At 1-min resolution the “first 60 s” holds exactly one sample — this is a single-bin read, not a peak-finding window, and it is noise-dominated at that scale (GFP 7386 reads −0.75%). No latency axis: with one bin there is no latency to report. Troughs are not shown (retired 2026-09-18); the sustained post-pulse trough is described in the group-means footnote above. Hover for the animal's numbers.</p>
   </div>
 </section>
 
@@ -1261,17 +1261,19 @@ function renderLpPeak(){
   for(const [a,e] of Object.entries(LPG.lp_trig)){
     const t=e.t, d=e.d;
     let m=null;
+    // r14 units fix (Matilde catch): 'first 60 s' at 1-min bins = the single
+    // (0,1] bin. The earlier (0,60]-MINUTES window was the first HOUR.
     for(let i=0;i<t.length;i++){
       const tt=t[i], v=d[i];
       if(v==null) continue;
-      if(tt>0&&tt<=60){ if(m===null||v>m) m=v; }
+      if(tt>0&&tt<=1){ if(m===null||v>m) m=v; }
     }
     peak60[a]=m;
   }
   const ds=[];
   for(const [g,arr] of Object.entries(byG)){
-    ds.push({type:'scatter',label:`${g} peak (0\u201360 s)`,
-      data:arr.map(({a})=>({x:a,y:(peak60[a]!=null?peak60[a]*100:LPG.peaks[a].peak_dF*100)})),
+    ds.push({type:'scatter',label:`${g} first-minute \u0394F/F`,
+      data:arr.map(({a})=>({x:a,y:(peak60[a]!=null?peak60[a]*100:null)})),
       backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
   }
   const animalIds=Object.keys(LPG.peaks);
@@ -1281,13 +1283,13 @@ function renderLpPeak(){
     data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
       scales:{x:{type:'category',labels:animalIds.map(a=>'#'+a),
-              title:{display:true,text:'animal (raw peak of the 1-min-binned ΔF/F, first 60 s from pulse onset)'}},
-              y:{title:{display:true,text:'peak ΔF/F₀ (%) in first 60 s'},grid:{color:RULE}}}},
+              title:{display:true,text:'animal (first-minute ΔF/F, single 1-min bin after pulse onset)'}},
+              y:{title:{display:true,text:'first-minute ΔF/F₀ (%)'},grid:{color:RULE}}}},
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
         tooltip:{callbacks:{label:it=>{
           const a=animalIds[it.dataIndex];
           const v=peak60[a];
-          return `#${a}: peak ${v!=null?(v>=0?'+':'')+(v*100).toFixed(2):'n/a'}% in the first 60 s`;
+          return `#${a}: first-minute ΔF/F ${v!=null?(v>=0?'+':'')+(v*100).toFixed(2):'n/a'}%`;
         }}}}});
 }
 function renderActogram(a){
