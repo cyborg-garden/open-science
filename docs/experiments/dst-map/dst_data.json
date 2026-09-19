@@ -1,0 +1,488 @@
+{
+ "meta": {
+  "computed": "2026-09-16",
+  "method": "NOAA solar calculator, per-day loop over 2026, NZ DST calendar per Time Act 1974",
+  "note_chathams": "Territory, not a region \u2014 runs 45 minutes ahead: UTC+12:45 standard, UTC+13:45 daylight.",
+  "total_pop": 5324100
+ },
+ "regions": {
+  "Northland": {
+   "city": "Whang\u0101rei",
+   "lat": -35.732,
+   "lon": 174.322,
+   "pop": 201100,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:32",
+     "winter_sunset": "17:16",
+     "summer_sunset": "20:39",
+     "days_sunrise_after_7": 158,
+     "days_sunset_before_6": 136
+    },
+    "abolish": {
+     "winter_sunrise": "07:32",
+     "winter_sunset": "17:16",
+     "summer_sunset": "19:39",
+     "days_sunrise_after_7": 110,
+     "days_sunset_before_6": 136
+    },
+    "permanent": {
+     "winter_sunrise": "08:32",
+     "winter_sunset": "18:16",
+     "summer_sunset": "20:39",
+     "days_sunrise_after_7": 223,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Auckland": {
+   "city": "Auckland",
+   "lat": -36.85,
+   "lon": 174.76,
+   "pop": 1816000,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:34",
+     "winter_sunset": "17:11",
+     "summer_sunset": "20:40",
+     "days_sunrise_after_7": 154,
+     "days_sunset_before_6": 142
+    },
+    "abolish": {
+     "winter_sunrise": "07:34",
+     "winter_sunset": "17:11",
+     "summer_sunset": "19:40",
+     "days_sunrise_after_7": 110,
+     "days_sunset_before_6": 142
+    },
+    "permanent": {
+     "winter_sunrise": "08:34",
+     "winter_sunset": "18:11",
+     "summer_sunset": "20:40",
+     "days_sunrise_after_7": 219,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Waikato": {
+   "city": "Hamilton",
+   "lat": -37.787,
+   "lon": 175.279,
+   "pop": 532100,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:34",
+     "winter_sunset": "17:07",
+     "summer_sunset": "20:41",
+     "days_sunrise_after_7": 148,
+     "days_sunset_before_6": 147
+    },
+    "abolish": {
+     "winter_sunrise": "07:34",
+     "winter_sunset": "17:07",
+     "summer_sunset": "19:41",
+     "days_sunrise_after_7": 109,
+     "days_sunset_before_6": 147
+    },
+    "permanent": {
+     "winter_sunrise": "08:34",
+     "winter_sunset": "18:07",
+     "summer_sunset": "20:41",
+     "days_sunrise_after_7": 214,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Bay of Plenty": {
+   "city": "Tauranga",
+   "lat": -37.686,
+   "lon": 176.167,
+   "pop": 351500,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:30",
+     "winter_sunset": "17:03",
+     "summer_sunset": "20:37",
+     "days_sunrise_after_7": 135,
+     "days_sunset_before_6": 154
+    },
+    "abolish": {
+     "winter_sunrise": "07:30",
+     "winter_sunset": "17:03",
+     "summer_sunset": "19:37",
+     "days_sunrise_after_7": 101,
+     "days_sunset_before_6": 154
+    },
+    "permanent": {
+     "winter_sunrise": "08:30",
+     "winter_sunset": "18:03",
+     "summer_sunset": "20:37",
+     "days_sunrise_after_7": 208,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Gisborne": {
+   "city": "Gisborne",
+   "lat": -38.662,
+   "lon": 178.018,
+   "pop": 52700,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:26",
+     "winter_sunset": "16:53",
+     "summer_sunset": "20:33",
+     "days_sunrise_after_7": 116,
+     "days_sunset_before_6": 167
+    },
+    "abolish": {
+     "winter_sunrise": "07:26",
+     "winter_sunset": "16:53",
+     "summer_sunset": "19:33",
+     "days_sunrise_after_7": 90,
+     "days_sunset_before_6": 169
+    },
+    "permanent": {
+     "winter_sunrise": "08:26",
+     "winter_sunset": "17:53",
+     "summer_sunset": "20:33",
+     "days_sunrise_after_7": 195,
+     "days_sunset_before_6": 46
+    }
+   }
+  },
+  "Hawke's Bay": {
+   "city": "Napier",
+   "lat": -39.493,
+   "lon": 176.912,
+   "pop": 179700,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:33",
+     "winter_sunset": "16:55",
+     "summer_sunset": "20:40",
+     "days_sunrise_after_7": 132,
+     "days_sunset_before_6": 162
+    },
+    "abolish": {
+     "winter_sunrise": "07:33",
+     "winter_sunset": "16:55",
+     "summer_sunset": "19:40",
+     "days_sunrise_after_7": 102,
+     "days_sunset_before_6": 162
+    },
+    "permanent": {
+     "winter_sunrise": "08:33",
+     "winter_sunset": "17:55",
+     "summer_sunset": "20:40",
+     "days_sunrise_after_7": 202,
+     "days_sunset_before_6": 40
+    }
+   }
+  },
+  "Taranaki": {
+   "city": "New Plymouth",
+   "lat": -39.056,
+   "lon": 174.075,
+   "pop": 130300,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:43",
+     "winter_sunset": "17:08",
+     "summer_sunset": "20:50",
+     "days_sunrise_after_7": 166,
+     "days_sunset_before_6": 141
+    },
+    "abolish": {
+     "winter_sunrise": "07:43",
+     "winter_sunset": "17:08",
+     "summer_sunset": "19:50",
+     "days_sunrise_after_7": 121,
+     "days_sunset_before_6": 141
+    },
+    "permanent": {
+     "winter_sunrise": "08:43",
+     "winter_sunset": "18:08",
+     "summer_sunset": "20:50",
+     "days_sunrise_after_7": 220,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Manawat\u016b-Whanganui": {
+   "city": "Palmerston North",
+   "lat": -40.356,
+   "lon": 175.611,
+   "pop": 260700,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:40",
+     "winter_sunset": "16:58",
+     "summer_sunset": "20:48",
+     "days_sunrise_after_7": 148,
+     "days_sunset_before_6": 154
+    },
+    "abolish": {
+     "winter_sunrise": "07:40",
+     "winter_sunset": "16:58",
+     "summer_sunset": "19:48",
+     "days_sunrise_after_7": 114,
+     "days_sunset_before_6": 154
+    },
+    "permanent": {
+     "winter_sunrise": "08:40",
+     "winter_sunset": "17:58",
+     "summer_sunset": "20:48",
+     "days_sunrise_after_7": 209,
+     "days_sunset_before_6": 28
+    }
+   }
+  },
+  "Wellington": {
+   "city": "Wellington",
+   "lat": -41.287,
+   "lon": 174.776,
+   "pop": 543400,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:47",
+     "winter_sunset": "16:58",
+     "summer_sunset": "20:54",
+     "days_sunrise_after_7": 160,
+     "days_sunset_before_6": 149
+    },
+    "abolish": {
+     "winter_sunrise": "07:47",
+     "winter_sunset": "16:58",
+     "summer_sunset": "19:54",
+     "days_sunrise_after_7": 122,
+     "days_sunset_before_6": 149
+    },
+    "permanent": {
+     "winter_sunrise": "08:47",
+     "winter_sunset": "17:58",
+     "summer_sunset": "20:54",
+     "days_sunrise_after_7": 213,
+     "days_sunset_before_6": 26
+    }
+   }
+  },
+  "Tasman": {
+   "city": "Richmond",
+   "lat": -41.339,
+   "lon": 173.185,
+   "pop": 59900,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:53",
+     "winter_sunset": "17:04",
+     "summer_sunset": "21:01",
+     "days_sunrise_after_7": 178,
+     "days_sunset_before_6": 138
+    },
+    "abolish": {
+     "winter_sunrise": "07:53",
+     "winter_sunset": "17:04",
+     "summer_sunset": "20:01",
+     "days_sunrise_after_7": 132,
+     "days_sunset_before_6": 138
+    },
+    "permanent": {
+     "winter_sunrise": "08:53",
+     "winter_sunset": "18:04",
+     "summer_sunset": "21:01",
+     "days_sunrise_after_7": 221,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Nelson": {
+   "city": "Nelson",
+   "lat": -41.271,
+   "lon": 173.284,
+   "pop": 54300,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:53",
+     "winter_sunset": "17:04",
+     "summer_sunset": "21:00",
+     "days_sunrise_after_7": 177,
+     "days_sunset_before_6": 139
+    },
+    "abolish": {
+     "winter_sunrise": "07:53",
+     "winter_sunset": "17:04",
+     "summer_sunset": "20:00",
+     "days_sunrise_after_7": 131,
+     "days_sunset_before_6": 139
+    },
+    "permanent": {
+     "winter_sunrise": "08:53",
+     "winter_sunset": "18:04",
+     "summer_sunset": "21:00",
+     "days_sunrise_after_7": 221,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Marlborough": {
+   "city": "Blenheim",
+   "lat": -41.516,
+   "lon": 173.957,
+   "pop": 50800,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "07:51",
+     "winter_sunset": "17:00",
+     "summer_sunset": "20:58",
+     "days_sunrise_after_7": 169,
+     "days_sunset_before_6": 144
+    },
+    "abolish": {
+     "winter_sunrise": "07:51",
+     "winter_sunset": "17:00",
+     "summer_sunset": "19:58",
+     "days_sunrise_after_7": 127,
+     "days_sunset_before_6": 144
+    },
+    "permanent": {
+     "winter_sunrise": "08:51",
+     "winter_sunset": "18:00",
+     "summer_sunset": "20:58",
+     "days_sunrise_after_7": 217,
+     "days_sunset_before_6": 6
+    }
+   }
+  },
+  "West Coast": {
+   "city": "Greymouth",
+   "lat": -42.451,
+   "lon": 171.207,
+   "pop": 34700,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "08:05",
+     "winter_sunset": "17:08",
+     "summer_sunset": "21:12",
+     "days_sunrise_after_7": 202,
+     "days_sunset_before_6": 128
+    },
+    "abolish": {
+     "winter_sunrise": "08:05",
+     "winter_sunset": "17:08",
+     "summer_sunset": "20:12",
+     "days_sunrise_after_7": 146,
+     "days_sunset_before_6": 128
+    },
+    "permanent": {
+     "winter_sunrise": "09:05",
+     "winter_sunset": "18:08",
+     "summer_sunset": "21:12",
+     "days_sunrise_after_7": 231,
+     "days_sunset_before_6": 0
+    }
+   }
+  },
+  "Canterbury": {
+   "city": "Christchurch",
+   "lat": -43.531,
+   "lon": 172.637,
+   "pop": 698200,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "08:03",
+     "winter_sunset": "16:59",
+     "summer_sunset": "21:11",
+     "days_sunrise_after_7": 186,
+     "days_sunset_before_6": 139
+    },
+    "abolish": {
+     "winter_sunrise": "08:03",
+     "winter_sunset": "16:59",
+     "summer_sunset": "20:11",
+     "days_sunrise_after_7": 139,
+     "days_sunset_before_6": 139
+    },
+    "permanent": {
+     "winter_sunrise": "09:03",
+     "winter_sunset": "17:59",
+     "summer_sunset": "21:11",
+     "days_sunrise_after_7": 222,
+     "days_sunset_before_6": 19
+    }
+   }
+  },
+  "Otago": {
+   "city": "Dunedin",
+   "lat": -45.878,
+   "lon": 170.503,
+   "pop": 253900,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "08:20",
+     "winter_sunset": "16:59",
+     "summer_sunset": "21:29",
+     "days_sunrise_after_7": 208,
+     "days_sunset_before_6": 131
+    },
+    "abolish": {
+     "winter_sunrise": "08:20",
+     "winter_sunset": "16:59",
+     "summer_sunset": "20:29",
+     "days_sunrise_after_7": 154,
+     "days_sunset_before_6": 131
+    },
+    "permanent": {
+     "winter_sunrise": "09:20",
+     "winter_sunset": "17:59",
+     "summer_sunset": "21:29",
+     "days_sunrise_after_7": 229,
+     "days_sunset_before_6": 18
+    }
+   }
+  },
+  "Southland": {
+   "city": "Invercargill",
+   "lat": -46.413,
+   "lon": 168.354,
+   "pop": 104800,
+   "scenarios": {
+    "keep": {
+     "winter_sunrise": "08:31",
+     "winter_sunset": "17:05",
+     "summer_sunset": "21:39",
+     "days_sunrise_after_7": 222,
+     "days_sunset_before_6": 120
+    },
+    "abolish": {
+     "winter_sunrise": "08:31",
+     "winter_sunset": "17:05",
+     "summer_sunset": "20:39",
+     "days_sunrise_after_7": 166,
+     "days_sunset_before_6": 120
+    },
+    "permanent": {
+     "winter_sunrise": "09:31",
+     "winter_sunset": "18:05",
+     "summer_sunset": "21:39",
+     "days_sunrise_after_7": 238,
+     "days_sunset_before_6": 0
+    }
+   }
+  }
+ },
+ "national": {
+  "keep": {
+   "pop_weighted_days_sunrise_after_7": 160.9,
+   "pop_weighted_days_sunset_before_6": 143.8
+  },
+  "abolish": {
+   "pop_weighted_days_sunrise_after_7": 118.4,
+   "pop_weighted_days_sunset_before_6": 143.8
+  },
+  "permanent": {
+   "pop_weighted_days_sunrise_after_7": 217.4,
+   "pop_weighted_days_sunset_before_6": 9.2
+  }
+ }
+}

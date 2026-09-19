@@ -1,0 +1,10 @@
+{
+  "slug": "dst-map",
+  "title": "Daylight Saving in Aotearoa: Three Clock Futures",
+  "blurb": "Is NZ really scrapping daylight saving? An interactive regional map of three clock policies — keep, abolish, permanent NZDT — with health, safety and energy evidence weighed honestly (14 citations verified, none retracted).",
+  "emoji": "🕰️",
+  "status": "published",
+  "updated": "2026-09-16",
+  "order": 100,
+  "source": "scripts/compute_dst_data.py + scripts/simplify_dst_geojson.py in this repo; Stats NZ regional boundaries (CC-BY 4.0) and subnational population estimates"
+}
