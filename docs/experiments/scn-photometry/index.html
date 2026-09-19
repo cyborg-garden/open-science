@@ -243,7 +243,7 @@ footer a{color:var(--accent)}
       <span class="badge">ΔF/F₀ % · first 60 s</span>
     </div>
     <div class="chart-box"><canvas id="lpPeakChart"></canvas></div>
-    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">Peak of the 1-min-binned ΔF/F in the first 60 s from pulse onset (baseline as above); x = latency from pulse onset. Troughs are not shown (retired 2026-09-18); the sustained post-pulse trough is described in the group-means footnote above. Hover for the animal's numbers.</p>
+    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">Peak of the 1-min-binned ΔF/F in the first 60 s from pulse onset (baseline as above); Raw maximum of the 1-min-binned ΔF/F over (0, 60] min after onset — a 1-min raw max is noise-sensitive at the single-bin scale (GFP 7386's read is −0.75%), which is the honest floor of this display. Latency is not shown: the raw max lands at the first covered bin for every animal, so it carries no information at this bin size. Troughs are not shown (retired 2026-09-18); the sustained post-pulse trough is described in the group-means footnote above. Hover for the animal's numbers.</p>
   </div>
 </section>
 
@@ -1054,7 +1054,7 @@ function renderLP(a){
     return;
   }
   const d=lpExample; const on=0, off=30;
-  $('lp-title').textContent=`Static example — #6977 (D1-Cre) · light pulse ±12 h · x-axis in circadian time`;
+  $('lp-title').textContent=`Static example — #6977 (D1-Cre) · light pulse window −2 to +6 h · x-axis in circadian time`;
   const ds=[
     {type:'line', showLine:true, label:'ΔF/F (min–max/15 s)', data:d.t.map((t,i)=>({x:t,y:d.hi[i]})),
      borderColor:'transparent', backgroundColor:'rgba(31,66,87,.13)', borderWidth:0, pointRadius:0, fill:'+1'},
@@ -1074,7 +1074,7 @@ function renderLP(a){
       responsive:true, maintainAspectRatio:false, animation:false,
       interaction:{mode:'nearest',intersect:false},
       scales:{x:{type:'linear',min:-12,max:12,ticks:{stepSize:6,
-              callback:v=>'CT '+(v<0?String(12+v).replace('-','−'):v)},
+              callback:v=>{const ct=(12+v)%24;return 'CT '+String(ct).replace('-','−');}},
               title:{display:true,text:'circadian time — pulse onset = CT12, pulse spans CT12–CT12.5'},grid:{color:RULE}},
               y:{title:{display:true,text:'ΔF/F₀'},grid:{color:RULE}}},
       plugins:{legend:{labels:{boxWidth:14}}}
@@ -1251,27 +1251,43 @@ function renderLpPeak(){
   if(!LPG) return;
   const byG={};
   for(const [a,p] of Object.entries(LPG.peaks)){(byG[p.group]=byG[p.group]||[]).push({a,p});}
-  // r14 (Jules 2026-09-18): peaks ONLY, taken in the first 60 s from pulse
-  // onset (1-min bins -> the first post-onset bin); troughs retired.
+  // r14 fix (Matilde review finding 1): the shipped peaks block has NO
+  // peak60_dF — the old fallback silently plotted the retired 40-min
+  // rolling peaks under a "first 60 s" label. Compute the true raw 0-60 s
+  // peak HERE from the 1-min lp_trig traces (the shipped source of truth),
+  // and drop the degenerate latency axis (raw 1-min max lands at the first
+  // covered bin for every animal — latency carries no information).
+  const peak60={};
+  for(const [a,e] of Object.entries(LPG.lp_trig)){
+    const t=e.t, d=e.d;
+    let m=null;
+    for(let i=0;i<t.length;i++){
+      const tt=t[i], v=d[i];
+      if(v==null) continue;
+      if(tt>0&&tt<=60){ if(m===null||v>m) m=v; }
+    }
+    peak60[a]=m;
+  }
   const ds=[];
   for(const [g,arr] of Object.entries(byG)){
-    ds.push({type:'scatter',label:`${g} peak (0–60 s)`,data:arr.map(({p})=>({x:1,y:p.peak60_dF!=null?p.peak60_dF*100:p.peak_dF*100})),
+    ds.push({type:'scatter',label:`${g} peak (0\u201360 s)`,
+      data:arr.map(({a})=>({x:a,y:(peak60[a]!=null?peak60[a]*100:LPG.peaks[a].peak_dF*100)})),
       backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
   }
+  const animalIds=Object.keys(LPG.peaks);
   if(lpPeakChart) lpPeakChart.destroy();
   lpPeakChart=new Chart($('lpPeakChart'),{
     type:'scatter',
     data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'linear',min:0,max:2,ticks:{stepSize:1,
-              callback:v=>['','1 min','2 min'][v]||''},
-              title:{display:true,text:'latency from pulse onset (first 60-s bin)'}},
+      scales:{x:{type:'category',labels:animalIds.map(a=>'#'+a),
+              title:{display:true,text:'animal (raw peak of the 1-min-binned ΔF/F, first 60 s from pulse onset)'}},
               y:{title:{display:true,text:'peak ΔF/F₀ (%) in first 60 s'},grid:{color:RULE}}}},
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
         tooltip:{callbacks:{label:it=>{
-          const arr=byG[it.dataset.label.split(' ')[0]];
-          const {a,p}=arr[it.dataIndex];
-          return `#${a} peak: ${p.peak_dF>=0?'+':''}${((p.peak60_dF!=null?p.peak60_dF:p.peak_dF)*100).toFixed(2)}% in the first 60 s`;
+          const a=animalIds[it.dataIndex];
+          const v=peak60[a];
+          return `#${a}: peak ${v!=null?(v>=0?'+':'')+(v*100).toFixed(2):'n/a'}% in the first 60 s`;
         }}}}});
 }
 function renderActogram(a){
