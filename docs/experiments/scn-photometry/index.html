@@ -47,8 +47,13 @@ p+p{margin-top:14px}
 .ctrl label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:6px}
 .ctrl select{font-family:var(--mono);font-size:14px;padding:8px 12px;background:var(--surface);border:1px solid var(--rule-2);color:var(--ink);border-radius:2px;min-width:180px}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
+/* r14: square-ish zoom panels (Jules 2026-09-18 — ±5-min panels were ~4:1
+   stretched in x). Aspect 4/3 keeps them readable without eating the page. */
+.square-zoom-box{aspect-ratio:4/3;min-height:240px}
 .chip{font-family:var(--mono);font-size:12px;padding:5px 12px;border:1px solid var(--rule-2);border-radius:999px;background:var(--surface);color:var(--ink-soft);cursor:pointer;user-select:none}
 .chip.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+/* r14: chips with no data behind them are visibly disabled, not silently inert */
+.chip.nodata{opacity:.35;cursor:not-allowed}
 .card{background:var(--surface);border:1px solid var(--rule);border-radius:3px;padding:22px}
 .chart-box{position:relative;height:340px}
 .chart-box.tall{height:420px}
@@ -108,23 +113,24 @@ footer a{color:var(--accent)}
   <a href="#lightpulse">Light pulse</a>
   <a href="#clocks">Two clocks</a>
   <a href="#relock">Re-locking</a>
-  <a href="#feedback">Running &amp; clock</a>
   <a href="#boutca">Bout calcium</a>
   <a href="#lddd">LD → DD</a>
+  <a href="#roomcontrol">Room control</a>
   <a href="#cohort">Cohort</a>
   <a href="#methods">Methods &amp; validation</a>
+  <a href="#analysis-archive">Archive</a>
 </div></nav>
 
 <section id="explore">
   <div class="wrap">
     <h2><span class="no">01</span>Individual mouse recordings</h2>
-    <p class="lede">Calcium-dependent fluorescence (ΔF/F₀, 470 nm signal / 415 nm isosbestic correction) alongside wheel revolutions, across the entire recording. The shaded band is the min–max envelope per 6-minute bin; the line is the running signal. The gold line marks the light pulse.</p>
+    <p class="lede">Calcium-dependent fluorescence (ΔF/F₀, 470 nm signal / 415 nm isosbestic correction) alongside the behavior stream, across the entire recording. The shaded band is the min–max envelope per 6-minute bin; the darker line is the smoothed signal. The gold line marks the light pulse. <span id="explore-construct">Expressed: —</span></p>
     <div class="controls">
       <div class="ctrl"><label>Session</label><select id="sel-session"></select></div>
-      <div class="ctrl"><label>Animal</label><select id="sel-animal"></select></div>
+      <div class="ctrl" id="explore-animal-ctrl"><label>Animal</label><select id="sel-animal"></select></div>
       <div class="chips" id="trace-toggles">
         <span class="chip on" data-layer="dF">ΔF/F signal</span>
-        <span class="chip on" data-layer="wheel">Wheel running</span>
+        <span class="chip on" data-layer="wheel">Behavior</span>
         <span class="chip" data-layer="sig">Raw corrected signal</span>
       </div>
     </div>
@@ -155,6 +161,7 @@ footer a{color:var(--accent)}
     <h2><span class="no">02</span>The average circadian cycle</h2>
     <p class="lede">Every cycle at its native length, anchored at each animal's own activity onset (CT12): the average calcium day and the wheel-running rate beside it. Cycles are never stretched — a 23-h cycle occupies 23 h — so the 23–24 h tail is honest thinner, not filled. The pulse-containing cycle is excluded; everything before and after is kept.</p>
     <div class="controls" style="margin-bottom:14px">
+      <div class="ctrl"><label>Animal</label><select id="sel-cycle-animal"></select></div>
       <div class="chips" id="cycle-gt-chips">
         <span class="chip on" data-gt="VIP">VIP-Cre</span>
         <span class="chip" data-gt="D1">D1-Cre</span>
@@ -176,14 +183,15 @@ footer a{color:var(--accent)}
 <section id="tau">
   <div class="wrap">
     <h2><span class="no">03</span>Two clocks, one period</h2>
-    <p class="lede">The wheel clock and the calcium clock each free-run with their own period. If SCN calcium is a faithful readout of the oscillator the wheel reports, the two periods should agree per animal — and they nearly do: calcium τ runs longer than wheel τ in all five animals, consistently across two independent estimators. Same direction everywhere; the magnitude depends on the estimator, which is the honest reading at n = 5.</p>
+    <p class="lede">The behavioral clock and the calcium clock each free-run with their own period. If SCN calcium is a faithful readout of the oscillator the wheel reports, the two periods should agree per animal — and they nearly do: calcium τ runs longer than wheel τ in all five animals, consistently across two independent estimators. Same direction everywhere; the magnitude depends on the estimator, which is the honest reading at n = 5.</p>
     <div class="card">
       <div class="chart-head">
         <span class="chart-title">Free-running period: wheel vs calcium</span>
         <span class="badge" id="tau-badge">—</span>
       </div>
       <div class="chart-box"><canvas id="tauChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px" id="tau-foot">—</p>
+      <p class="footnote" style="margin-top:10px"><span id="tau-sign" style="font-weight:600"></span> Unity line: points on it would mean the two clocks share one period. The sign test asks whether more animals sit on one side of that line than coin-flip chance allows.</p>
+      <p class="footnote" style="margin-top:6px" id="tau-foot">—</p>
     </div>
   </div>
 </section>
@@ -191,7 +199,7 @@ footer a{color:var(--accent)}
 <section id="lightpulse">
   <div class="wrap">
     <h2><span class="no">04</span>The light pulse</h2>
-    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). The GFP controls (#7382, #7386 — ΔF/F is movement artifact, not biology, per the Methods §11 QC screen) join every triggered average as their own n=2 series: a light-evoked deflection in GFP indicts movement artifact in the GCaMP response; its absence certifies signal. And the deflection is here: GFP 7382's pulse-triggered peak is +15.2% above baseline at +22 min — larger than any GCaMP animal (cohort max: 7390 at +13.7%), the movement-artifact signature the control exists to expose. This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
+    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). The GFP controls (#7382, #7386 — ΔF/F is movement artifact, not biology, per the Methods §12 QC screen) join every triggered average as their own n=2 series: a light-evoked deflection in GFP indicts movement artifact in the GCaMP response; its absence certifies signal. And the deflection is here: GFP 7382's pulse-triggered peak is +15.2% above baseline at +22 min — larger than any GCaMP animal (cohort max: 7390 at +13.7%), the movement-artifact signature the control exists to expose. This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
     <div class="card">
       <div class="chart-head">
         <span class="chart-title" id="lp-title">—</span>
@@ -210,21 +218,39 @@ footer a{color:var(--accent)}
       <div class="chart-box"><canvas id="lpGroupChart"></canvas></div>
       <p class="footnote" style="margin-top:10px">One pulse per animal, aligned at pulse onset; baseline = that animal's mean over the 2 h to 30 min before the pulse; 1-min bins; shaded band = SEM across animals. The second-session pulses (ZT8: 7390 and the GFP pair 7382/7386) are pooled with the ZT12 pulses in their group means — n = 2 VIP / 3 D1, plus the GFP control pair (n = 2, never pooled into D1 despite the D1-Cre genotype), so these are displays, not stats. What they show: both groups rise during the 30-min pulse (VIP peak +6.7%, D1 +10.8% above baseline at pulse onset) — the acute excitation — then D1 falls to a sustained post-pulse trough (−3.7% at ~100 min) while VIP holds nearer baseline; by +6 h both are rising into the next calcium day.</p>
     </div>
+  </div>
+  <div class="grid-2" style="margin-top:20px">
     <div class="card">
       <div class="chart-head">
-        <span class="chart-title">Peak &amp; trough response, per animal</span>
-        <span class="badge">ΔF/F₀ % · latency</span>
+        <span class="chart-title">Pulse onset, ±5 min</span>
+        <span class="badge">15-s bins</span>
       </div>
-      <div class="chart-box"><canvas id="lpPeakChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px" id="lp-peak-foot">Filled = peak, open = trough, of the 8-min rolling-mean ΔF/F in the first 40 min from pulse onset (the 30-min pulse + 10 min after; baseline as above); x = latency from pulse onset. Hover for the animal's numbers.</p>
+      <div class="chart-box square-zoom-box"><canvas id="lpZoomOnChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">t = 0 is light-pulse <b>onset</b>, native 15-s resolution, same per-animal baseline as the traces above. Group means with SEM bands.</p>
     </div>
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">Pulse offset, ±5 min</span>
+        <span class="badge">15-s bins</span>
+      </div>
+      <div class="chart-box square-zoom-box"><canvas id="lpZoomOffChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">t = 0 is light-pulse <b>offset</b> (lights back off, 30 min after onset), native 15-s resolution, same baseline convention. The acute dynamics at both edges of the pulse.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <div class="chart-head">
+      <span class="chart-title">Peak response, per animal</span>
+      <span class="badge">ΔF/F₀ % · first minute</span>
+    </div>
+    <div class="chart-box"><canvas id="lpPeakChart"></canvas></div>
+    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">First-minute ΔF/F: the single 1-min bin after pulse onset (baseline as above). At 1-min resolution the “first 60 s” holds exactly one sample — this is a single-bin read, not a peak-finding window, and it is noise-dominated at that scale (GFP 7386 reads −0.75%). No latency axis: with one bin there is no latency to report. Troughs are not shown (retired 2026-09-18); the sustained post-pulse trough is described in the group-means footnote above. Hover for the animal's numbers.</p>
   </div>
 </section>
 
 <section id="clocks">
 <div class="wrap">
   <h2><span class="no">05</span>Two clocks, one pulse</h2>
-  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the wheel clock) and when SCN calcium reaches its daily minimum (the calcium clock). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
+  <p class="lede">Each animal carries two measurable oscillators: when it starts running (the behavioral clock) and the phase of its SCN calcium rhythm (the calcium clock — the S+6 sine-acrophase anchor defined in Methods). The light pulse rewrites both — but not identically, and the disagreements are the interesting part.</p>
   <div class="controls" style="margin-bottom:14px">
     <div class="chips" id="sec4-ct-chips">
       <span class="chip on" data-frame="wheel">CT frame: behavior clock</span>
@@ -241,11 +267,12 @@ footer a{color:var(--accent)}
     </div>
     <div class="card">
       <div class="chart-head">
-        <span class="chart-title">Shift correlation: wheel vs calcium clock</span>
+        <span class="chart-title">Shift correlation: behavioral vs calcium clock</span>
         <span class="badge" id="corr-badge">—</span>
       </div>
       <div class="chart-box"><canvas id="clockShiftChart"></canvas>
       </div>
+      <p class="footnote" style="margin-top:10px"><span id="corr-sign" style="font-weight:600"></span> Each animal's two shifts are paired on one row: filled circle = behavioral clock, rotated square = calcium clock, connected by the within-animal line. <span id="corr-loo"></span></p>
     </div>
     <div class="card">
       <div class="chart-head">
@@ -258,34 +285,24 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
       </div>
-      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Calcium clock anchored on the per-cycle sine acrophase + 6 h (CT12 marker, the S+6 convention); the previous daily-minimum (CT18) anchor is retained as a labeled diagnostic and for the published-number reproduction gates.</p>
+      <p class="footnote" style="margin-top:12px">Shift = pre/post-pulse regression difference at the pulse cycle, in circadian hours (×24/τ pre). Recomputed 2026-09-15 under the same CT metric as the scatter above (raw-ZT values superseded; per-animal superseded values retained in the data file). Calcium clock anchored on the per-cycle sine acrophase + 6 h (CT12 marker, the S+6 convention); the previous daily-minimum (CT18) anchor is retained as a labeled diagnostic and for the published-number reproduction gates.</p>
     </div>
   </div>
-  <p class="footnote" id="sec4-foot">Correlation between the two clocks' shifts under the current calcium convention: <b id="clock-r">—</b>. Under the retired daily-minimum anchor the value was r = +0.53; an earlier ΔF-weighted circular-mean estimator gave a spurious −0.93. At n = 5 every value here is a lead, not a conclusion. 6978's advance is confirmed by its calcium clock (+2.0 vs wheel +4.1); 7390's wheel-clock advance (+4.3 CT) shrinks to +2.1 in the calcium frame — same sign, half the size, consistent with its wheel onsets pulling the behavioral estimate. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29%), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p>
-</div>
+  <p class="footnote" id="sec4-foot">The chart pairs each animal's behavioral-clock shift with its calcium-clock shift under the current S+6 sine-acrophase convention — the same convention the Methods and the estimator comparison use: <b id="clock-r">—</b>. The retired daily-minimum (CT18) anchor gave r = +0.53 on these same animals, and an earlier ΔF-weighted circular-mean estimator gave a spurious −0.93; each is a different quantity — a different calcium-clock definition, not a competing measurement of one number — and the retired anchor survives only as a labeled diagnostic in Methods. At n = 5 every value here is a lead, not a conclusion. 6978's advance is confirmed by its calcium clock (+2.16 vs behavioral +4.11); 7390's behavioral-clock advance (+4.32 CT) shrinks to +2.05 in the calcium frame — same sign, half the size, consistent with its wheel onsets pulling the behavioral estimate. Flag: 7390 runs in the opposite absolute-ZT half from the four 221014 animals (83% of wheel events in ZT0–12 vs 4–29%), consistent with a ~12 h difference in session ZT convention or release phase — within-animal CT analyses are unaffected; cross-session absolute-ZT comparisons are not.</p></div>
 </section>
 
 
 <section id="relock">
 <div class="wrap">
   <h2><span class="no">06</span>Two clocks, re-locking</h2>
-  <p class="lede">The light pulse knocks the wheel clock and the calcium clock out of alignment. Do they find each other again? ψ (psi) is the per-cycle phase difference between the two clocks — sine-acrophase calcium anchor minus the paired wheel onset. Before the pulse the two clocks hold a stable offset; after it, ψ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. One panel per animal, never pooled across genotypes. φ (phi) is the same difference with the clocks' ~6 h offset removed — calcium CT12 minus behavioral CT12 — so 0 means the two CT12s coincide; the toggle switches convention.</p>
-  <div class="controls" style="margin-bottom:14px">
-    <div class="ctrl"><label>Animal</label><select id="sel-relock-animal"></select></div>
-    <div class="chips" id="relock-chips">
-      <span class="chip on" data-layer="pre">pre-pulse ψ</span>
-      <span class="chip on" data-layer="post">post-pulse ψ</span>
-      <span class="chip on" data-layer="lp">light pulse</span>
+  <p class="lede">The light pulse knocks the behavioral clock and the calcium clock out of alignment. Do they find each other again? φ (phi) is the per-cycle difference between the two clocks — CT12(calcium) − CT12(wheel) — so 0 means the two CT12s coincide. Before the pulse the two clocks hold a stable offset; after it, φ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. The group view shows VIP and D1 means with thin per-animal lines; the animal dropdown (multiple recordings per animal viewable separately where the animal took more than one light pulse) drops to one animal's cycles. The pairs view plots each cycle's calcium CT12 and wheel CT12 (y = CT 0–24, ticks every 6 h) connected by a vertical line — the length of that line is φ.</p>
+    <div class="controls" style="margin-bottom:14px">
+      <div class="ctrl"><label>Animal</label><select id="sel-relock-animal"></select></div>
+      <div class="chips" id="relock-view-chips">
+        <span class="chip" data-view="pairs">CT12 pairs</span>
+        <span class="chip on" data-view="phi">φ = CT12 − CT12</span>
+      </div>
     </div>
-    <div class="chips" id="lp2-ct-chips">
-      <span class="chip on" data-frame="wheel">LP2 CT frame: behavior clock</span>
-      <span class="chip" data-frame="caS">LP2 CT frame: calcium clock (S+6)</span>
-    </div>
-    <div class="chips" id="relock-conv-chips">
-      <span class="chip on" data-conv="psi">ψ = Ca anchor − wheel onset</span>
-      <span class="chip" data-conv="phi">φ = CT12 − CT12 (offset removed)</span>
-    </div>
-  </div>
   <div class="card">
     <div class="chart-head">
       <span class="chart-title" id="relock-title">—</span>
@@ -299,68 +316,37 @@ footer a{color:var(--accent)}
         <span class="chart-title">Second pulse, within-animal (wheel-only)</span>
         <span class="badge">n = 3 + 1 excluded</span>
       </div>
+      <div class="controls" style="margin:8px 0 4px">
+        <div class="chips" id="lp2-ct-chips">
+          <span class="chip on" data-frame="wheel">behavior clock</span>
+          <span class="chip" data-frame="caS">calcium clock</span>
+        </div>
+      </div>
       <div class="chart-box"><canvas id="lp2Chart"></canvas></div>
       <p class="footnote" style="margin-top:10px">Each pilot animal took a second, unlogged light pulse (photodiode-verified, DOY-288) one week after the first — but photometry ends 18–27 h before it for every animal, so this point is wheel-only. Post windows hold a single onset each (exploratory 1-point fits, not regression estimates). 6976 is excluded from this panel: its post-pulse wheel data lacks clean rest/onset structure for rhythm estimation (the same ~8 h suppression→re-onset is present, but the following ~34 h never settles into detectable onsets), and it is a single-span animal whose numbers are self-consistency-validated only. The exclusion is documented here rather than left as a silent absence. LP2 CT estimates carry a sensitivity caveat: over the fixed 168 h P1→P2 interval, post-P1 τ-drift moves the CT estimate by ~9.5 h for 6577 (τ 23.96→22.68 — real drift), ~4.2 h for 6977, ~2.4 h for 6978. The primary frame is the adjacent (pre-pulse) regression; the τ-swap bracket (23.96-h τ held fixed) clusters all three near midnight (~15/~22/~16 CT) instead of the diverse primary CTs (0.6/17.6/13.5). Both frames are shown in the tooltip; the spread is the τ-instability, worst where drift is largest.</p>
     </div>
     <div class="card" style="margin-top:20px">
       <div class="chart-head">
-        <span class="chart-title">ψ re-locking read-out</span>
+        <span class="chart-title">φ re-locking read-out</span>
         <span class="badge">per animal</span>
       </div>
       <div style="overflow-x:auto">
       <table id="relock-table">
-        <thead><tr><th>Animal</th><th>Pre ψ / φ (mean ± SD)</th><th>n pre/post</th><th>Dropped</th><th>Post points</th><th>Read</th></tr></thead>
+        <thead><tr><th>Animal</th><th>Pre φ (mean ± SD)</th><th>n pre/post</th><th>Dropped</th><th>Post points</th><th>Read</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
-      <p class="footnote" style="margin-top:12px">ψ = sine-acrophase calcium anchor − paired wheel onset (pairing window: the onset within [anchor−4, anchor+16] h closest to anchor+6 h); φ = ψ + 6 h = calcium CT12 − behavioral CT12. Cycles are LP1-relative; the re-locking question is identical in both conventions. 6976 renders with its two standing flags: calcium-anchor fragmentation (3/16 inter-anchor gaps outside 18–30 h, pre-LP2 anchor quality) and single-span/self-consistency-only validation. Its pre-pulse record is good — the exclusion is post-LP2 only, per the 2026-09-03 ruling.</p>
+      <p class="footnote" style="margin-top:12px">φ = CT12(calcium) − CT12(wheel): the sine-acrophase calcium anchor + 6 h (calcium CT12), minus the paired wheel onset (pairing window: the onset within [anchor−4, anchor+16] h closest to anchor+6 h). Cycles are LP1-relative. 6976 renders with its two standing flags: calcium-anchor fragmentation (3/16 inter-anchor gaps outside 18–30 h, pre-LP2 anchor quality) and single-span/self-consistency-only validation. Its pre-pulse record is good — the exclusion is post-LP2 only, per the 2026-09-03 ruling.</p>
     </div>
   </div>
 </section>
 
 
-<section id="feedback">
-<div class="wrap">
-  <h2><span class="no">07</span>Running and the clock</h2>
-  <p class="lede">Three questions asked of the wheel data: does a heavy night buy a quieter following day (the mice could be sleeping more soundly)? Does more running change the next cycle's length? And do the light shifts at recording start contaminate the first days?</p>
-  <div class="controls" style="margin-bottom:14px">
-    <div class="chips" id="sec8-ct-chips">
-      <span class="chip on" data-frame="wheel">CT frame: behavior clock</span>
-      <span class="chip" data-frame="caS">CT frame: calcium clock (S+6)</span>
-    </div>
-  </div>
-  <div class="grid-2">
-    <div class="card">
-      <div class="chart-head">
-        <span class="chart-title">Night revolutions vs next subjective day</span>
-        <span class="badge" id="comp-badge">—</span>
-      </div>
-      <div class="chart-box"><canvas id="compChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px">Per circadian cycle, wheel clock. No compensation: heavy nights do not buy detectably quieter days in this cohort.</p>
-    </div>
-    <div class="card">
-      <div class="chart-head">
-        <span class="chart-title">The rate-normalization artifact</span>
-        <span class="badge">r with next cycle length</span>
-      </div>
-      <div class="chart-box"><canvas id="artifactChart"></canvas></div>
-      <p class="footnote" style="margin-top:10px">Dividing revolutions by window length suggests a strong negative activity→period effect (pooled r = −0.41, p = 0.001) — but the window <i>is</i> the outcome variable. Permuting counts while keeping windows (structural null) reproduces most of it. Honest verdict: no per-cycle activity feedback detectable here.</p>
-    </div>
-  </div>
-  <div class="card" style="margin-top:20px">
-    <div class="chart-head">
-      <span class="chart-title">Phase shift vs leading-days exclusion</span>
-      <span class="badge">wheel clock</span>
-    </div>
-    <div class="chart-box"><canvas id="firstDaysChart"></canvas></div>
-    <p class="footnote" style="margin-top:10px">Dropping the first 1–3 days (light-shift transient at recording start) does not shrink the two large advances — if anything it grows them. But the pre-pulse onset count shrinks with each skip (7390: 6 → 3), so the growing values increasingly rest on thin fits. The <i>sign</i> of every animal's conclusion is stable; magnitudes beyond skip-1 are fragile.</p>
-  </div>
-</div>
-</section>
+
 
 <section id="boutca">
 <div class="wrap">
-  <h2><span class="no">08</span>Calcium at the start of a run</h2>
+  <h2><span class="no">07</span>Calcium at the start of a run</h2>
   <p class="lede">When a mouse breaks a stillness of ≥10 min (left) or ≥5 min (right) and starts running, SCN calcium shifts. The size of that shift depends on circadian time — and the pattern differs between animals. The GFP controls join as their own series (n = 2, own color, never pooled): a bout-onset deflection in GFP is the expected movement signature; anything beyond it indicts artifact.</p>
   <div class="controls" style="margin-bottom:14px">
     <div class="chips" id="sec9-ct-chips">
@@ -389,6 +375,7 @@ footer a{color:var(--accent)}
         <span class="badge" id="onset-badge">—</span>
       </div>
       <div class="controls" style="margin-bottom:10px">
+        <div class="ctrl"><label>Animal</label><select id="sel-onset-animal"></select></div>
         <div class="chips" id="sec9-quartile-chips">
           <span class="chip on" data-q="all">All onsets</span>
           <span class="chip" data-q="q1">CT0–6</span>
@@ -399,6 +386,7 @@ footer a{color:var(--accent)}
       </div>
       <div class="chart-box"><canvas id="onsetTrigChart"></canvas></div>
       <p class="footnote" style="margin-top:10px" id="onset-trig-footnote">First rev after ≥5 min stillness; baseline-normalized (mean of −60…−10 s → 0). Shading = SEM across animals. Onsets whose −60→+180 s window lacks photometry coverage are excluded everywhere (window edges, recording gaps); legend n's count contributing onsets only, so per animal the four quartile n's sum to the All-view n (341–400 for the GCaMP animals; 196–274 for the GFP controls). Quartiles are of the behavior clock (wheel onsets = CT12): CT0–12 subjective day, CT12–24 night; the legend shows the animals contributing onsets in each quartile.</p>
+      <p class="footnote" id="incdec-note"><b>Increasers / decreasers (added 2026-09-18):</b> at the whole-animal level the mean 0–60 s response splits the five GCaMP animals into increasers (#6577, #6977, #6978) and decreasers (#6976, #7390). The animal-average curve shown here is each animal's own mean; a per-onset split (averaging only increasing vs only decreasing onsets within an animal) needs per-onset data that this page's artifacts do not ship — that view is parked as a data dependency, flagged in the build PR, not silently omitted.</p>
     </div>
   </div>
   <details>
@@ -411,11 +399,56 @@ footer a{color:var(--accent)}
 
 <section id="lddd">
   <div class="wrap">
-    <h2><span class="no">09</span>LD → DD transitions</h2>
+    <h2><span class="no">08</span>LD → DD transitions</h2>
     <p class="lede">What happens at the moment the lights go off for good: the time course of phase drift for behavior and calcium from the first hour of constant darkness, in one frame. Does the calcium clock carry the LD-entrained phase into free-run cleanly — and how fast does the internal τ drift establish once the external synchronizer is gone?</p>
     <div class="card">
       <p style="font-size:16px;color:var(--ink-soft)">Not yet live — for a concrete reason: both exemplar sessions on this page (221014, 221128) <i>start</i> in constant darkness, so neither contains the LD→DD transition. The data for this section is identified: the Oct 24 – Nov 4 campaign (~11 d LD→DD, 10 animals, including 7381's earlier recording — a direct fiber-vs-animal test of its zero-periodicity exclusion). It lands here when that campaign is pulled and QC'd. Two checks gate the pull: confirming IDs "1"/"2" are the camera-test dummies rather than animals, and anchoring the DD switch point from the lab log and photodiode — the session's own params label it plain DD, so the transition time must come from outside the recording.</p>
     </div>
+  </div>
+</section>
+
+<section id="roomcontrol">
+  <div class="wrap">
+    <h2><span class="no">09</span>Room control: was it really dark?</h2>
+    <p class="lede">The Oct-24 campaign records were labeled DD, but the room photodiode had been disabled since Sep 28 — its silence proves nothing. Two independent behavioral controls answer the question instead: reference animals with known endogenous periods free-ran through the week before the campaign (the room was standing-DD), and light-masking released in all eight campaign animals across the DD span (lights-on would have suppressed their daytime running). The same analysis caught a method artifact: the night mask used for τ estimation clamps free-run onsets and reads certified free-runners as 24 h-locked — the earlier "entrained" headline is withdrawn.</p>
+
+    <div class="card">
+      <div class="chart-head">
+        <span class="chart-title">τ repeatability: same animals, same room, six weeks apart</span>
+        <span id="rc-badge" class="badge">—</span>
+      </div>
+      <div class="chart-box"><canvas id="rcTauChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px" id="rc-tau-foot">—</p>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="chart-head">
+        <span class="chart-title">Masking release across the campaign span</span>
+      </div>
+      <p style="font-size:14.5px;color:var(--ink-soft);margin:4px 0 10px">Fraction of wheel running in the night window (ZT18–6), each animal's own logged-LD week (Oct 18–22) vs the DD span (Oct 24–Nov 4). Under LD, lights-on suppresses daytime running — night-only is the signature. If the "DD" span had actually been LD, these fractions would stay pinned at the top of the range. Instead daytime activity emerges in 8/8 animals.</p>
+      <div class="chart-box"><canvas id="rcMaskChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px" id="rc-mask-foot">—</p>
+    </div>
+
+    <div class="card" style="margin-top:20px">
+      <div class="chart-head">
+        <span class="chart-title">Campaign wheel reads (unmasked χ², context only)</span>
+      </div>
+      <div style="overflow-x:auto">
+      <table id="rc-cohort-table">
+        <thead><tr>
+          <th>Animal</th><th>τ (session-run)</th><th>q-ratio</th><th>LD-week night frac.</th><th>DD-span night frac.</th><th>Read</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+      </div>
+      <p class="footnote" style="margin-top:10px" id="rc-cohort-foot">—</p>
+    </div>
+
+    <details style="margin-top:14px">
+      <summary>Method artifact: why the night mask reads free-runners as 24 h-locked</summary>
+      <div id="rc-method-body" style="font-size:14px;color:var(--ink-soft);line-height:1.6"></div>
+    </details>
   </div>
 </section>
 
@@ -453,9 +486,9 @@ footer a{color:var(--accent)}
       <p><b>Correction.</b> Signal = 470/415 (divide-by-isosbestic for all animals here), 30-s centered median filter, ΔF/F₀ with F₀ = mean over ZT 14–22 of the first cycle. Wheel events (ZT-hour timestamps of revolutions) are histogrammed into 10-min bins.</p>
       <p><b>Port validation.</b> The Python demux was compared sample-for-sample against the MATLAB <i>FullTrace.mat</i> outputs: raw channels matched to ~1e-16, corrected signal r = 0.9998, ΔF/F r = 1.0000 (max abs diff ≈ 1.4e-6) on the pilot animal; the cross-session check runs live below against a second-session animal.</p>
       <p><b>Average cycle (§02).</b> Cycles are consecutive activity onsets (the shipped 18–30 h guard); the pulse-containing cycle is excluded and all others kept. The axis is elapsed hours from onset (CT12) — cycles occupy their native length; no resampling. Per-bin calcium = mean ΔF/F over the cycles that reach the bin (animal-first, then group mean ± SEM across animals). Wheel-running probability = fraction of reaching cycles with ≥1 event in the bin; cycles that end before the bin never enter its denominator. The 23–24 h tail thins because τ < 24 h in most animals — the count is on the badge, not smoothed away.</p>
-      <p><b>GFP controls (§04, §08).</b> #7382 and #7386 express GFP/tdTomato (no GCaMP); their ΔF/F is movement artifact by the §11 QC screen — that is exactly what makes them the right control. A light-evoked deflection in a triggered GFP average indicts movement artifact in the GCaMP response; a bout-onset deflection is the expected movement signature; absence certifies signal. GFP appears as its own labeled n=2 series in every triggered average, never pooled into D1 despite the D1-Cre genotype. The calcium-clock (S+6) frame never ran on GFP calcium (QC-excluded), so GFP bout bins are behavior-frame only.</p>
+      <p><b>GFP controls (§04, §08).</b> #7382 and #7386 express GFP/tdTomato (no GCaMP); their ΔF/F is movement artifact by the §12 QC screen — that is exactly what makes them the right control. A light-evoked deflection in a triggered GFP average indicts movement artifact in the GCaMP response; a bout-onset deflection is the expected movement signature; absence certifies signal. GFP appears as its own labeled n=2 series in every triggered average, never pooled into D1 despite the D1-Cre genotype. The calcium-clock (S+6) frame never ran on GFP calcium (QC-excluded), so GFP bout bins are behavior-frame only.</p>
       <p><b>Light-pulse-triggered traces (§04).</b> Group means are per-animal curves from the native 15-s ΔF/F (1-min rebin, per-animal baseline = mean over the 2 h to 30 min before pulse onset); the peak/trough readouts use an 8-min rolling mean (8×1-min bins) over the first 40 min from pulse onset (the 30-min pulse + 10 min after), latency measured from onset. Each animal contributes one pulse — ZT12 for the four 221014 animals, ZT8 for 7390 and the GFP pair (7382/7386, second session) — so the group curves are displays, not statistics.</p>
-    <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window, computed separately pre/post light pulse.</p>
+    <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window (trial periods on a 0.1 h grid), computed separately pre/post light pulse.</p>
       <p><b>How calcium circadian time (CT) is computed — the S+6 convention (updated 2026-09-03).</b> The calcium clock's phase marker is the <i>acrophase of a per-cycle least-squares sine fit</i> (period fitted per animal — a global free-period sine fit on the same 30-min ΔF/F-weighted, 3-h-smoothed profile the published pipeline uses), with the CT12 marker placed at acrophase + 6 h. The shift is the pre-vs-post regression difference through the marker series evaluated at the pulse cycle, converted to circadian hours (×24/τ<sub>pre</sub>); the continuity unwrap (consecutive marker differences constrained to 12–36 h) is part of the estimator definition. <b>Why it changed:</b> the previous anchor — the daily ΔF/F minimum, labeled CT18 — degrades on these traces because the calcium trough is a 5.5–9.5 h plateau: the argmin lands anywhere on the plateau, and on 6977's span it double-sampled one physical trough and missed another entirely, pushing that animal's published shift to +6.62 CT where the clean estimate is −0.54. The sine acrophase is not artifact-immune in principle — it needed the unwrap on two spans — but its failure mode is repairable, while a double-sampled plateau cannot be un-double-sampled. <b>Numbers under the switch (canonical dashboard path, era-A cache):</b> 6577 +0.93 → +0.40, 6976 −1.32 → −0.87, 6977 −2.59 → −0.54 (the published +6.62 checkpoint value was argmin-artifact-corrupted; corrected here with the artifact documented in the repeat-recordings appendix below), 6978 +3.40 → +2.16, 7390 −0.75 → +2.05. <b>Fitted-period update (2026-09-14):</b> the per-cycle acrophase fits now carry each animal's fitted τ rather than a fixed 24 h — the swap moved every published S-basis number by ≤0.12 CT h (shifts), ≤0.003 z (bout bins), +0.0004 (compensation pooled r), and ≤0.13 h (relock ψ). No reading changes. The daily-minimum anchor is retained as a labeled diagnostic — S-vs-T disagreement is how the 6977 artifact was caught — and all published numbers reproduce exactly under it (parity gate: 5/5 animals, d = 0.0000). The sine fit is absent from the in-vivo photometry phase-extraction literature (the field uses threshold/midpoint markers on smoothed ΔF), so this choice rests on the benchmark below, not on precedent. <b>Path provenance:</b> an earlier benchmark run on the era-B re-cut files (30-min bins, different F₀ window) gave S shifts of +0.63 / −0.13 / +1.87 for the three pilots; the numbers above ride the era-A cache arrays that feed this dashboard, and the 0.2–0.7 h differences between the two sets are bin-grid and F₀ path effects, not biology — both sets are archived with the estimator suite.</p>
       <p><b>Estimator comparison, rendered from the data.</b> The chart below overlays the three candidate calcium markers — daily-minimum argmin (T, the retired anchor), per-cycle sine acrophase (S, the current anchor), and a Brancaccio-style midrise crossing (M, diagnostic) — on the actual per-cycle series, per animal. The companion table gives the numbers: marker jitter (median interval deviation), wrap-flip counts, sine fit R², plateau occupancy, and the S-vs-T shift deltas. On clean spans T and S agree within 0.1–1.8 h; the divergence is exactly where the plateau artifacts live.</p>
       <div class="chart-box" style="height:340px;margin-top:12px"><canvas id="estimatorChart"></canvas></div>
@@ -498,7 +531,7 @@ footer a{color:var(--accent)}
         <tbody></tbody>
       </table>
     </div>
-    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the §05 numbers. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is where the daily-minimum anchor fails: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h) and the argmin double-samples one plateau and misses another trough entirely, which is what pushed the checkpoint value to +6.62. The per-cycle sine-acrophase estimator (§11) is clean on this span — 0 wrap flips, even 23–24 h marker spacing, residual SD 0.64 h post-pulse — and gives −0.54 CT. So the +6.62 is an argmin artifact, not a windowing story: the fragmentation flag was real, but it indicts the estimator, not the animal. The corrected estimate rides in §05; the +6.62 stays in this table as the documented artifact it is.</p>
+    <p class="footnote" style="margin-top:12px">checkpoint = the within-animal run's first output, whose post-pulse window ran to the recording end — past the unlogged pulse; cut at pulse 2 = post window truncated at the second pulse; pilot window = the exact data window behind the §05 numbers. The wheel reconstruction itself is bit-exact against the lab's ground truth (corr 1.0, zero diff), so the spread is windowing, not loading. 6977's calcium row is where the daily-minimum anchor fails: its post-pulse trough series is fragmented (6 of 17 inter-trough gaps outside 18–30 h) and the argmin double-samples one plateau and misses another trough entirely, which is what pushed the checkpoint value to +6.62. The per-cycle sine-acrophase estimator (§12) is clean on this span — 0 wrap flips, even 23–24 h marker spacing, residual SD 0.64 h post-pulse — and gives −0.54 CT. So the +6.62 is an argmin artifact, not a windowing story: the fragmentation flag was real, but it indicts the estimator, not the animal. The corrected estimate rides in §05; the +6.62 stays in this table as the documented artifact it is.</p>
   </div>
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
@@ -528,6 +561,7 @@ footer a{color:var(--accent)}
     </div>
     <div class="chart-box tall"><canvas id="rpChart"></canvas></div>
     <p class="footnote" id="rp-foot" style="margin-top:10px"></p>
+    <p class="footnote" style="margin-top:2px">Round-11 addition: #6976's 220829 span is a recon find — the Aug 19–29 campaign's second half, present on disk but never QC-screened (6976 was a main-cohort animal, not a within-animal candidate) and absent from every shipped artifact until this round; it screens as the strongest span in this explorer (circadian SNR 21.55, 9.7 d DD with wheel). Its same-campaign companion, #6577's 220829 span, was already in the explorer — the campaign's two halves now both live here. QC screen = circadian SNR + τ sanity, the shipped convention; both repeat spans pass.</p>
   </div>
     </details>
 
@@ -562,6 +596,41 @@ footer a{color:var(--accent)}
   </div>
 </section>
 
+
+<section id="analysis-archive">
+<div class="wrap">
+  <h2><span class="no">A</span>Analysis archive</h2>
+  <p class="lede">Analyses we ran but did not pursue — kept with context so they can be brought back as more data lands. Collapsed by default; nothing here feeds the sections above.</p>
+  <details id="archive-block" style="margin-bottom:14px">
+    <summary style="cursor:pointer;font-weight:600">Three archived analyses (click to expand)</summary>
+    <div class="card" style="margin-top:12px">
+      <div class="chart-head">
+        <span class="chart-title">Night revolutions vs next subjective day</span>
+        <span class="badge" id="comp-badge">—</span>
+      </div>
+      <div class="chart-box"><canvas id="compChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">Does a heavy night buy a quieter following day (deeper sleep)? Per circadian cycle, behavioral clock: no detectable compensation in this cohort. <b>Why archived:</b> a null result on n = 5 with no compensation signal; worth re-running once more animals add power, but not a lead worth a main section.</p>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="chart-head">
+        <span class="chart-title">The rate-normalization artifact</span>
+        <span class="badge">r with next cycle length</span>
+      </div>
+      <div class="chart-box"><canvas id="artifactChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">Dividing revolutions by window length suggests a strong negative activity→period effect (pooled r = −0.41, p = 0.001) — but the window <i>is</i> the outcome variable. A structural null (permuting counts, keeping windows) reproduces most of it. <b>Why archived:</b> the honest verdict is "no per-cycle activity feedback detectable here"; the naive reading is an artifact, and the corrected one is a null. Kept as a cautionary example.</p>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="chart-head">
+        <span class="chart-title">Phase shift vs leading-days exclusion</span>
+        <span class="badge">behavioral clock</span>
+      </div>
+      <div class="chart-box"><canvas id="firstDaysChart"></canvas></div>
+      <p class="footnote" style="margin-top:10px">Dropping the first 1–3 days (light-shift transient at recording start) does not shrink the two large advances — if anything it grows them, but the pre-pulse onset count shrinks with each skip (7390: 6 → 3), so magnitudes beyond skip-1 rest on thin fits; the <i>sign</i> is stable. <b>Why archived:</b> a robustness check on §05's numbers, not a standalone result — the §05 footnote disclosure covers its conclusion. Revivable as a sensitivity-analysis panel if the exclusion question returns.</p>
+    </div>
+  </details>
+</div>
+</section>
+
 <footer>
   <div class="wrap">
     <p>Part of <a href="https://nimblecoorg.github.io/open-science/">NimbleCo Open Science</a>. Data collected in the Mao Lab by Jules, 2022. Pipeline: MATLAB (lab) → Python port (Matilde), pilot exact / cross-session r = 0.997. Built 2026-08-26; circadian analysis suite added same day.</p>
@@ -572,7 +641,7 @@ footer a{color:var(--accent)}
 const INK='#211c16', SOFT='#675e4f', FAINT='#a99e89', RULE='#e2d9c7',
       ACCENT='#1f4257', POS='#357a5b', LP='#b07d22', WHEEL='#6b8f3a';
 
-let DATA=null, cur={sess:0, anim:0}, layers={dF:true, wheel:true, sig:false};
+let DATA=null, cur={sess:0, anim:0, spanIdx:null}, layers={dF:true, wheel:true, sig:false};
 let traceChart=null, lpChart=null;
 
 Chart.defaults.font.family="'Spline Sans Mono', monospace";
@@ -588,18 +657,207 @@ function animalBadges(a){
   return `<span class="badge ${g}">${a.genotype}</span> <span class="badge ${v}">${vn}</span> <span class="badge">#${a.id} ${a.sex??''}</span>`;
 }
 
+function renderSpanTrace(e){
+  // r14: honor the same layer toggles as the pilot renderer; behavior = wheel
+  // OR motion (the artifact keys differ by modality: t_wheel/wheel vs
+  // t_motion/motion); one 'Behavior' chip covers both.
+  const tr=e.trace;
+  const ds=[];
+  const behT=(e.beh==='wheel'&&tr.t_wheel&&tr.wheel)?tr.t_wheel:
+             ((tr.t_motion&&tr.motion)?tr.t_motion:null);
+  const behV=(e.beh==='wheel'&&tr.t_wheel&&tr.wheel)?tr.wheel:
+             ((tr.t_motion&&tr.motion)?tr.motion:null);
+  if(layers.dF&&tr.t&&tr.dF_hi){
+    ds.push({type:'line', showLine:true, label:'ΔF/F (min–max envelope)', data:tr.t.map((t,i)=>({x:t,y:tr.dF_hi[i]})),
+      borderColor:'transparent', backgroundColor:'rgba(31,66,87,.13)', borderWidth:0, pointRadius:0,
+      fill:'+1', order:3});
+    ds.push({type:'line', showLine:true, label:'ΔF/F envelope low', data:tr.t.map((t,i)=>({x:t,y:tr.dF_lo[i]})),
+      borderColor:'transparent', backgroundColor:'transparent', borderWidth:0, pointRadius:0, fill:false, order:3});
+    // r14: darker solid smoothed line (20-min rolling mean of the envelope
+    // midpoint), replacing the dark envelope strokes.
+    const mid=tr.t.map((t,i)=>(tr.dF_hi[i]+tr.dF_lo[i])/2);
+    ds.push({type:'line', showLine:true, label:'ΔF/F smoothed (20-min mean)', data:smoothSeries(tr.t, mid, 20/60),
+      borderColor:'#1f4257', borderWidth:1.8, pointRadius:0, fill:false, order:1});
+  }
+  if(layers.wheel&&behT){
+    // r14: bin BOTH modalities into 10-min histograms — a near-binary 1-min
+    // motion stream (96.5% zeros on 6529 220509) renders as an unreadable
+    // wall of vertical lines; the histogram matches the wheel-revs display.
+    const binH=10/60;
+    const nb={}, bvals={};
+    for(let i=0;i<behT.length;i++){
+      const b=Math.floor(behT[i]/binH);
+      (nb[b]=nb[b]||[]).push(behV[i]);
+    }
+    const bKeys=Object.keys(nb).map(Number).sort((p,q)=>p-q);
+    const binnedT=bKeys.map(b=>b*binH+binH/2);
+    const binnedY=bKeys.map(b=>{
+      const arr=nb[b];
+      return arr.reduce((s,v)=>s+(v!==0?1:0),0); // events (non-zero samples) per 10 min
+    });
+    const lab=(e.beh==='wheel')?'wheel revs/10 min':'motion events/10 min (binned)';
+    ds.push({type:'bar', label:lab, data:binnedT.map((t,i)=>({x:t,y:binnedY[i]})),
+      backgroundColor:'rgba(107,143,58,.45)', borderWidth:0, pointRadius:0,
+      yAxisID:'y1', order:4});
+  }
+  if(layers.sig&&tr.signal){
+    ds.push({type:'line', showLine:true, label:'corrected signal (mean/6 min)', data:tr.t.map((t,i)=>({x:t,y:tr.signal[i]})),
+      borderColor:POS, borderWidth:1, pointRadius:0, fill:false, order:2});
+  }
+  if(traceChart) traceChart.destroy();
+  const tEnd=tr.t&&tr.t.length?tr.t[tr.t.length-1]:((behT&&behT.length)?behT[behT.length-1]:48);
+  const lp0=(e.lp&&e.lp.length)?e.lp[0].cumZT:null;
+  traceChart=new Chart($('traceChart'),{
+    type:'scatter',
+    data:{datasets:ds},
+    options:{
+      responsive:true, maintainAspectRatio:false, animation:false,
+      interaction:{mode:'nearest',intersect:false},
+      scales:{
+        x:{type:'linear',min:0,max:Math.ceil(tEnd/48)*48,
+           ticks:{stepSize:48},title:{display:true,text:'cumulative ZT (h)'},grid:{color:RULE}},
+        y:{title:{display:true,text:'ΔF/F₀'},grid:{color:RULE}},
+        y1:{position:'right',min:0,title:{display:true,text:(e.beh==='wheel')?'wheel revs / 10 min':'motion events / 10 min'},grid:{display:false},
+            ticks:{color:WHEEL}, title:{color:WHEEL}}
+      },
+      plugins:{legend:{labels:{boxWidth:14}}, tooltip:{callbacks:{
+        title:it=>`ZT ${it[0].parsed.x.toFixed(2)} h`}},
+        spanLpMarker:{}}
+    },
+    plugins:[{
+      id:'spanLpMarker',
+      afterDatasetsDraw(chart){
+        if(!e.lp||!e.lp.length) return;
+        const {ctx, chartArea:{top,bottom}, scales:{x}}=chart;
+        e.lp.forEach((p,k)=>{
+          const px=x.getPixelForValue(p.cumZT);
+          if(Number.isFinite(px)){
+            ctx.save();
+            ctx.strokeStyle=LP; ctx.lineWidth=1.6; ctx.setLineDash([4,3]);
+            ctx.beginPath(); ctx.moveTo(px,top); ctx.lineTo(px,bottom); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle=LP; ctx.font='10px monospace';
+            ctx.fillText('LP'+(k+1), px+4, top+12);
+            ctx.restore();
+          }
+        });
+      }
+    }]
+  });
+}
+function renderSpanStats(e){
+  const behTxt=e.beh==='wheel'?'wheel stream':(e.beh==='motion'?'total-cage motion (not wheel)':'no behavior stream');
+  const qc=e.ca_snr!=null?(e.ca_snr>=10?'QC pass':(e.ca_snr>=5?'QC borderline':'QC weak')):'—';
+  $('stat-grid').innerHTML=`
+    <div class="stat"><div class="k">Span</div><div class="v" style="font-size:19px">${e.date}</div><div class="u">${e.dur_d} d · ${e.cond}</div></div>
+    <div class="stat"><div class="k">Animal</div><div class="v" style="font-size:19px">#${e.animal}</div><div class="u">${e.genotype} · ${e.sex??'—'}</div></div>
+    <div class="stat"><div class="k">Calcium QC</div><div class="v">${e.ca_snr??'—'}</div><div class="u">circadian SNR · ${qc}</div></div>
+    <div class="stat"><div class="k">Behavior</div><div class="v" style="font-size:19px">${behTxt}</div><div class="u">${e.beh==='none'?'no onset analysis':''}</div></div>
+    <div class="stat"><div class="k">Light pulses</div><div class="v">${e.lp?e.lp.length:0}</div><div class="u">${(e.lp&&e.lp.length&&e.lp.some(p=>/not in lab records/.test(p.source||'')))?'includes an unlogged pulse (photodiode)':'photodiode / lab records'}</div></div>`;
+}
+function renderSpanActogram(e){
+  const cv=$('actogram-canvas'), ctx=cv.getContext('2d');
+  // r14: behavior = wheel OR motion (artifact keys differ by modality)
+  const beh=(e.beh==='wheel'&&e.trace.t_wheel&&e.trace.wheel)?{t:e.trace.t_wheel,w:e.trace.wheel}:
+            ((e.trace.t_motion&&e.trace.motion)?{t:e.trace.t_motion,w:e.trace.motion}:null);
+  if(e.beh==='none'||!beh){
+    const W=cv.parentElement.clientWidth||600, H=140;
+    cv.style.width='100%'; cv.style.height=H+'px';
+    cv.width=W; cv.height=H;
+    ctx.clearRect(0,0,W,H);
+    $('acto-title').textContent=`#${e.animal} · ${e.date} · no behavioral stream`;
+    $('acto-foot').textContent='No wheel/motion data in this span — no actogram. The calcium trace above is the full record.';
+    return;
+  }
+  const t=beh.t, w=beh.w;
+  const t0=Math.floor(t[0]), t1=Math.ceil(t[t.length-1]);
+  const days=Math.max(1,Math.floor((t1-t0)/24));
+  const box=cv.parentElement;
+  const dpr=window.devicePixelRatio||1;
+  const W=Math.max(320, Math.floor(box.clientWidth-44)||1000);
+  const H=Math.max(300, Math.min(620, Math.round(26*days+34)));
+  cv.style.width='100%'; cv.style.height=H+'px';
+  cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.font='10px monospace';
+  // r14: on-canvas intensity legend REMOVED (Jules ruling 2026-09-18 — it
+  // pushed the actogram left via padR). Modality + 98th-pct note now lives
+  // in the fig caption (acto-foot) below the canvas.
+  const padL=46, padR=10, padT=18, rowH=Math.min(26,(H-padT-10)/days);
+  const plotW=W-padL-padR;
+  ctx.fillStyle='#fffdf8'; ctx.fillRect(0,0,W,H);
+  const mx=Math.max(...w.filter(v=>v>0).slice(0,1e6),1);
+  const p95=percentile(w,98)||mx;
+  for(let d=0; d<days; d++){
+    const y=padT+d*rowH;
+    if(d%2===1){ctx.fillStyle='rgba(0,0,0,.028)';ctx.fillRect(padL,y,plotW,rowH);}
+  }
+  // LP rows
+  const lpDays=(e.lp||[]).map(p=>Math.floor((p.cumZT-t0)/24));
+  ctx.fillStyle='#211c16';
+  for(let i=0;i<t.length;i++){
+    const tt=t[i]-t0;
+    const d=Math.floor(tt/24), hr=tt-d*24;
+    if(d>=days)continue;
+    const v=Math.min(w[i]/p95,1);
+    if(v<=0.02)continue;
+    const x=padL+hr/24*plotW, y=padT+d*rowH;
+    ctx.globalAlpha=0.15+0.85*v;
+    ctx.fillRect(x,y+1,plotW/24/6+0.5,rowH-2);
+  }
+  ctx.globalAlpha=1;
+  ctx.strokeStyle='#cfc3aa'; ctx.lineWidth=0.5; ctx.font='10px monospace'; ctx.fillStyle='#a99e89';
+  for(let h=0;h<=24;h+=6){
+    const x=padL+h/24*plotW;
+    ctx.beginPath();ctx.moveTo(x,padT);ctx.lineTo(x,padT+days*rowH);ctx.stroke();
+    if(h<24)ctx.fillText(String(h).padStart(2,'0'),x+2,padT-4);
+  }
+  ctx.fillStyle='#675e4f';
+  for(let d=0; d<days; d++){
+    ctx.fillText('day '+(d+1),4,padT+d*rowH+rowH*0.7);
+    if(lpDays.includes(d)){ctx.fillStyle='#b07d22';ctx.fillText('day '+(d+1)+' LP',4,padT+d*rowH+rowH*0.7);ctx.fillStyle='#675e4f';}
+  }
+  ctx.fillStyle='#a99e89'; ctx.fillText('ZT (h) \u2192',padL+plotW/2-14,H-6);
+  $('acto-title').textContent=`#${e.animal} · ${e.date} · ${e.beh==='wheel'?'wheel actogram':'motion actogram (modality differs)'}`;
+  const modalityTxt=e.beh==='wheel'?'Intensity = wheel revolutions per 10-min bin; black = 98th percentile.':'Rows are total-cage motion (not wheel revolutions) — descriptive only; no onset analysis is claimed on motion streams. Intensity = motion events; black = 98th percentile.';
+  $('acto-foot').textContent=`Repeat span, ${e.dur_d} d, ${e.cond}. ${modalityTxt}`;
+}
+
+let SPANS=null;   // repeat_recordings.json, loaded by initSpans()
+function spanLabel(e){
+  const qc=e.ca_snr!=null?(e.ca_snr>=10?'QC ok':(e.ca_snr>=5?'QC borderline':'QC weak')):'—';
+  const beh=e.beh==='wheel'?'wheel':(e.beh==='motion'?'motion (modality differs)':'no behavior stream');
+  return `${e.date} · #${e.animal} ${e.genotype} · ${e.dur_d} d · ${e.cond} · ${beh} · ${qc} (repeat span)`;
+}
 function fillSelectors(){
   const ss=$('sel-session'), as=$('sel-animal');
   ss.innerHTML='';
+  const opts=[];
   DATA.sessions.forEach((s,i)=>{
-    const o=document.createElement('option');
-    o.value=i; o.textContent=`${s.session} — ${s.condition}, ${s.animals.length} animals`;
-    ss.appendChild(o);
+    opts.push({value:'s:'+i, text:`${s.session} — ${s.condition}, ${s.animals.length} animals`});
   });
-  ss.onchange=()=>{cur.sess=+ss.value; fillAnimals();};
-  fillAnimals();
-  function fillAnimals(){
-    const s=DATA.sessions[cur.sess];
+  if(SPANS){
+    const byA={};
+    SPANS.forEach((e,k)=>{(byA[e.animal]=byA[e.animal]||[]).push([e,k]);});
+    Object.keys(byA).sort().forEach(a=>{
+      byA[a].forEach(([e,k])=>{
+        opts.push({value:'r:'+k, text:spanLabel(e)});
+      });
+    });
+  }
+  opts.forEach(o=>{
+    const el=document.createElement('option');
+    el.value=o.value; el.textContent=o.text;
+    ss.appendChild(el);
+  });
+  ss.onchange=()=>{selectSession(ss.value);};
+  selectSession(ss.value);
+}
+function selectSession(v){
+  const animalCtrl=$('explore-animal-ctrl');
+  if(v.startsWith('s:')){
+    cur.sess=+v.slice(2); cur.spanIdx=null;
+    const s=DATA.sessions[cur.sess], as=$('sel-animal');
     as.innerHTML='';
     s.animals.forEach((a,i)=>{
       const o=document.createElement('option');
@@ -607,16 +865,77 @@ function fillSelectors(){
       as.appendChild(o);
     });
     as.onchange=()=>{cur.anim=+as.value; render();};
+    as.disabled=false;
+    animalCtrl.style.display='';
     cur.anim=0; render();
+  } else {
+    cur.spanIdx=+v.slice(2);
+    // r14: single-animal span — the Animal dropdown has nothing to pick, so
+    // hide it rather than showing a dead "single-animal span" option.
+    animalCtrl.style.display='none';
+    render();
   }
 }
 
 function curAnimal(){return DATA.sessions[cur.sess].animals[cur.anim];}
+function curIsSpan(){return cur.spanIdx!=null && cur.spanIdx!==undefined;}
 
+function spanAsAnimal(e){
+  // Adapt a repeat-span entry to the session-animal shape renderers expect.
+  const tr=e.trace;
+  const out={
+    id:e.animal, genotype:e.genotype, virus:'—', sex:e.sex??null, fiber:'—', correction:'—',
+    duration_h:e.dur_d*24, n_samples:(tr.t||[]).length,
+    circadian:{pre_period_h:null, post_period_h:null},
+    dF_pct:[null,null],
+    light_pulse:(e.lp&&e.lp.length)?{on_cumZT:e.lp[0].cumZT, off_cumZT:(e.lp[0].cumZT+0.5), lp_list:e.lp}:null,
+    trace:{
+      t:tr.t||[], dF_lo:tr.dF_lo||[], dF_hi:tr.dF_hi||[], signal:null,
+      t_wheel:(tr.t_motion||[]), wheel:(tr.motion||[])
+    },
+    spanMeta:e
+  };
+  return out;
+}
+
+// r14: per the standing broken-interaction rule, a chip with no data behind it
+// is visibly disabled with the reason on hover — never silently inert.
+function updateChipAvailability(){
+  const chips=[...document.querySelectorAll('#trace-toggles .chip')];
+  const set=(k,ok,why)=>{const c=chips.find(x=>x.dataset.layer===k); if(!c)return;
+    c.classList.toggle('nodata',!ok);
+    if(!ok) c.title=why||'no data in this recording'; else c.title='';};
+  if(curIsSpan()){
+    const e=SPANS[cur.spanIdx], tr=e.trace||{};
+    set('dF',!!(tr.t&&tr.dF_hi),'no ΔF/F in this span');
+    set('wheel',!!((tr.t_wheel&&tr.wheel)||(tr.t_motion&&tr.motion)), e.beh==='none'?'no behavior stream in this span':'');
+    set('sig',!!tr.signal,'no corrected-signal array in this span');
+  }else{
+    const a=curAnimal(), tr=a.trace||{};
+    set('dF',!!(tr.t&&tr.dF_hi),'no ΔF/F in this recording');
+    set('wheel',!!(tr.t_wheel&&tr.wheel),'no wheel stream in this recording');
+    set('sig',!!tr.signal,'no corrected-signal array in this recording');
+  }
+}
 function render(){
+  if(curIsSpan()){
+    const e=SPANS[cur.spanIdx];
+    const a=spanAsAnimal(e);
+    $('trace-title').textContent=`${e.date} · #${e.animal} ${e.genotype} · repeat span · ${e.dur_d} d · ${e.cond}`;
+    $('trace-badges').innerHTML=`<span class="badge">${e.cond}</span> <span class="badge">${e.beh==='wheel'?'wheel':(e.beh==='motion'?'motion stream':'no behavior')}</span> <span class="badge">${e.ca_snr!=null?('Ca SNR '+e.ca_snr):'—'}</span>`;
+    // r14: express the recorded construct in the description
+    $('explore-construct').textContent=`Expressed: ${e.genotype} / GCaMP6s${e.beh==='none'?' · no behavior stream':''}`;
+    updateChipAvailability();
+    renderSpanTrace(e); renderSpanStats(e); renderSpanActogram(e);
+    document.querySelectorAll('#cohort-table tbody tr').forEach(tr=>{tr.style.background='';});
+    return;
+  }
   const a=curAnimal();
   $('trace-title').textContent=`#${a.id} · ${a.genotype} · ${a.virus.replace('_tdTomato','')} · full record`;
   $('trace-badges').innerHTML=animalBadges(a);
+  // r14: express the recorded construct in the description
+  $('explore-construct').textContent=`Expressed: ${a.genotype} / ${a.virus.replace('_tdTomato','')}`;
+  updateChipAvailability();
   renderTrace(a); renderStats(a); renderActogram(a); renderLP(a);
   document.querySelectorAll('#cohort-table tbody tr').forEach(tr=>{
     tr.style.background = tr.dataset.id===a.id ? 'var(--surface-2)' : '';
@@ -658,15 +977,37 @@ const lpMarkerPlugin={
 };
 Chart.register(lpMarkerPlugin);
 
+// r14: time-weighted rolling-mean smoother for the ΔF/F envelope midpoint.
+// Series are irregularly sampled (6-min bins, gaps); a fixed-N window would
+// smear across gaps. windowH is in hours.
+function smoothSeries(t, y, windowH){
+  const n=t.length;
+  const out=new Array(n);
+  let j=0;
+  for(let i=0;i<n;i++){
+    const t0=t[i]-windowH, t1=t[i]+windowH;
+    while(j<n&&t[j]<t0) j++;
+    let k=j, s=0, wsum=0;
+    while(k<n&&t[k]<=t1){ s+=y[k]; wsum++; k++; }
+    out[i]=wsum?s/wsum:y[i];
+  }
+  return out.map((v,i)=>({x:t[i],y:v}));
+}
+
 function renderTrace(a){
   const tr=a.trace;
   const ds=[];
   if(layers.dF){
     ds.push({type:'line', showLine:true, label:'ΔF/F (min–max/6 min)', data:tr.t.map((t,i)=>({x:t,y:tr.dF_hi[i]})),
-      borderColor:ACCENT, backgroundColor:'rgba(31,66,87,.10)', borderWidth:1.2, pointRadius:0,
+      borderColor:'transparent', backgroundColor:'rgba(31,66,87,.13)', borderWidth:0, pointRadius:0,
       fill:'+1', order:3});
     ds.push({type:'line', showLine:true, label:'ΔF/F envelope low', data:tr.t.map((t,i)=>({x:t,y:tr.dF_lo[i]})),
-      borderColor:'rgba(31,66,87,.35)', borderWidth:.8, pointRadius:0, fill:false, order:3});
+      borderColor:'transparent', backgroundColor:'transparent', borderWidth:0, pointRadius:0, fill:false, order:3});
+    // r14: darker solid smoothed line (20-min rolling mean of the envelope
+    // midpoint), replacing the dark envelope strokes.
+    const mid=tr.t.map((t,i)=>(tr.dF_hi[i]+tr.dF_lo[i])/2);
+    ds.push({type:'line', showLine:true, label:'ΔF/F smoothed (20-min mean)', data:smoothSeries(tr.t, mid, 20/60),
+      borderColor:'#1f4257', borderWidth:1.8, pointRadius:0, fill:false, order:1});
   }
   if(layers.sig){
     ds.push({type:'line', showLine:true, label:'corrected signal (mean/6 min)', data:tr.t.map((t,i)=>({x:t,y:tr.signal[i]})),
@@ -699,20 +1040,31 @@ function renderTrace(a){
   traceChart.$lp=(a.light_pulse&&a.light_pulse.on_cumZT!=null)?{on:a.light_pulse.on_cumZT, off:a.light_pulse.off_cumZT}:null;
 }
 
+// r14 (Jules 2026-09-18): the ±12 h panel is now a STATIC example — #6977,
+// the clean span — with the x-axis in circadian time. 6977's pulse landed at
+// ZT12 on the behavior clock (the 221014 session convention), so pulse onset
+// = CT12 and t=0 maps to CT12 directly. The per-animal picker is retired on
+// this panel; group means and zooms below remain the pooled views.
+let lpExample=null;
 function renderLP(a){
-  if(!a.light_pulse||a.light_pulse.on_cumZT==null){
-    $('lp-title').textContent=`#${a.id} · no light pulse in this recording`;
+  const target='6977';
+  if(!lpExample||lpExample.id!==target){
     if(lpChart){lpChart.destroy();lpChart=null;}
+    $('lp-title').textContent='static example — loading #6977…';
     return;
   }
-  const tr=a.trace, on=a.light_pulse.on_cumZT, off=a.light_pulse.off_cumZT;
-  $('lp-title').textContent=`#${a.id} · light pulse ±12 h · ${a.light_pulse.zt} on day ${a.light_pulse.day}`;
+  const d=lpExample; const on=0, off=30;
+  $('lp-title').textContent=`Static example — #6977 (D1-Cre) · light pulse window −2 to +6 h · x-axis in circadian time`;
   const ds=[
-    {type:'line', showLine:true, label:'ΔF/F (min–max/15 s)', data:tr.lp_t.map((t,i)=>({x:t,y:tr.lp_dF_hi[i]})),
-     borderColor:ACCENT, backgroundColor:'rgba(31,66,87,.10)', borderWidth:1.4, pointRadius:0, fill:'+1'},
-    {type:'line', showLine:true, label:'ΔF/F envelope low', data:tr.lp_t.map((t,i)=>({x:t,y:tr.lp_dF_lo[i]})),
-     borderColor:'rgba(31,66,87,.35)', borderWidth:1, pointRadius:0, fill:false},
+    {type:'line', showLine:true, label:'ΔF/F (min–max/15 s)', data:d.t.map((t,i)=>({x:t,y:d.hi[i]})),
+     borderColor:'transparent', backgroundColor:'rgba(31,66,87,.13)', borderWidth:0, pointRadius:0, fill:'+1'},
+    {type:'line', showLine:true, label:'ΔF/F envelope low', data:d.t.map((t,i)=>({x:t,y:d.lo[i]})),
+     borderColor:'transparent', backgroundColor:'transparent', borderWidth:0, pointRadius:0, fill:false},
   ];
+  if(d.mean){
+    ds.push({type:'line', showLine:true, label:'ΔF/F smoothed (20-min mean)', data:smoothSeries(d.t, d.mean, 20/60),
+      borderColor:'#1f4257', borderWidth:1.8, pointRadius:0, fill:false, order:1});
+  }
   if(lpChart) lpChart.destroy();
   lpChart=new Chart($('lpChart'),{
     type:'scatter',
@@ -721,8 +1073,9 @@ function renderLP(a){
       $lp:{on, off},
       responsive:true, maintainAspectRatio:false, animation:false,
       interaction:{mode:'nearest',intersect:false},
-      scales:{x:{type:'linear',min:Math.floor((on-12)/6)*6,max:Math.ceil((off+12)/6)*6,
-              ticks:{stepSize:6},title:{display:true,text:'cumulative ZT (h) — pulse at '+on.toFixed(2)},grid:{color:RULE}},
+      scales:{x:{type:'linear',min:-12,max:12,ticks:{stepSize:6,
+              callback:v=>{const ct=(12+v)%24;return 'CT '+String(ct).replace('-','−');}},
+              title:{display:true,text:'circadian time — pulse onset = CT12, pulse spans CT12–CT12.5'},grid:{color:RULE}},
               y:{title:{display:true,text:'ΔF/F₀'},grid:{color:RULE}}},
       plugins:{legend:{labels:{boxWidth:14}}}
     }
@@ -737,11 +1090,56 @@ function barHeadroom(vals){ // page-wide rule: no bar touches the axis top
   if(!isFinite(mx)||mx<=0) return undefined;
   return Math.ceil(mx*1.15*10)/10; // ~15% above the tallest bar
 }
+let cycleAnimal='group';
+function fillCycleAnimalSelect(){
+  const sel=$('sel-cycle-animal');
+  if(!sel||sel.dataset.filled) return;
+  sel.dataset.filled='1';
+  const oG=document.createElement('option');
+  oG.value='group'; oG.textContent='Group averages';
+  sel.appendChild(oG);
+  for(const [a,r] of Object.entries(CYC.animals)){
+    const o=document.createElement('option');
+    const lab=(r.group==='GFP')?'GFP control':r.group+'-Cre';
+    o.value=a; o.textContent=`#${a} — ${lab} (${r.n_cycles} cycles)`;
+    sel.appendChild(o);
+  }
+  sel.onchange=e=>{cycleAnimal=e.target.value;renderCycle();};
+}
 function renderCycle(){
   if(!CYC) return;
-  const sel=cycleGt==='both'?['VIP','D1']:cycleGt==='gfp'?['VIP','D1','GFP']:[cycleGt];
+  fillCycleAnimalSelect();
   const ds=[];
   const t0=CYC.t_hours;
+  if(cycleAnimal!=='group'){
+    const R=CYC.animals[cycleAnimal];
+    const g=R.group;
+    const lab=(g==='GFP')?'GFP control (movement artifact, not biology)':g+'-Cre calcium';
+    ds.push({type:'line',label:`${lab} — #${cycleAnimal} (${R.n_cycles} cycles)`,
+      data:t0.map((t,i)=>({x:t,y:R.ca_mc[i]})),borderColor:col(g),borderWidth:2,pointRadius:0,yAxisID:'y'});
+    ds.push({type:'bar',label:`#${cycleAnimal} wheel rate (events/30 min)`,
+      data:t0.map((t,i)=>({x:t,y:R.wh_rate[i]})),backgroundColor:col(g)+'33',
+      borderWidth:0,yAxisID:'y1',order:4});
+    $('cycle-badge').textContent=`#${cycleAnimal} ${g} · ${R.n_cycles} cycles · reaches bin 24 h: ${R.n_reach[47]}/${R.n_reach[0]}`;
+    if(cycleChart) cycleChart.destroy();
+    cycleChart=new Chart($('cycleChart'),{type:'scatter',data:{datasets:ds},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,showLine:true,
+        scales:{x:{type:'linear',min:-2,max:26,ticks:{stepSize:6,
+                 callback:v=>v===0?'CT 0':(v<0||v>24)?'':String(v)},
+                 title:{display:true,text:'Within-Day Average Cycle (hrs), native cycle lengths'},
+                 grid:{color:RULE}},
+                y:{type:'linear',position:'left',title:{display:true,text:'ΔF/F₀ excursion, mean-centered (single animal — no SEM band)'},
+                   grid:{color:RULE}},
+                y1:{type:'linear',position:'right',min:0,
+                    suggestedMax:Math.max(...R.wh_rate)*1.15,
+                    title:{display:true,text:'wheel rate (events/30 min)'},grid:{display:false}}},
+        plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+          filter:it=>!!it.text}}}}});
+    $('cycle-title').textContent=`Average cycle — #${cycleAnimal} (${g})`;
+    $('cycle-foot').textContent=`Single-animal view: ${R.n_cycles} cycles at native length, anchored at this animal's own onsets (CT12). Mean-centered excursion units; the wheel rate is this animal's own per-bin mean. Group-level notes (smearing bound, tail thinning) apply per animal too; switch back to Group averages for the across-animal SEM bands.`;
+    return;
+  }
+  const sel=cycleGt==='both'?['VIP','D1']:cycleGt==='gfp'?['VIP','D1','GFP']:[cycleGt];
   for(const g of sel){
     const G=CYC.groups[g];
     if(!G) continue;
@@ -781,7 +1179,7 @@ function renderCycle(){
   $('cycle-foot').textContent=`Scale: each animal's calcium curve is mean-centered — zero = that animal's own cycle-averaged ΔF/F₀ (excursion units). The raw lab "ΔF/F" keeps the +1 of F/F₀ over each animal's own day-1 F₀ (ZT 14–22), so absolute levels are not comparable across sensors — the GFP pair sits higher in level (drift + motion artifact, not biology) while its modulation depth is comparable. Removed levels: ${lv} F/F₀. `+
     `Each cycle at its native length (18–30 h guard): no stretching, no resampling. `+
     `Wheel shown as rate (events per 30-min bin) — the ≥1-event probability saturated (day bins carry ~170–230 events, so P(≥1)≈1 all day); the rate contrast is ~5× night/day. `+
-    `Calcium is anchored to the wheel clock; the calcium acrophase follows ~19 h after wheel onset (ψ circ-SD 2.2–2.5 h for 4/5 GCaMP), so cross-cycle calcium averaging carries that bound of smearing — re-anchoring to the calcium clock moves group amplitude only 19.0→16.7% (VIP) / 16.6→18.9% (D1). `+
+    `Calcium is anchored to the behavioral clock; the calcium acrophase follows ~19 h after wheel onset (ψ circ-SD 2.2–2.5 h for 4/5 GCaMP), so cross-cycle calcium averaging carries that bound of smearing — re-anchoring to the calcium clock moves group amplitude only 19.0→16.7% (VIP) / 16.6→18.9% (D1). `+
     `Bins past a cycle's end are excluded from that cycle — the thinning tail is real. ${tail}. `+
     `Pulse-containing cycles excluded; first post-pulse cycle kept (7%–12% of each animal's average; 6977's `+
     `17-h post-pulse interval fails the guard so it has none). Non-reach cycles are excluded, not counted as rest.`+
@@ -853,30 +1251,47 @@ function renderLpPeak(){
   if(!LPG) return;
   const byG={};
   for(const [a,p] of Object.entries(LPG.peaks)){(byG[p.group]=byG[p.group]||[]).push({a,p});}
-  // GFP control points ride with their group color, labeled in tooltip
+  // r14 fix (Matilde review finding 1): the shipped peaks block has NO
+  // peak60_dF — the old fallback silently plotted the retired 40-min
+  // rolling peaks under a "first 60 s" label. Compute the true raw 0-60 s
+  // peak HERE from the 1-min lp_trig traces (the shipped source of truth),
+  // and drop the degenerate latency axis (raw 1-min max lands at the first
+  // covered bin for every animal — latency carries no information).
+  const peak60={};
+  for(const [a,e] of Object.entries(LPG.lp_trig)){
+    const t=e.t, d=e.d;
+    let m=null;
+    // r14 units fix (Matilde catch): 'first 60 s' at 1-min bins = the single
+    // (0,1] bin. The earlier (0,60]-MINUTES window was the first HOUR.
+    for(let i=0;i<t.length;i++){
+      const tt=t[i], v=d[i];
+      if(v==null) continue;
+      if(tt>0&&tt<=1){ if(m===null||v>m) m=v; }
+    }
+    peak60[a]=m;
+  }
   const ds=[];
   for(const [g,arr] of Object.entries(byG)){
-    ds.push({type:'scatter',label:`${g} peak`,data:arr.map(({p})=>({x:p.peak_lat_min,y:p.peak_dF*100})),
+    ds.push({type:'scatter',label:`${g} first-minute \u0394F/F`,
+      data:arr.map(({a})=>({x:a,y:(peak60[a]!=null?peak60[a]*100:null)})),
       backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
-    ds.push({type:'scatter',label:`${g} trough`,data:arr.map(({p})=>({x:p.trough_lat_min,y:p.trough_dF*100})),
-      backgroundColor:'transparent',borderColor:col(g),pointRadius:6,pointHoverRadius:8,pointBorderWidth:2});
   }
+  const animalIds=Object.keys(LPG.peaks);
   if(lpPeakChart) lpPeakChart.destroy();
-  lpPeakChart=new Chart($('lpPeakChart'),{type:'scatter',data:{datasets:ds},
+  lpPeakChart=new Chart($('lpPeakChart'),{
+    type:'scatter',
+    data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'linear',min:0,max:40,ticks:{stepSize:10},
-              title:{display:true,text:'latency from pulse onset (min)'}},
-              y:{title:{display:true,text:'ΔF/F₀ (%)'},grid:{color:RULE}}},
+      scales:{x:{type:'category',labels:animalIds.map(a=>'#'+a),
+              title:{display:true,text:'animal (first-minute ΔF/F, single 1-min bin after pulse onset)'}},
+              y:{title:{display:true,text:'first-minute ΔF/F₀ (%)'},grid:{color:RULE}}}},
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
         tooltip:{callbacks:{label:it=>{
-          const arr=byG[it.dataset.label.split(' ')[0]];
-          const {a,p}=arr[it.dataIndex];
-          return it.dataset.label.includes('peak')
-            ? `#${a} peak: ${p.peak_dF>=0?'+':''}${(p.peak_dF*100).toFixed(2)}% at ${p.peak_lat_min.toFixed(0)} min`
-            : `#${a} trough: ${(p.trough_dF*100).toFixed(2)}% at ${p.trough_lat_min.toFixed(0)} min`;
-        }}}}}});
+          const a=animalIds[it.dataIndex];
+          const v=peak60[a];
+          return `#${a}: first-minute ΔF/F ${v!=null?(v>=0?'+':'')+(v*100).toFixed(2):'n/a'}%`;
+        }}}}});
 }
-
 function renderActogram(a){
   const cv=$('actogram-canvas'), ctx=cv.getContext('2d');
   const t=a.trace.t_wheel, w=a.trace.wheel;
@@ -893,9 +1308,9 @@ function renderActogram(a){
   cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
   ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.font='10px monospace';
-  const LEGEND='\u25a0 intensity = wheel revs (98th pct = black)';
-  const legendW=ctx.measureText(LEGEND).width;
-  const padL=46, padR=Math.max(120,Math.ceil(legendW+28)), padT=18, rowH=Math.min(26,(H-padT-10)/days);
+  // r14: on-canvas legend removed (Jules 2026-09-18) — padR collapses, plot
+  // reclaims the width. The intensity note lives in acto-foot.
+  const padL=46, padR=10, padT=18, rowH=Math.min(26,(H-padT-10)/days);
   const plotW=W-padL-padR; // px for 24h
   ctx.fillStyle='#fffdf8'; ctx.fillRect(0,0,W,H);
   const mx=Math.max(...w.filter(v=>v>0).slice(0,1e6),1);
@@ -940,9 +1355,10 @@ function renderActogram(a){
   }
   // 24h label + scale bar
   ctx.fillStyle='#a99e89'; ctx.fillText('ZT (h) \u2192',padL+plotW/2-14,H-6);
-  ctx.fillStyle='#675e4f'; ctx.fillText(LEGEND,padL+plotW+12,padT+10);
+  // r14: on-canvas intensity legend REMOVED per Jules ruling 2026-09-18 —
+  // it pushed the actogram left. The note lives in the fig caption below.
   $('acto-title').textContent=`#${a.id} · ${a.genotype} · ${a.virus.replace('_tdTomato','')}`;
-  $('acto-foot').textContent=`Free-running τ ≈ ${a.circadian.pre_period_h?.toFixed(2)??'—'} h before the pulse${hasLP?` (day ${lpDay+1}, gold band = pulse day)`:''}, ${a.circadian.post_period_h?.toFixed(2)??'—'} h after. Onsets drifting left each day = τ < 24 h.`;
+  $('acto-foot').textContent=`Free-running τ ≈ ${a.circadian.pre_period_h?.toFixed(2)??'—'} h before the pulse${hasLP?` (day ${lpDay+1}, gold band = pulse day)`:''}, ${a.circadian.post_period_h?.toFixed(2)??'—'} h after. Onsets drifting left each day = τ < 24 h. Intensity = wheel revolutions per 10-min bin; black = 98th percentile.`;
 }
 function percentile(arr,p){const s=[...arr].sort((a,b)=>a-b);const i=Math.floor(s.length*p/100);return s[i];}
 window.addEventListener('resize',()=>{if(DATA)renderActogram(curAnimal());});
@@ -982,10 +1398,12 @@ function fillAnimalsFromCur(){
 
 document.querySelectorAll('#trace-toggles .chip').forEach(ch=>{
   ch.onclick=()=>{
+    if(ch.classList.contains('nodata'))return;
     const k=ch.dataset.layer;
     layers[k]=!layers[k];
     ch.classList.toggle('on',layers[k]);
-    renderTrace(curAnimal());
+    if(curIsSpan()) renderSpanTrace(SPANS[cur.spanIdx]);
+    else renderTrace(curAnimal());
   };
 });
 
@@ -1176,7 +1594,7 @@ const C_VIPC='#2c6c8c', C_D1C='#7c5784', C_GFPC='#6b8f2a';
 let ANA=null;
 function col(g){return g==='VIP'?C_VIPC:(g==='GFP'?C_GFPC:C_D1C);}
 
-let CT_FRAMES=null, SE=null, RL=null, GFPB=null;
+let CT_FRAMES=null, SE=null, RL=null, GFPB=null, RL13=null;
 let sec4Frame='wheel', sec8Frame='wheel', sec9Frame='wheel';
 let sec9Metric='peak', sec9Quartile='all';
 let prcDualChart=null, clockShiftChart=null, compChart=null, boutCaChart=null, onsetTrigChart=null;
@@ -1195,12 +1613,12 @@ function frameChipHandler(chipsId, get, set, rerender){
 function renderPRCDual(){
   const c=CT_FRAMES.correlation;
   const ds=[];
-  const animals=Object.keys(c.T.points);
+  const animals=Object.keys(c.S.points);
   const lpct=c.lp_in_ct;
   for(const a of animals){
     const g=ANA.dual_clock[a].group;
     const X=(sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a];
-    const Y=(sec4Frame==='wheel')?c.T.points[a].wheel:c.T.points[a].ca;
+    const Y=(sec4Frame==='wheel')?c.S.points[a].wheel:c.S.points[a].ca;
     ds.push({type:'scatter',label:`#${a} ${g}`,data:[{x:X,y:Y}],
       backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
   }
@@ -1213,7 +1631,7 @@ function renderPRCDual(){
       plugins:{legend:{display:false},
         tooltip:{callbacks:{label:it=>{
           const a=animals[it.datasetIndex];
-          return `#${a}: LP at CT ${((sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a]).toFixed(1)}, shift ${((sec4Frame==='wheel')?c.T.points[a].wheel:c.T.points[a].ca).toFixed(2)} CT`;}}}}}});
+          return `#${a}: LP at CT ${((sec4Frame==='wheel')?lpct.wheel[a]:lpct.caS[a]).toFixed(1)}, shift ${((sec4Frame==='wheel')?c.S.points[a].wheel:c.S.points[a].ca).toFixed(2)} CT`;}}}}}});
   $('prc-title').textContent=(sec4Frame==='wheel')
     ?'Phase-reset points — behavioral (wheel) CT frame'
     :'Phase-reset points — calcium (S+6) CT frame';
@@ -1221,29 +1639,52 @@ function renderPRCDual(){
 
 function renderClockShift(){
   const c=CT_FRAMES.correlation;
-  const which=(sec4Frame==='wheel')?c.T:c.S;
-  $('corr-badge').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)}, perm p = ${which.p.toFixed(2)}, n = ${c.n}`;
+  const which=c.S;
+  $('corr-badge').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)} (S+6), perm p = ${which.p.toFixed(2)}, n = ${c.n}`;
   $('clock-r').textContent=`r = ${which.r>=0?'+':''}${which.r.toFixed(2)} (perm p = ${which.p.toFixed(2)}, n = ${c.n})`;
-  const ds=[]; const labels=[];
+  // r14 (Jules 2026-09-18): paired display — each animal's behavioral and
+  // calcium shift as TWO points joined by a line (same animal, same pulse).
+  // X = shift magnitude (ΔCT h), one row per animal; the connecting line is
+  // the within-animal disagreement between clocks.
+  const ds=[]; const rowOf={};
   const pts=which.points;
-  for(const [a,p] of Object.entries(pts)){
+  const ids=Object.keys(pts);
+  ids.forEach((a,i)=>{ rowOf[a]=i; });
+  ids.forEach((a,i)=>{
     const g=ANA.dual_clock[a].group;
-    ds.push({type:'scatter', label:`#${a} ${g}`, data:[{x:p.wheel,y:p.ca}],
-      backgroundColor:col(g), pointRadius:7, pointHoverRadius:9});
-    labels.push(a);
-  }
+    const p=pts[a];
+    ds.push({type:'scatter', label:`#${a} ${g} behavioral`, data:[{x:p.wheel,y:i}],
+      backgroundColor:col(g), pointRadius:6, pointHoverRadius:8, pointStyle:'circle'});
+    ds.push({type:'scatter', label:`#${a} ${g} calcium`, data:[{x:p.ca,y:i}],
+      backgroundColor:col(g), pointRadius:6, pointHoverRadius:8, pointStyle:'rectRot'});
+    ds.push({type:'line', label:`#${a} pair`, data:[{x:p.wheel,y:i},{x:p.ca,y:i}],
+      borderColor:col(g), borderWidth:1.2, opacity:.65, pointRadius:0, order:1, showLine:true});
+  });
   const wv=Object.values(pts).map(p=>p.wheel), cv=Object.values(pts).map(p=>p.ca);
-  const xs=[Math.min(...wv,...cv)-1, Math.max(...wv,...cv)+1];
-  const b=np_polyfit(wv,cv);
-  ds.push({type:'line', data:[{x:xs[0],y:np_polyval(b,xs[0])},{x:xs[1],y:np_polyval(b,xs[1])}],
-    borderColor:'#a99e89', borderWidth:1, borderDash:[5,4], pointRadius:0, order:0, label:'fit'});
+  const all=wv.concat(cv);
+  const xlo=Math.floor(Math.min(...all,-1))-0.5, xhi=Math.ceil(Math.max(...all,1))+0.5;
+  const st5=signTestAboveBelow(Object.values(pts).map(p=>({x:p.wheel,y:p.ca})));
+  $('corr-sign').textContent=fmtSignTest(st5,'calcium shift above','calcium shift below');
+  // r14: calcium LOO — recompute r leaving each animal out (shipped points).
+  const loo=[];
+  for(const left of ids){
+    const rest=ids.filter(x=>x!==left);
+    const rw=rest.map(x=>pts[x].wheel), rc=rest.map(x=>pts[x].ca);
+    const r=np_pearson(rw,rc);
+    loo.push({a:left, r});
+  }
+  const looStr=loo.map(o=>`#${o.a}: ${o.r>=0?'+':''}${o.r.toFixed(2)}`).join(' · ');
+  $('corr-loo').textContent=`Calcium-clock LOO (recomputed, S+6): ${looStr}`;
+  squareChartBox('clockShiftChart');
   if(clockShiftChart) clockShiftChart.destroy();
   clockShiftChart=new Chart($('clockShiftChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{min:-6,max:6,ticks:{stepSize:6},title:{display:true,text:'wheel-clock shift (ΔCT h)'},grid:{color:RULE}},
-              y:{min:-6,max:6,ticks:{stepSize:6},title:{display:true,text:'calcium-clock shift (ΔCT h)'},grid:{color:RULE}}},
+      scales:{x:{min:xlo,max:xhi,title:{display:true,text:'phase shift (ΔCT h) — ● behavioral clock, ⊡ calcium clock'},grid:{color:RULE}},
+              y:{min:-0.8,max:ids.length-0.2,ticks:{display:false},grid:{display:false}}},
       plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:it=>{const a=labels[it.datasetIndex];return a?`#${a}: wheel ${pts[a].wheel.toFixed(2)}, calcium ${pts[a].ca.toFixed(2)} CT`:'';}}}}}});
+        tooltip:{callbacks:{label:it=>{
+          const a=ids[Math.round(it.parsed.y)];
+          return a?`#${a}: wheel ${pts[a].wheel.toFixed(2)}, calcium ${pts[a].ca.toFixed(2)} CT`:'';}}}}}});
 }
 
 function renderComp(){
@@ -1304,45 +1745,82 @@ function renderBoutCa(){
 }
 
 // ---- re-locking section (06) -------------------------------------------
-let relockChart=null, relockCur=0, relockLayers={pre:true,post:true,lp:true}, relockConv='psi';
+let relockChart=null, relockView='phi', relockSel='group', relockIsLP2=false;
 const RELOCK_ANIMALS=['6577','6976','6977','6978'];
 
+
 function renderRelock(){
-  const a=RELOCK_ANIMALS[relockCur];
-  const d=RL.psi_S[a];
-  const g=d.genotype.includes('VIP')?'VIP':'D1';
-  const sh=(relockConv==='phi')?6:0;
+  const a=(relockSel==='group')?null:relockSel;
   const ds=[];
-  if(relockLayers.pre && d.pre_points){
-    ds.push({type:'scatter',label:'pre-LP '+(relockConv==='phi'?'φ':'ψ'),data:d.pre_points.map(p=>({x:p[0],y:p[1]+sh})),
-      backgroundColor:'#8a8171',pointRadius:4,pointHoverRadius:6,opacity:.8});
-  }
-  if(d.pre_mean!==null){
-    ds.push({type:'line',label:'pre mean',data:[{x:-10,y:d.pre_mean+sh},{x:6,y:d.pre_mean+sh}],
-      borderColor:'#8a8171',borderWidth:1,borderDash:[5,4],pointRadius:0,order:0});
-    if(d.pre_sd){
-      ds.push({type:'line',label:'pre band +1SD',data:[{x:-10,y:d.pre_mean+d.pre_sd+sh},{x:6,y:d.pre_mean+d.pre_sd+sh}],
-        borderColor:'transparent',backgroundColor:'rgba(138,129,113,.15)',fill:'+1',pointRadius:0});
-      ds.push({type:'line',data:[{x:-10,y:d.pre_mean-d.pre_sd+sh},{x:6,y:d.pre_mean-d.pre_sd+sh}],
-        borderColor:'transparent',pointRadius:0,fill:false});
+  let yTitle, yMin, yMax, tickStep;
+  if(relockView==='phi'){
+    yTitle='φ = CT12(calcium) − CT12(wheel) (h)'; yMin=null; yMax=null; tickStep=null;
+    if(relockSel==='group'){
+      for(const g of ['VIP','D1']){
+        const anByG=RELOCK_ANIMALS.filter(x=>RL13.genotypes[x]===g);
+        // collect cycle-union across animals in group, group-mean phi at each cycle
+        const cycs=[...new Set(anByG.flatMap(x=>RL13.animals[x].map(r=>r.cyc)))].sort((p,q)=>p-q);
+        const mean=[]; const thin=[];
+        for(const x of anByG){
+          thin.push({type:'line',label:`#${x}`,data:RL13.animals[x].map(r=>({x:r.cyc,y:r.phi})),
+            borderColor:col(g),borderWidth:1,opacity:.35,pointRadius:0,order:2});
+        }
+        for(const c of cycs){
+          const vals=anByG.flatMap(x=>RL13.animals[x].filter(r=>r.cyc===c).map(r=>r.phi));
+          if(vals.length) mean.push({x:c,y:vals.reduce((s,v)=>s+v,0)/vals.length});
+        }
+        ds.push({type:'line',label:g+' mean',data:mean,borderColor:col(g),borderWidth:2.4,
+          pointRadius:2.5,pointHoverRadius:5,tension:0,order:1});
+        ds.push(...thin);
+      }
+    }else{
+      const g=RL13.genotypes[a];
+      ds.push({type:'scatter',label:'φ per cycle',data:RL13.animals[a].map(r=>({x:r.cyc,y:r.phi})),
+        backgroundColor:col(g),pointRadius:4.5,pointHoverRadius:6});
+    }
+  }else{
+    yTitle='CT (h)'; yMin=0; yMax=24; tickStep=6;
+    const items=(relockSel==='group')?RELOCK_ANIMALS:[a];
+    for(const x of items){
+      const g=RL13.genotypes[x];
+      const rows=RL13.animals[x];
+      const emph=(relockSel!=='group');
+      for(const r of rows){
+        ds.push({type:'line',label:`#${x} φ link`,data:[{x:r.cyc,y:r.wheel},{x:r.cyc,y:r.ca}],
+          borderColor:col(g),borderWidth:emph?1.6:0.9,opacity:emph?0.85:0.4,
+          pointRadius:0,order:2,showLine:true});
+        ds.push({type:'scatter',label:`#${x} CT12 wheel`,data:[{x:r.cyc,y:r.wheel}],
+          backgroundColor:'#8a8171',pointRadius:emph?3.4:2.2,pointHoverRadius:5});
+        ds.push({type:'scatter',label:`#${x} CT12 calcium`,data:[{x:r.cyc,y:r.ca}],
+          backgroundColor:col(g),pointRadius:emph?3.4:2.2,pointHoverRadius:5});
+      }
     }
   }
-  if(relockLayers.post && d.post_points){
-    ds.push({type:'scatter',label:'post-LP '+(relockConv==='phi'?'φ':'ψ'),data:d.post_points.map(p=>({x:p[0],y:p[1]+sh})),
-      backgroundColor:col(g),pointRadius:6,pointHoverRadius:8});
-  }
-  if(relockLayers.lp){
-    ds.push({type:'line',label:'light pulse',data:[{x:0,y:null},{x:0,y:null}],
-      borderColor:'#b07d22',borderWidth:0,pointRadius:0});
-  }
   if(relockChart) relockChart.destroy();
+  const yOpts={title:{display:true,text:yTitle},grid:{color:RULE}};
+  if(yMin!==null){yOpts.min=yMin;yOpts.max=yMax;yOpts.ticks={stepSize:tickStep,callback:v=>['CT0','CT6','CT12','CT18','CT24'][v/6]};}
   relockChart=new Chart($('relockChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
       scales:{x:{type:'linear',ticks:{stepSize:2},title:{display:true,text:'cycles from LP1'},grid:{color:RULE}},
-              y:{title:{display:true,text:(relockConv==='phi'?'φ = calcium CT12 − behavioral CT12':'ψ = Ca anchor − wheel onset')+' (h)'},grid:{color:RULE}}},
+              y:yOpts},
       plugins:{
-        legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},filter:it=>!!it.text}},
-        tooltip:{callbacks:{}},
+        legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+          filter:(it,chart)=>{
+            const keep=['VIP mean','D1 mean','φ per cycle'];
+            if(keep.some(k=>it.text===k)) return true;
+            if(relockView==='pairs') return it.text.includes('CT12');
+            return false;
+          }}},
+        tooltip:{callbacks:{label:it=>{
+          const lb=it.dataset.label||'';
+          if(lb.includes('CT12 wheel')) return `wheel CT12 ${it.parsed.y.toFixed(1)}`;
+          if(lb.includes('CT12 calcium')) return `calcium CT12 ${it.parsed.y.toFixed(1)}`;
+          if(lb.includes('φ link')){
+            const d=it.dataset.data;
+            return `φ ${(d[1].y-d[0].y).toFixed(1)} h (wheel CT12 ${d[0].y.toFixed(1)} → calcium CT12 ${d[1].y.toFixed(1)})`;
+          }
+          return `${lb}: φ ${it.parsed.y.toFixed(1)} h @ cycle ${it.parsed.x.toFixed(1)}`;
+        }}},
         lpLine06:{}
       },
       lpX:0
@@ -1363,43 +1841,72 @@ function renderRelock(){
         }
       }
     }]});
-  $('relock-title').textContent=`#${a} · ${d.genotype} · ${relockConv==='phi'?'φ':'ψ'} re-locking`;
+  $('relock-title').textContent=(relockSel==='group')
+    ? `Group φ re-locking · VIP / D1`
+    : `#${a} · ${RL13.genotypes[a]} · φ re-locking`;
   const flags=(a==='6976')?' · flagged: ca-anchor fragmentation; single-span, self-consistency only':'';
-  const preM=(relockConv==='phi')?(d.pre_mean+6).toFixed(2):d.pre_mean;
-  $('relock-badge').textContent=`pre ${preM}±${d.pre_sd} h · n pre ${d.pre_n} / post ${d.post_points.length}${flags}`;
-  $('relock-foot').textContent=`${relockConv==='phi'?'φ = ψ + 6 h (calcium CT12 − behavioral CT12; 0 = CT12s coincide)':'ψ = sine-acrophase calcium anchor − paired wheel onset'}. ${
-    d.dropped?`${d.dropped} anchor(s) dropped (no paired onset in window). `:''}${
-    d.post_points.length<3?'Post window thin (n='+d.post_points.length+') — read as a trajectory, not a fit.':''}`;
+  if(relockSel==='group'){
+    $('relock-badge').textContent=`VIP n=2 · D1 n=2 (pilot animals)`;
+  }else{
+    const rows=RL13.animals[a];
+    const pre=rows.filter(r=>r.cyc<-0.25).map(r=>r.phi);
+    const post=rows.filter(r=>r.cyc>0.25).map(r=>r.phi);
+    const pm=pre.length?(pre.reduce((s,v)=>s+v,0)/pre.length):null;
+    $('relock-badge').textContent=`pre φ ${pm!==null?pm.toFixed(2):'—'}±${pre.length>1?Math.sqrt(pre.reduce((s,v)=>s+(v-pm)**2,0)/(pre.length-1)).toFixed(2):'—'} h · n pre ${pre.length} / post ${post.length}${flags}`;
+  }
+  $('relock-foot').textContent=`φ = CT12(calcium) − CT12(wheel), the S+6 sine-acrophase convention. ${
+    relockView==='pairs'?'Each vertical line links one cycle\u2019s wheel CT12 (grey) to its calcium CT12 (colored); the line\u2019s length is φ. ':''
+  }Cycles are LP1-relative; the gold dashed line marks LP1. ${
+    relockSel==='group'?'Group means are across-animal means at each cycle — a shared-time display, not a pooled fit. ':''
+  }6976 renders with its two standing flags (calcium-anchor fragmentation; single-span/self-consistency-only validation).`;
 }
 
 function fillRelockControls(){
   const as=$('sel-relock-animal');
   as.innerHTML='';
-  RELOCK_ANIMALS.forEach((a,i)=>{
+  const optG=document.createElement('option');
+  optG.value='group'; optG.textContent='Group — VIP / D1';
+  as.appendChild(optG);
+  RELOCK_ANIMALS.forEach(a=>{
     const o=document.createElement('option');
-    o.value=i;
+    o.value=a;
     const d=RL.psi_S[a];
-    o.textContent=`#${a} — ${d.genotype}`;
+    const g=RL13.genotypes[a];
+    o.textContent=`#${a} — ${g} · LP1`;
     as.appendChild(o);
+    if(RL.lp2[a] && !RL.lp2[a].excluded){
+      const o2=document.createElement('option');
+      o2.value=a;
+      o2.textContent=`#${a} — ${g} · LP2 (wheel-only)`;
+      o2.dataset.note='lp2';
+      as.appendChild(o2);
+    }
   });
-  as.onchange=e=>{relockCur=+e.target.value;renderRelock();};
-  document.querySelectorAll('#relock-conv-chips .chip').forEach(ch=>{
+  as.onchange=e=>{
+    const sel=e.target.selectedOptions[0];
+    relockSel=e.target.value;
+    relockIsLP2=!!(sel && sel.dataset && sel.dataset.note==='lp2');
+    renderRelock();
+  };
+  document.querySelectorAll('#relock-view-chips .chip').forEach(ch=>{
     ch.onclick=()=>{
-      document.querySelectorAll('#relock-conv-chips .chip').forEach(c=>c.classList.remove('on'));
+      document.querySelectorAll('#relock-view-chips .chip').forEach(c=>c.classList.remove('on'));
       ch.classList.add('on');
-      relockConv=ch.dataset.conv;
-      renderRelock();
-    };
-  });
-  document.querySelectorAll('#relock-chips .chip').forEach(ch=>{
-    ch.onclick=()=>{
-      relockLayers[ch.dataset.layer]=!relockLayers[ch.dataset.layer];
-      ch.classList.toggle('on',relockLayers[ch.dataset.layer]);
+      relockView=ch.dataset.view;
       renderRelock();
     };
   });
 }
 
+document.addEventListener('DOMContentLoaded',()=>{}); // no-op
+function armArchiveExpand(){
+  const det=document.getElementById('archive-block');
+  if(!det||det.dataset.armed) return;
+  det.dataset.armed='1';
+  det.addEventListener('toggle',()=>{
+    if(det.open){ renderComp(); renderArtifact(); renderFirstDays(); }
+  });
+}
 let lp2Frame='wheel', lp2Chart=null;
 function renderLP2(){
   const L=RL.lp2;
@@ -1466,16 +1973,16 @@ function fillRelockTable(){
     const flags=(a==='6976')?' <span style="color:#bb4a33">⚑ flagged</span>':'';
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span>${flags}</td>
-      <td>${d.pre_mean} ± ${d.pre_sd} / ${(d.pre_mean+6).toFixed(2)} ± ${d.pre_sd} h</td>
+      <td>${(d.pre_mean+6).toFixed(2)} ± ${d.pre_sd} h</td>
       <td>${d.pre_n} / ${d.post_points.length}</td>
       <td>${d.dropped}</td>
-      <td style="font-size:11px">${d.post_points.map(p=>`${p[0].toFixed(1)}d:${p[1].toFixed(1)}h`).join(' ')}</td>
+      <td style="font-size:11px">${d.post_points.map(p=>`${p[0].toFixed(1)}d:${(p[1]+6).toFixed(1)}h`).join(' ')}</td>
       <td style="font-size:11px">${read}</td>`;
     tb.appendChild(tr);
   }
 }
 
-// ---- estimator comparison (methods §11) ---------------------------------
+// ---- estimator comparison (methods §12) ---------------------------------
 function renderEstimatorChart(){
   const ds=[];
   const an=Object.keys(SE).filter(k=>k!=='_meta');
@@ -1532,6 +2039,11 @@ function fillEstimatorTable(){
 function np_polyfit(x,y){const n=x.length;const sx=x.reduce((a,b)=>a+b),sy=y.reduce((a,b)=>a+b);
   const sxy=x.reduce((a,b,i)=>a+b*y[i],0),sxx=x.reduce((a,b)=>a+b*b,0);
   const m=(n*sxy-sx*sy)/(n*sxx-sx*sx);return [m,(sy-m*sx)/n];}
+// r14: Pearson r (the LOO recompute needs it; np_polyfit only gives the line).
+function np_pearson(x,y){const n=x.length;const mx=x.reduce((a,b)=>a+b)/n,my=y.reduce((a,b)=>a+b)/n;
+  let num=0,dx=0,dy=0;
+  for(let i=0;i<n;i++){num+=(x[i]-mx)*(y[i]-my);dx+=(x[i]-mx)**2;dy+=(y[i]-my)**2;}
+  const den=Math.sqrt(dx*dy);return den?num/den:NaN;}
 function np_polyval(b,x){return b[0]*x+b[1];}
 
 function renderStability(){
@@ -1542,8 +2054,8 @@ function renderStability(){
     const g=ANA.dual_clock[a].group;
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span></td>
-      <td class="${s.full<0?'negv':'pos'}">${s.full>=0?'+':''}${s.full.toFixed(2)}</td>
-      <td>${s.loo_min.toFixed(1)} … ${s.loo_max.toFixed(1)}</td>
+      <td class="${s.full_CT<0?'negv':'pos'}">${s.full_CT>=0?'+':''}${s.full_CT.toFixed(2)}</td>
+      <td>${s.loo_min_CT.toFixed(1)} … ${s.loo_max_CT.toFixed(1)}</td>
       <td>${reads[a]??''}</td>`;
     tb.appendChild(tr);
   }
@@ -1621,11 +2133,43 @@ function renderFirstDays(){
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}}}}});
 }
 
+let sec9Animal='group';
+function fillOnsetAnimalSelect(){
+  const sel=$('sel-onset-animal');
+  if(!sel||sel.dataset.filled) return;
+  sel.dataset.filled='1';
+  const oG=document.createElement('option');
+  oG.value='group'; oG.textContent='Group means (VIP / D1 / GFP)';
+  sel.appendChild(oG);
+  for(const a of Object.keys(ANA.onset_triggered)){
+    const o=document.createElement('option');
+    o.value=a; o.textContent=`#${a} — ${ANA.dual_clock[a].group}-Cre`;
+    sel.appendChild(o);
+  }
+  if(GFPB&&GFPB.onset_triggered_gfp){
+    for(const a of Object.keys(GFPB.onset_triggered_gfp)){
+      const o=document.createElement('option');
+      o.value='gfp:'+a; o.textContent=`#${a} — GFP control`;
+      sel.appendChild(o);
+    }
+  }
+  sel.onchange=e=>{sec9Animal=e.target.value;renderOnsetTrig();};
+}
 function renderOnsetTrig(){
+  fillOnsetAnimalSelect();
   // cur quartile: 'all' (shipped overall average) or 'q1'..'q4'
   const q=sec9Quartile;
   const groups={};
-  if(q==='all'){
+  if(sec9Animal!=='group'){
+    // single-animal view: quartile chips keep working within the animal
+    const isG=sec9Animal.startsWith('gfp:');
+    const a=isG?sec9Animal.slice(4):sec9Animal;
+    const src=isG?(GFPB&&GFPB.onset_triggered_gfp||{}):ANA.onset_triggered;
+    const srcQ=isG?(GFPB&&GFPB.onset_quartile_gfp||{}):ANA.onset_quartile_curves;
+    const lab=isG?'GFP':ANA.dual_clock[a].group;
+    if(q==='all'){ (groups[lab]=groups[lab]||[]).push(src[a]); }
+    else if(srcQ[a]&&srcQ[a][q]){ (groups[lab]=groups[lab]||[]).push(srcQ[a][q]); }
+  } else if(q==='all'){
     for(const [a,d] of Object.entries(ANA.onset_triggered)){
       const g=ANA.dual_clock[a].group;
       (groups[g]=groups[g]||[]).push(d);
@@ -1651,9 +2195,9 @@ function renderOnsetTrig(){
   const t0=Object.values(ANA.onset_triggered)[0].t;
   let tot=0; for(const g of ['VIP','D1','GFP']) tot+=(groups[g]||[]).length;
   const qlabel=q==='all'?'':({q1:' · CT0–6',q2:' · CT6–12',q3:' · CT12–18',q4:' · CT18–24'})[q];
-  $('onset-badge').textContent=q==='all'
-    ? `${tot} animals · 341–400 onsets each (GFP controls: 196–274)`
-    : `${tot} animals${qlabel}`;
+  const whoLabel = sec9Animal==='group' ? (q==='all'?`${tot} animals · 341–400 onsets each (GFP controls: 196–274)`:`${tot} animals${qlabel}`)
+    : `#${sec9Animal.startsWith('gfp:')?sec9Animal.slice(4):sec9Animal}${qlabel} · single animal`;
+  $('onset-badge').textContent=whoLabel;
   for(const [g,arr] of Object.entries(groups)){
     if(!arr.length) continue;
     const M=arr.map(d=>d.z);
@@ -1680,7 +2224,20 @@ function renderOnsetTrig(){
     }
   };
   if(onsetTrigChart) onsetTrigChart.destroy();
-  onsetTrigChart=new Chart($('onsetTrigChart'),{type:'scatter',data:{datasets:ds},options:opts});
+  onsetTrigChart=new Chart($('onsetTrigChart'),{type:'scatter',data:{datasets:ds},options:opts,
+    plugins:[{
+      id:'t0line',
+      afterDatasetsDraw(chart){
+        const x=chart.scales.x.getPixelForValue(0);
+        const {ctx,chartArea:{top,bottom}}=chart;
+        if(Number.isFinite(x)){
+          ctx.save();
+          ctx.strokeStyle='#b07d22'; ctx.lineWidth=1.2; ctx.setLineDash([3,3]);
+          ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x,bottom); ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }]});
 }
 
 let earlyLateChart=null;
@@ -1719,7 +2276,7 @@ function renderEarlyLate(){
 
 fetch('data/analyses.json').then(r=>r.json()).then(a=>{
   ANA=a;
-  renderStability(); renderQC(); renderQCDay(); renderArtifact(); renderFirstDays(); renderOnsetTrig(); renderEarlyLate();
+  renderStability(); renderQC(); renderQCDay(); renderOnsetTrig(); renderEarlyLate(); armArchiveExpand();
   renderWithin();
   loadRepeatRecordings();
   // new S+6 surfaces
@@ -1729,8 +2286,10 @@ fetch('data/analyses.json').then(r=>r.json()).then(a=>{
       SE=se;
       fetch('data/relock.json').then(r=>r.json()).then(rl=>{
         RL=rl;
-        renderPRCDual(); renderClockShift(); renderComp(); renderBoutCa();
-        fillRelockControls(); renderRelock(); renderLP2(); fillRelockTable();
+        fetch('data/relock_r13.json').then(r=>r.json()).then(rl13=>{
+          RL13=rl13;
+          renderPRCDual(); renderClockShift(); renderComp(); renderBoutCa();
+          fillRelockControls(); renderRelock(); renderLP2(); fillRelockTable();
         renderEstimatorChart(); fillEstimatorTable();
         frameChipHandler('sec4-ct-chips', ()=>sec4Frame, v=>{sec4Frame=v;},
           ()=>{renderPRCDual();renderClockShift();});
@@ -1754,6 +2313,7 @@ fetch('data/analyses.json').then(r=>r.json()).then(a=>{
             renderOnsetTrig();
           };
         });
+        }).catch(e=>{ $('#relock-foot').textContent='relock_r13 data unavailable: '+e; });
       }).catch(e=>{ $('#relock-foot').textContent='relock data unavailable: '+e; });
     }).catch(e=>{ console.error('s_estimator load failed', e); });
   }).catch(e=>{ console.error('ct_frames load failed', e); });
@@ -1765,7 +2325,100 @@ fetch('data/analyses.json').then(r=>r.json()).then(a=>{
 
 fetch('data/lp_response.json').then(r=>r.json()).then(d=>{
   LPG=d; renderLpGroup(); renderLpPeak();
+  // r14: build the static #6977 example (±12 h, CT axis) from the 1-min
+  // pulse-triggered trace — native ΔF/F, pulse onset at t=0.
+  const tr=d.lp_trig['6977'];
+  if(tr){
+    lpExample={id:'6977', t:tr.t.map(x=>x/60), hi:tr.d, lo:tr.d, mean:null};
+    // 6977's ±12 h window at 1-min bins: the trace IS the signal; envelope =
+    // trace for display (15-s envelope not shipped in this artifact), the
+    // smoothed line carries the shape.
+    const tH=lpExample.t, yH=lpExample.hi;
+    lpExample.mean=yH; // smoothed via smoothSeries at render
+    renderLP(null);
+  }
 }).catch(e=>{ $('lp-group-badge').textContent='lp group data unavailable'; });
+
+// ---- §04 zooms: ±5 min at LP onset/offset (round 13) --------------------
+let LPZOOM=null, lpZoomOnChart=null, lpZoomOffChart=null;
+function renderLpZoom(chartId, which, stateKey){
+  if(!LPZOOM) return;
+  const ds=[]; const t0=null;
+  const groups=LPZOOM[stateKey];
+  const order=['VIP','D1','GFP'];
+  for(const g of order){
+    const G=groups[g];
+    if(!G) continue;
+    const t=G.t;
+    ds.push({type:'line',label:`${g==='GFP'?'GFP control':g+'-Cre'} (n=${G.n})`,
+      data:t.map((tt,i)=>({x:tt,y:G.mean[i]})),
+      borderColor:col(g),borderWidth:2,pointRadius:0});
+  }
+  if(stateKey==='group_on' && LPZOOM.group_on){
+    // SEM bands need per-animal spread: recompute from lp_zoom_on
+    for(const g of order){
+      const G=groups[g]; if(!G) continue;
+      const members=LPZOOM.lp_zoom_on ? G.animals.map(a=>LPZOOM.lp_zoom_on[a]) : [];
+      if(members.length<2 || !members[0]) continue;
+      const M=members.map(m=>m.d);
+      const t=G.t;
+      const mean=M[0].map((_,i)=>M.reduce((s2,m)=>s2+m[i],0)/M.length);
+      const se=mean.map((mm,i)=>Math.sqrt(M.reduce((s2,m)=>s2+(m[i]-mm)**2,0)/(M.length-1)/M.length));
+      ds.push({type:'line',data:t.map((tt,i)=>({x:tt,y:mean[i]+se[i]})),borderColor:'transparent',
+        backgroundColor:col(g)+'22',fill:'+1',pointRadius:0});
+      ds.push({type:'line',data:t.map((tt,i)=>({x:tt,y:mean[i]-se[i]})),borderColor:'transparent',pointRadius:0,fill:false});
+    }
+  }
+  if(stateKey==='group_off' && LPZOOM.group_off){
+    for(const g of order){
+      const G=groups[g]; if(!G) continue;
+      const members=G.animals.map(a=>LPZOOM.lp_zoom_off[a]);
+      if(members.length<2 || !members[0]) continue;
+      const M=members.map(m=>m.d);
+      const t=G.t;
+      const mean=M[0].map((_,i)=>M.reduce((s2,m)=>s2+m[i],0)/M.length);
+      const se=mean.map((mm,i)=>Math.sqrt(M.reduce((s2,m)=>s2+(m[i]-mm)**2,0)/(M.length-1)/M.length));
+      ds.push({type:'line',data:t.map((tt,i)=>({x:tt,y:mean[i]+se[i]})),borderColor:'transparent',
+        backgroundColor:col(g)+'22',fill:'+1',pointRadius:0});
+      ds.push({type:'line',data:t.map((tt,i)=>({x:tt,y:mean[i]-se[i]})),borderColor:'transparent',pointRadius:0,fill:false});
+    }
+  }
+  const opts={
+    responsive:true, maintainAspectRatio:false, animation:false, showLine:true,
+    scales:{
+      x:{type:'linear',min:-5,max:5,ticks:{stepSize:1},
+         title:{display:true,text:'min from '+(which==='on'?'pulse onset':'pulse offset')},grid:{color:RULE}},
+      y:{title:{display:true,text:'ΔF/F (baseline-subtracted)'},grid:{color:RULE}}
+    },
+    plugins:{
+      legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},filter:it=>!!it.text}},
+      t0zoom:{}
+    }
+  };
+  const cur=(which==='on')?lpZoomOnChart:lpZoomOffChart;
+  if(cur) cur.destroy();
+  const ch=new Chart($(chartId),{type:'scatter',data:{datasets:ds},options:opts,
+    plugins:[{
+      id:'t0zoom',
+      afterDatasetsDraw(chart){
+        const x=chart.scales.x.getPixelForValue(0);
+        const {ctx,chartArea:{top,bottom}}=chart;
+        if(Number.isFinite(x)){
+          ctx.save();
+          ctx.strokeStyle='#b07d22'; ctx.lineWidth=1.4; ctx.setLineDash([4,3]);
+          ctx.beginPath(); ctx.moveTo(x,top); ctx.lineTo(x,bottom); ctx.stroke();
+          ctx.restore();
+        }
+      }
+    }]});
+  if(which==='on') lpZoomOnChart=ch; else lpZoomOffChart=ch;
+}
+
+fetch('data/lp_zoom.json').then(r=>r.json()).then(z=>{
+  LPZOOM=z;
+  renderLpZoom('lpZoomOnChart','on','group_on');
+  renderLpZoom('lpZoomOffChart','off','group_off');
+}).catch(e=>{ console.error('lp zoom load failed', e); });
 
 fetch('data/gfp_blocks.json').then(r=>r.json()).then(d=>{
   GFPB=d;
@@ -1776,6 +2429,40 @@ fetch('data/gfp_blocks.json').then(r=>r.json()).then(d=>{
 fetch('data/cycle_avg.json').then(r=>r.json()).then(d=>{
   CYC=d; renderCycle();
 }).catch(e=>{ console.error('cycle avg load failed', e); });
+
+
+// ---- r13 shared: square correlation plots + above/below-unity sign test ----
+function squareChartBox(id){
+  // Chart.js sizes the canvas from its parent box; square the PARENT.
+  const cv=document.getElementById(id);
+  if(!cv||!cv.parentElement) return;
+  const box=cv.parentElement;
+  const w=box.clientWidth||460;
+  const side=Math.min(w,520);
+  box.style.aspectRatio='1 / 1';
+  box.style.height=side+'px';
+  box.style.width=side+'px';
+  box.style.margin='0 auto';
+}
+function signTestAboveBelow(pairs){
+  // pairs: [{x,y},...] — counts points strictly above vs below the unity line y=x.
+  // Exact two-sided sign test: 2 * P(X >= k) under Binomial(n, 0.5), k = max side.
+  const above=pairs.filter(p=>p.y>p.x).length, below=pairs.filter(p=>p.y<p.x).length;
+  const n=above+below;
+  if(n===0) return null;
+  const k=Math.max(above,below);
+  // P(X >= k) = sum_{i=k..n} C(n,i) / 2^n   (computed top-down to stay small)
+  let coef=1;            // C(n,n)
+  let sf=coef;           // i = n term
+  for(let i=n-1;i>=k;i--){ coef=coef*(i+1)/(n-i); sf+=coef; }
+  const p=Math.min(1, 2*sf/Math.pow(2,n));
+  return {above, below, n, k, p2:Number(p.toFixed(4))};
+}
+function fmtSignTest(t, aboveLabel, belowLabel){
+  if(!t) return '';
+  const floorNote = (t.n<6 && t.k===t.n) ? ' — at n='+t.n+' the all-one-sided outcome is the strongest statement available (two-sided binomial p floor '+t.p2+')' : '';
+  return `${aboveLabel} ${t.above} / ${belowLabel} ${t.below} of ${t.n} on the unity line, sign test two-sided p = ${t.p2}${floorNote}. `;
+}
 
 // ---- tau agreement (section 03) ----------------------------------------
 let TAUC=null, tauChart=null;
@@ -1789,9 +2476,16 @@ function renderTau(){
       backgroundColor:col(g),pointRadius:8,pointHoverRadius:10});
     ds.push({type:'scatter',label:`#${a} ${g} (series slope)`,data:[{x:r.tau_wheel_pre,y:r.tau_ca_slope_pre}],
       backgroundColor:'transparent',borderColor:col(g),pointRadius:6,pointHoverRadius:8,pointBorderWidth:2});
+    if(r.spans) for(const [d,sp] of Object.entries(r.spans)){
+      if(sp.tau_wheel==null||sp.tau_ca_sine==null) continue;
+      ds.push({type:'scatter',label:`#${a} ${g} repeat ${d} (no pulse)`,data:[{x:sp.tau_wheel,y:sp.tau_ca_sine}],
+        backgroundColor:col(g),pointStyle:'rectRot',pointRadius:7,pointHoverRadius:9,
+        borderColor:col(g),borderWidth:1.5});
+    }
   }
   ds.push({type:'line',label:'identity (τca = τwheel)',data:[{x:23,y:23},{x:24.6,y:24.6}],
     borderColor:'#a99e89',borderWidth:1,borderDash:[5,4],pointRadius:0,order:0});
+  squareChartBox('tauChart');
   if(tauChart) tauChart.destroy();
   tauChart=new Chart($('tauChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
@@ -1802,14 +2496,100 @@ function renderTau(){
       plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
         filter:it=>!!it.text}},
         tooltip:{callbacks:{label:it=>`${it.dataset.label}: wheel ${it.parsed.x.toFixed(2)} → calcium ${it.parsed.y.toFixed(2)} h`}}}}});
-  $('tau-badge').textContent=`r = +${C.r_sine.toFixed(2)} (sine) / +${C.r_slope.toFixed(2)} (slope), n = ${C.n} animals`;
-  $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land.`;
+  const nSpan=Object.values(A).reduce((n,r)=>n+(r.spans?Object.values(r.spans).filter(sp=>sp.tau_wheel!=null&&sp.tau_ca_sine!=null).length:0),0);
+  const st=signTestAboveBelow(Object.values(A).map(r=>({x:r.tau_wheel_pre,y:r.tau_ca_sine_pre})));
+  $('tau-badge').textContent=`r = +${C.r_sine.toFixed(2)} (sine) / +${C.r_slope.toFixed(2)} (slope), n = ${C.n} animals`+(nSpan?` + ${nSpan} repeat-span τ read${nSpan>1?'s':''} (no pulse)`:'');
+  $('tau-sign').textContent=fmtSignTest(st,'calcium τ above','calcium τ below');
+  $('tau-foot').textContent=`Wheel τ = χ² periodogram on 10-min wheel histograms (the cohort table's method); the periodogram scans trial periods on a 0.1 h grid across 20–28 h, so wheel τ is an estimate at 0.1 h resolution — the three animals reading 23.6 h are independent estimates that share a grid point, and differences smaller than 0.1 h are not resolvable. Calcium τ = global free-period sine fit on the ΔF/F-weighted 30-min 3-h-smoothed profile (solid points), with the pre-pulse slope of the acrophase series as an independent estimator (open points; both continuous fits, so no grid quantization on the calcium side). Both sides pre-pulse — the light pulse perturbs both clocks. At n = 5 this is a consistency plot, not a powered correlation. The read: calcium τ exceeds wheel τ in 5/5 animals (sine +0.25…+1.30 h, slope +0.06…+0.87 h) — same direction under both estimators, magnitude estimator-dependent. The GFlamp1 pair (7121/7122) is QC-excluded for no detectable signal (one of their "τ" estimates pinned to the 28 h search boundary — noise, not period) and is absent here. New no-LP campaigns grow the n as they land. Repeat-span reads (rotated squares, added 2026-09-14): the Aug 19–29 campaign's second half — #6976's 9.7-d no-pulse span, the strongest QC pass of the screened spans (circadian SNR 21.55) — reads τwheel = 23.8 h vs its pilot pre-pulse 23.3 h, and τca = 23.80 h vs pilot 23.75 h; #6577's same-campaign span reads τwheel = 23.6 h (pilot 23.6) and τca = 23.85 h vs pilot 24.9 h. Same-estimator, same-animal, independent-span: the calcium side of #6577 moves −1.05 h span-to-span while #6976 holds within 0.05 h — at these n the honest read is that short-record calcium τ carries span-to-span scatter comparable to the estimator spread, so single-span τ differences under ~1 h are not resolvable per animal. Both repeat spans are QC-screened (circadian SNR + τ sanity) and live in the individual-recordings explorer with full traces.`;
 }
+
+// ---- section 10: room control (r12) ---------------------------------------
+let RC=null, rcTauChart=null, rcMaskChart=null;
+function renderRoomControl(){
+  if(!RC) return;
+  const R=RC.repeatability, G={ '6577':col('VIP'), '6976':col('VIP') };
+  // (a) tau timeline: Aug certified vs Oct unmasked, per animal
+  const ds=[];
+  for(const [aid,r] of Object.entries(R)){
+    const c=G[aid];
+    ds.push({type:'line',label:`#${aid} span-to-span`,data:[
+      {x:0,y:r.aug_certified_tau},{x:1,y:r.oct_tau_unmasked}],
+      borderColor:c,borderWidth:2,pointRadius:0,order:2});
+    ds.push({type:'scatter',label:`#${aid} certified τ (Aug)`,data:[{x:0,y:r.aug_certified_tau}],
+      backgroundColor:c,pointRadius:7,pointHoverRadius:9,order:1});
+    ds.push({type:'scatter',label:`#${aid} unmasked χ² τ (Oct)`,data:[{x:1,y:r.oct_tau_unmasked}],
+      backgroundColor:c,pointStyle:'rectRot',pointRadius:7,pointHoverRadius:9,borderColor:c,borderWidth:1.5,order:1});
+    ds.push({type:'scatter',label:`#${aid} masked-method τ (method test)`,data:[{x:1,y:r.oct_masked_method_test_tau}],
+      backgroundColor:'transparent',borderColor:c,borderDash:[4,3],pointRadius:6,pointHoverRadius:8,pointBorderWidth:1.5,order:1});
+  }
+  if(rcTauChart) rcTauChart.destroy();
+  rcTauChart=new Chart($('rcTauChart'),{type:'scatter',data:{datasets:ds},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      scales:{x:{type:'linear',min:-0.35,max:1.35,ticks:{stepSize:1,
+          callback:v=>['Aug 19–29\n(certified)','Sep 28 – Oct 17\n(logged DD)'][v]||''},
+              title:{display:true,text:'recording span'},grid:{color:RULE}},
+        y:{type:'linear',min:22.8,max:24.4,ticks:{stepSize:.4},
+              title:{display:true,text:'wheel τ (h)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
+          filter:(it,cd)=>{const d=cd.datasets[it.datasetIndex];return d.pointRadius!==0&&!!it.text;}}},
+        tooltip:{callbacks:{label:it=>`${it.dataset.label}: τ ${it.parsed.y.toFixed(2)} h`}}}}});
+  $('rc-badge').textContent=`#6577: ${R['6577'].aug_certified_tau.toFixed(1)} → ${R['6577'].oct_tau_unmasked.toFixed(1)} h · #6976: ${R['6976'].aug_certified_tau.toFixed(1)} → ${R['6976'].oct_tau_unmasked.toFixed(1)} h`;
+  $('rc-tau-foot').textContent=`Free-running period of the two reference animals (VIP-Cre, GCaMP6s) across two independent spans in the same room, ~6 weeks apart: Aug 19–29 certified free-run (χ² periodogram) vs the logged-DD Sep 28 – Oct 17 chain, estimated with the unmasked method (see the method note below for why the mask matters). #6577 holds 23.6 → 23.6 h; #6976 reads 23.8 → 23.3 h (q-ratio 1.4 / 3.14 on the Oct chain). Rotated squares: the unmasked χ² reads on the Oct chain. Open dashed circles: what the SHIPPED masked method reads on the same Oct data — τ 24.0, q 1.0, drift 0.0/0.026 h/day — the mask-clamp artifact that reads certified free-runners as 24 h-locked. τ repeatability within ~0.1–0.5 h across six weeks is the expected behavior of a stable endogenous oscillator in a room that stayed dark; a room on an LD cycle would have pinned both animals at 24.0 (their masked-method reads).`;
+
+  // (b) masking release: LD-week vs DD-span night fraction per animal
+  const C=RC.campaign, ds2=[];
+  const ids=C.map(r=>r.id);
+  ds2.push({type:'bar',label:'logged-LD week (Oct 18–22)',data:C.map(r=>r.night_frac_ld_week),
+    backgroundColor:'#b9a26b',borderRadius:2});
+  ds2.push({type:'bar',label:'DD span (Oct 24–Nov 4)',data:C.map(r=>r.night_frac_dd_span==null?null:r.night_frac_dd_span),
+    backgroundColor:'#4d7f9c',borderRadius:2});
+  if(rcMaskChart) rcMaskChart.destroy();
+  rcMaskChart=new Chart($('rcMaskChart'),{type:'bar',data:{labels:ids,datasets:ds2},
+    options:{responsive:true,maintainAspectRatio:false,animation:false,
+      scales:{x:{ticks:{font:{size:10}},grid:{display:false}},
+        y:{type:'linear',min:0,max:1,ticks:{stepSize:.25,format:{precision:2}},
+              title:{display:true,text:'night-window fraction of wheel running (ZT18–6)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
+        tooltip:{callbacks:{label:it=>`${it.dataset.label}: ${it.parsed.y==null?'—':it.parsed.y.toFixed(3)}`}}}}});
+  $('rc-mask-foot').textContent=`Night fraction of wheel running per campaign animal, own logged-LD week vs the DD span. LD week: 0.87–1.00 (daytime ~zero — light-masked). DD span: 0.43–0.93, daytime activity emerges in 8/8 animals (Δ −0.05 to −0.57). Sustained LD is inconsistent with the data: lights-on suppresses daytime running. Caveats: release is weak in #6646/#6647; the verdict is behavioral, not lux-measured. #7143 has no LD-week baseline on this chain (fiber-6 swap at the 221022→221024 boundary); #7177 ran the LD week on the pre-split fiber-6 channel and has no DD wheel coverage. 8/8 release with 7 comparable pairs is the count — those two rows carry no DD-side or no LD-side evidence respectively.`;
+
+  // (c) cohort table: honest reads, context only
+  const tb=$('rc-cohort-table').querySelector('tbody');
+  tb.innerHTML='';
+  for(const r of C){
+    const tr=document.createElement('tr');
+    let read;
+    if(r.ld_only) read='LD week only — no DD wheel coverage';
+    else if(r.hole) read=`${r.tau_session_run_unmasked.toFixed(1)} h (session-run; full-span hole-limited)`;
+    else if(r.tau_session_run_unmasked>=23.9&&r.tau_session_run_unmasked<=24.2)
+      read=`${r.tau_session_run_unmasked.toFixed(1)} h — a ~24 h free-run read; wheel data alone cannot tell it apart from any externally timed 24 h rhythm`;
+    else read=`${r.tau_session_run_unmasked.toFixed(1)} h free-run read`;
+    tr.innerHTML=`<td><b>#${r.id}</b></td>
+      <td>${r.tau_session_run_unmasked==null?'—':r.tau_session_run_unmasked.toFixed(1)+' h'}</td>
+      <td>${r.q_session_run==null?'—':r.q_session_run.toFixed(2)}</td>
+      <td>${r.night_frac_ld_week==null?'—':r.night_frac_ld_week.toFixed(2)}</td>
+      <td>${r.night_frac_dd_span==null?'—':r.night_frac_dd_span.toFixed(2)}</td>
+      <td style="font-family:var(--body);font-size:12.5px">${read}${(r.note&&!r.hole)?` <span style="color:var(--ink-faint)">(${r.note})</span>`:''}</td>`;
+    tb.appendChild(tr);
+  }
+  $('rc-cohort-foot').textContent=`Unmasked χ² periodogram reads on the longest hole-free session run of each chain, added 2026-09-15 (round 12). Every chain sits below the house confidence floor (q-ratio 2.0 against the 24 h peak): these are heterogeneous, low-confidence reads — several τ ≈ 24.0–24.1 h where a ~24 h free-run read cannot be told apart from an externally timed 24 h rhythm by wheel data alone, three reads short of 24 h. Per the τ-scatter ruling recorded in the public QC artifact: ${RC.tau_scatter.ruling} No uniform locking; these animals do not join the §03 free-run τ plot (no calcium τ exists for the era-A fragments, and their behavioral state is unresolved). The r11 masked-method reads ("8/9 chains entrained, drift < 0.05 h/day") are withdrawn as mask-clamp artifacts — see the method note.`;
+
+  // (d) method note
+  $('rc-method-body').innerHTML=`<p style="margin-top:8px">${RC.method.mask_clamp}</p><p>${RC.method.photodiode}</p><p><b>DD start:</b> ${RC.method.dd_start.note} (day ${Math.floor(RC.method.dd_start.h/24)} of the chain, ${(RC.method.dd_start.h%24).toFixed(1)} h). <b>Light pulses inside the Oct chain:</b> ${Object.entries(RC.method.pulses).map(([k,v])=>`day ${k.replace('doy','')} (${v})`).join('; ')} — the pulse detector out-recorded the logbook.</p>`;
+}
+fetch('data/room_control.json').then(r=>r.json()).then(d=>{RC=d;renderRoomControl();}).catch(e=>{console.error('room control load failed',e);});
+
 fetch('data/tau_correlation.json').then(r=>r.json()).then(d=>{TAUC=d;renderTau();}).catch(e=>{console.error('tau correlation load failed',e);});
 
 fetch('data/sessions.json').then(r=>r.json()).then(d=>{
   DATA=d;
-  fillSelectors(); fillCohort();
+  fetch('data/repeat_recordings.json').then(r=>r.json()).then(list=>{
+    SPANS=list.filter(e=>e.trace&&(e.trace.t||e.trace.t_motion));
+    fillSelectors(); fillCohort();
+  }).catch(err=>{
+    console.error('repeat recordings load failed', err);
+    fillSelectors(); fillCohort();
+  });
   fetch('data/validation.json').then(r=>r.json()).then(v=>{
     const c=v.cross_session_221128_7390;
     $('val-body').innerHTML=`<p style="font-size:16px;color:var(--ink-soft);margin-top:6px">Python port vs MATLAB <span style="font-family:var(--mono);font-size:13px">221128_concat_7390_FullTrace.mat</span> — a second-session animal the port was never tuned on:</p>
