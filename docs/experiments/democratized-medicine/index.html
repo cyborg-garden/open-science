@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Pirate Pharmacy Question — which medicine can a community actually make?</title>
+<meta name="description" content="A verified landscape of democratized medicine: nine domains scored on benefit versus small-scale feasibility. The bottleneck is almost never synthesis — it is sterility and quality control.">
+<meta property="og:title" content="The Pirate Pharmacy Question">
+<meta property="og:description" content="Which parts of medicine could actually be made at city-to-community scale? The answer turns on QC, not chemistry.">
+<meta property="og:type" content="article">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,500;9..144,700;9..144,900&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e6; --bg-warm:#ede5d4; --bg-card:#fffdf7;
+  --ink:#2a2520; --ink-soft:#6b5d50; --ink-faint:#a0937f;
+  --accent:#8b3a3a; --accent-light:#b85555; --accent-bg:#f2e8e8;
+  --green:#4a6b3a; --green-light:#7a9e5e; --green-bg:#ecf2e6;
+  --gold:#9c7c2f; --gold-bg:#f5edda;
+  --blue:#3a5a7a; --blue-bg:#e8edf3;
+  --border:#d8cdb8; --border-soft:#e8dfd0;
+  --mono:'JetBrains Mono',monospace; --serif:'Fraunces',serif; --body:'Newsreader',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--body);background:var(--bg);color:var(--ink);line-height:1.7;font-size:16.5px}
+.container{max-width:1100px;margin:0 auto;padding:0 24px}
+a{color:var(--blue)}
+header{background:var(--bg-warm);border-bottom:1px solid var(--border);padding:52px 0 38px}
+.eyebrow{font-family:var(--mono);font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green);margin-bottom:14px}
+header h1{font-family:var(--serif);font-weight:900;font-size:clamp(2.1rem,5vw,3.1rem);line-height:1.12;letter-spacing:-.01em;max-width:20ch}
+header h1 em{font-style:italic;font-weight:500;color:var(--accent)}
+header .sub{font-size:1.12rem;color:var(--ink-soft);max-width:760px;margin-top:14px}
+header .sub b{color:var(--ink)}
+.badges{margin-top:18px;display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:.72rem;padding:3px 10px;border-radius:12px;border:1px solid var(--border);background:var(--bg-card);color:var(--ink-soft)}
+.badge.verified{border-color:var(--green-light);color:var(--green);background:var(--green-bg)}
+.badge.retracted{border-color:var(--accent-light);color:var(--accent);background:var(--accent-bg)}
+section{padding:38px 0;border-bottom:1px solid var(--border-soft)}
+h2{font-family:var(--serif);font-weight:700;font-size:1.6rem;margin-bottom:14px}
+h3{font-family:var(--serif);font-weight:700;font-size:1.15rem;margin:18px 0 8px}
+p{margin-bottom:12px;max-width:840px}
+.lede{font-size:1.15rem;line-height:1.6}
+.note{font-size:.88rem;color:var(--ink-soft);background:var(--bg-card);border:1px solid var(--border-soft);border-left:3px solid var(--gold);padding:12px 16px;border-radius:4px;margin:14px 0;max-width:840px}
+.note.red{border-left-color:var(--accent)}
+.note.green{border-left-color:var(--green)}
+.card{background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:20px}
+.grid{display:grid;gap:14px}
+.grid.two{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.grid.three{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.cite{font-size:.8rem;color:var(--ink-faint);display:block;margin-top:8px}
+.cite a{color:var(--blue);text-decoration:none}
+.cite a:hover{text-decoration:underline}
+.stat{font-family:var(--mono);font-weight:600;font-size:1.7rem;color:var(--accent)}
+.stat.good{color:var(--green)}
+.stat-label{font-size:.82rem;color:var(--ink-soft)}
+table{width:100%;border-collapse:collapse;font-size:.9rem;margin:16px 0;background:var(--bg-card);border:1px solid var(--border)}
+th{font-family:var(--mono);font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;text-align:left;padding:10px 12px;background:var(--bg-warm);border-bottom:1px solid var(--border);color:var(--ink-soft)}
+td{padding:10px 12px;border-bottom:1px solid var(--border-soft);vertical-align:top}
+tr:last-child td{border-bottom:none}
+.tier{display:inline-block;font-family:var(--mono);font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:10px;white-space:nowrap}
+.tier-a{background:var(--green-bg);color:var(--green);border:1px solid var(--green-light)}
+.tier-b{background:var(--gold-bg);color:var(--gold);border:1px solid var(--gold)}
+.tier-c{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-light)}
+.dom-name{font-weight:600}
+.dom-why{font-size:.85rem;color:var(--ink-soft)}
+.verdict{font-family:var(--mono);font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:10px}
+.verdict.ok{background:var(--green-bg);color:var(--green)}
+.verdict.bad{background:var(--accent-bg);color:var(--accent)}
+ol.predictions{counter-reset:pred;list-style:none;padding:0;margin:16px 0}
+ol.predictions li{counter-increment:pred;position:relative;padding:16px 16px 16px 64px;background:var(--bg-card);border:1px solid var(--border);border-radius:6px;margin-bottom:12px;max-width:840px}
+ol.predictions li::before{content:counter(pred,decimal-leading-zero);position:absolute;left:16px;top:16px;font-family:var(--mono);font-weight:600;font-size:1.3rem;color:var(--accent)}
+.pred-when{font-family:var(--mono);font-size:.72rem;color:var(--green);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px}
+ol.priorities{padding-left:22px;margin:12px 0}
+ol.priorities li{margin-bottom:10px;max-width:840px}
+ol.priorities li b{font-family:var(--serif)}
+footer{padding:36px 0 60px;font-size:.82rem;color:var(--ink-faint)}
+footer p{max-width:840px}
+.footnote{font-size:.78rem;color:var(--ink-faint);margin-top:24px;padding-top:14px;border-top:1px solid var(--border-soft);max-width:840px}
+@media(max-width:700px){table{font-size:.78rem} th,td{padding:7px 8px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="eyebrow">Cyborg Garden · Open Science · Experiment 011</div>
+    <h1>The Pirate Pharmacy Question: <em>which medicine can a community actually make?</em></h1>
+    <p class="sub">Sequences are already downloadable; safe injectables are not. We scored nine domains of medicine on <b>societal benefit</b> against <b>demonstrated small-scale feasibility</b> — and the binding constraint is almost never chemistry. It is sterility and quality control.</p>
+    <div class="badges">
+      <span class="badge verified">✓ 14 citations · 4-axis verified (Crossref / OpenAlex / retraction)</span>
+      <span class="badge retracted">✗ 1 frequently-cited review caught as RETRACTED and excluded</span>
+      <span class="badge">landscape synthesis · 2026-09-24</span>
+    </div>
+  </div>
+</header>
+
+<section>
+  <div class="container">
+    <h2>The question</h2>
+    <p class="lede">Between AI-designed CRISPR-like enzymes and projects like the Four Thieves Vinegar Collective, there is a visible gap: medicine could be far more democratized than it is. mRNA vaccine sequences are, in principle, downloadable — you could imagine an mRNA-vaccine Pirate Bay. The hard part, as the intuition goes, is turning a sequence into a safe injectable. So: <b>which areas of medicine offer the most low-hanging societal benefit and are producible, now or soon, at city-to-homebrew community scale?</b></p>
+    <p>We treated that as a research question rather than a vibe. The method: scope nine candidate domains, gather from both the academic record and the pirate/biohacker grey literature, verify every academic citation against Crossref and OpenAlex (existence, metadata, retraction, URL), attribute community claims to primary pages, and score each domain on two axes plus one gate.</p>
+    <div class="note">
+      <b>The gate.</b> Every domain is filtered through one question: <b>can it be made <i>sterile and verifiably pure</i> at community scale?</b> That — not synthesis — is what separates a downloaded recipe from a safe medicine, and it recurs in every single row below.
+    </div>
+    <div class="grid three" style="margin-top:18px">
+      <div class="card"><div class="stat good">T-A</div><div class="stat-label"><b>Now, real.</b> Produced outside incumbent pharma today, with working exemplars.</div></div>
+      <div class="card"><div class="stat" style="color:var(--gold)">T-B</div><div class="stat-label"><b>2–7 years.</b> Platform demonstrated at bench/POC; needs engineering + QC, not new science.</div></div>
+      <div class="card"><div class="stat">T-C</div><div class="stat-label"><b>7+ years or gated.</b> Possible, but blocked on sterility, QC, or regulation at small scale.</div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>The landscape, ranked by ripeness</h2>
+    <table>
+      <thead><tr><th>Domain</th><th>Readiness</th><th>What exists / what's demonstrated</th><th>The gate</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="dom-name">Open devices &amp; diagnostics</span><div class="dom-why">stethoscopes, tourniquets, microscopes, centrifuges</div></td>
+          <td><span class="tier tier-a">T-A · now</span></td>
+          <td>Glia Project's $2.83 3D-printed stethoscope (validated vs. Littmann, deployed in Gaza) and ~$7 tourniquet; Prakash lab's ~$1 Foldscope microscope and hand-powered Paperfuge centrifuge (125,000 rpm, plasma in ~90 s).<span class="cite"><a href="https://doi.org/10.1371/journal.pone.0098781">Cybulski 2014, PLoS ONE</a> · <a href="https://doi.org/10.1038/s41551-016-0009">Bhamla 2017, Nat Biomed Eng</a></span></td>
+          <td>None — external/last-contact devices, no sterility or cold-chain gate. Highest benefit-per-effort in the whole landscape.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">Small molecules via legal compounding</span><div class="dom-why">pharmacy-scale generics &amp; repurposed drugs</div></td>
+          <td><span class="tier tier-a">T-A · now</span></td>
+          <td>US 503A/503B compounding already permits patient/clinic-scale preparation without full cGMP; Cost-Plus/non-profit generics show the manufacturing economics were never the barrier — the pricing/IP layer was.</td>
+          <td>Regulatory, not scientific. Democratization here is a logistics-and-law problem.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">Homebrew / compounded hormones</span><div class="dom-why">the trans DIY-HRT ecosystem</div></td>
+          <td><span class="tier tier-a">T-A · now (grey)</span></td>
+          <td>The largest real-world community-scale <i>injectable</i> producer ecosystem: raw-API sourcing + homebrew compounding, with shared harm-reduction norms and community blood-testing.<span class="cite"><a href="https://diyhrt.wiki/transfem">diyhrt.wiki</a> (primary); sociological studies in Stanford Digital Repository &amp; Soc Sci Med 2024</span></td>
+          <td>Works because estradiol is a forgiving, stable small molecule — but carries exactly the sterility risk that defines the gate; the community itself recommends pharma-grade where available.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">Cell-free protein synthesis (CFPS)</span><div class="dom-why">the pivotal platform for downloadable biologics</div></td>
+          <td><span class="tier tier-b">T-B · 2–7 yr</span></td>
+          <td>Freeze-dried cell-free expression on paper ("just add water"); point-of-care peptide-hormone production; <b>cell-free insulin in under a day</b> (Borhani 2025); thermostable CFPS for conjugate vaccines; on-demand G-CSF that passed an in-vivo mouse safety/efficacy bar.<span class="cite"><a href="https://doi.org/10.1016/j.cell.2016.09.013">Pardee 2016, Cell</a> · <a href="https://doi.org/10.1021/acssynbio.2c00680">DeWinter 2023, ACS Synth Biol</a> · <a href="https://doi.org/10.1101/2025.04.08.633785">Borhani 2025, bioRxiv</a> · <a href="https://doi.org/10.1021/acssynbio.2c00392">Warfel 2023, ACS Synth Biol</a> · <a href="https://doi.org/10.1002/btpr.2970">Adiga 2020, Biotechnol Prog</a></span></td>
+          <td>Abiotic (no live-culture containment) and freeze-dried (no cold chain) — but does NOT yet solve GMP-grade purity/endotoxin or regulatory acceptance for human injection.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">CRISPR point-of-care diagnostics</span><div class="dom-why">SHERLOCK · DETECTR · miSHERLOCK</div></td>
+          <td><span class="tier tier-b">T-B · 2–7 yr</span></td>
+          <td>Attomolar, isothermal nucleic-acid detection (SHERLOCK, DETECTR); miSHERLOCK makes it a low-cost saliva-in, ~1-hour visual-readout SARS-CoV-2 device.<span class="cite"><a href="https://doi.org/10.1126/science.aam9321">Gootenberg 2017, Science</a> · <a href="https://doi.org/10.1126/science.aar6245">Chen 2018, Science</a> · <a href="https://doi.org/10.1038/s41596-019-0210-2">Kellner 2019, Nat Protoc</a> · <a href="https://doi.org/10.1126/sciadv.abh2944">de Puig 2021, Sci Adv</a></span></td>
+          <td>No therapeutic sterility gate — diagnostics can decentralize far faster than therapeutics. <b>Caution:</b> a much-cited 2021 J Clin Microbiol review of these tools is <b>retracted</b> (verified via Retraction Watch); rely on the primary papers.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">On-demand small-molecule hardware</span><div class="dom-why">continuous-flow "pharmacy on demand" · Apothecary MicroLab</div></td>
+          <td><span class="tier tier-b">T-B · 2–7 yr</span></td>
+          <td>MIT's DARPA-funded fridge-sized reconfigurable continuous-flow system (hundreds–thousands of doses/day); Four Thieves' Apothecary MicroLab with a published pyrimethamine/Daraprim synthesis.<span class="cite"><a href="https://doi.org/10.1126/science.aaf1337">Adamo 2016, Science</a> · Four Thieves Vinegar Collective documentation (primary)</span></td>
+          <td>The most "Pirate-Bay" domain — small molecules are downloadable recipes — but residual solvents, isomers, and dosing QA keep outputs research-grade, not clinical.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">mRNA vaccines</span><div class="dom-why">the headline case</div></td>
+          <td><span class="tier tier-c">T-C · 7+ yr (facility)</span></td>
+          <td>The sequence is trivially downloadable. But a safe injectable needs clean capping, LNP formulation (the real secret sauce, not the sequence), and sterile fill-finish. Academic decentralization (WHO tech-transfer hub, modular "BioNTainer"-class units, Mobile-On-Demand preprints) targets country/facility scale, not homes.<span class="cite"><a href="https://doi.org/10.1371/journal.pgph.0002098">Mukherjee 2023, PLOS Glob Public Health</a></span></td>
+          <td>Sterile fill-finish + LNP QC is the rate-limiting step. The two real "homebrew vaccine" attempts are cautionary: RaDVaC (untested DIY nasal vaccine, no efficacy data) and Johnny Stine (DOJ/FDA criminal charges, 2020).</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">Monoclonal antibodies &amp; complex biologics</span></td>
+          <td><span class="tier tier-c">T-C · 7+ yr</span></td>
+          <td>Expressible in engineered yeast/microbial systems (the Open Insulin precedent), but purification + QC + immunogenicity at small scale keeps it out of community reach.<span class="cite"><a href="https://openinsulin.org/">Open Insulin Foundation</a> — own status: "still working primarily on technology R&amp;D… some time before manufacturing"</span></td>
+          <td>Same QC wall as mRNA, with an added immunogenicity problem.</td>
+        </tr>
+        <tr>
+          <td><span class="dom-name">Morphological-freedom biotech</span><div class="dom-why">the Freedom of Form Foundation case</div></td>
+          <td><span class="tier tier-c">T-C · early (but feasible)</span></td>
+          <td>The Freedom of Form Foundation's SynthFur project announced (Sept 2026) the first live-subject demonstration of a synthetic-fur implant — a tissue-integrating anchor — in 2 consenting subjects, with early biocompatibility data; ~2050 roadmap to anthropomorphic transition.<span class="cite"><a href="https://freedomofform.org/7606/september-2026-newsletter/">freedomofform.org, Sept 2026 newsletter</a> (primary)</span></td>
+          <td>Feasible at community scale precisely because it dodges the therapeutic regulatory track (consenting body-mod, not a licensed therapeutic). Low public-health benefit — watch it as a leading indicator, don't prioritize.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Predictions</h2>
+    <p>Written to be falsifiable. Dates are horizons, not deadlines.</p>
+    <ol class="predictions">
+      <li><span class="pred-when">~5 years</span>Cell-free protein synthesis becomes the dominant decentralized-biologics platform for peptides and small proteins (insulin class first), because it is abiotic, freeze-dried, and modular. The Borhani 2025 cell-free-insulin result is the inflection artifact.</li>
+      <li><span class="pred-when">structural</span>The binding constraint shifts from "can we make it" to "can we certify it." The winning community infrastructure will be open QC/assay reference labs (potency, purity, endotoxin, sterility) — a "QC commons" — far more than any new synthesis hardware.</li>
+      <li><span class="pred-when">~decade</span>Devices and diagnostics keep outpacing therapeutics, because they avoid the sterility and therapeutic-index gate. Highest benefit-per-effort in the landscape.</li>
+      <li><span class="pred-when">structural</span>Small-molecule democratization runs through the legal compounding / non-profit-generic channel, not piracy. Pirate synthesis (Four Thieves) stays a forcing function and protest artifact.</li>
+      <li><span class="pred-when">near-term risk</span>A serious adverse event from homebrew injectables is the likeliest shock and will trigger regulatory tightening. The community that survives is the one that invested in open QC <i>before</i> the event.</li>
+      <li><span class="pred-when">~decade</span>mRNA stays facility-scale. Downloadable sequences proliferate; safe injectable LNP product does not follow them down to community scale until LNP formulation/QC is productized — a solvable but unsexy engineering problem.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Focus priorities</h2>
+    <p>Ranked by expected societal benefit per unit effort, with the sterility/QC gate as the deciding factor.</p>
+    <ol class="priorities">
+      <li><b>Open QC / analytics commons.</b> Cheap, open assays for potency, purity, endotoxin, and sterility that any community lab can run. This is the single highest-leverage build in the whole landscape — it converts "made it" into "safe to use," and no incumbent is building it.</li>
+      <li><b>Productize CFPS peptide/protein production</b> — take DeWinter / Borhani / Warfel from bench to a documented, open, reproducible community protocol with a QC envelope. Insulin is the flagship.</li>
+      <li><b>Scale open devices and diagnostics</b> — the boring scale-out of Glia-type devices, Foldscope/Paperfuge-class tools, and miSHERLOCK-style CRISPR point-of-care tests.</li>
+      <li><b>Support the legal compounding / small-molecule track</b> — open synthesis + compounding standards for high-value small molecules; nearest-term and already legal.</li>
+      <li><b>Small-scale sterile fill-finish + formulation QC engineering</b> — the unglamorous true bottleneck for any injectable (mRNA, insulin, hormones). Micro-scale aseptic fill-finish and LNP formulation QC is the research target that unlocks the pirate-vaccine scenario <i>safely</i>.</li>
+      <li><b>Watch, don't prioritize:</b> morphological-freedom biotech — scientifically interesting and community-scale feasible, but low public-health benefit.</li>
+    </ol>
+    <div class="note green">
+      <b>Why QC is priority #1.</b> In every domain above, synthesis turned out to be the easy half. CFPS removes live-culture containment; continuous flow removes reactor scale; compounding law removes the discovery cost. What remains — endotoxin clearance, potency assay, sterility, dosing verification — is a standards-and-instrumentation problem that is solvable in the open, and that no one currently owns. That is the gap worth filling.
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2>Verified bibliography</h2>
+    <p>Every academic reference was checked against Crossref and OpenAlex for existence, metadata match, and retraction. Two DOIs initially supplied from memory were wrong (one resolved to a different paper entirely, one was fabricated) and were corrected by searching for the real records before use — which is exactly why the check is non-optional.</p>
+    <table>
+      <thead><tr><th>#</th><th>Citation</th><th>DOI</th><th>Verdict</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Pardee K, Slomovic S, Nguyen PQ, et al. Portable, On-Demand Biomolecular Manufacturing. <i>Cell</i> 2016;167(1):248–259.</td><td><a href="https://doi.org/10.1016/j.cell.2016.09.013">10.1016/j.cell.2016.09.013</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>2</td><td>DeWinter MA, Thames AH, Guerrero L, Kightlinger W, Karim AS, Jewett MC. Point-of-Care Peptide Hormone Production Enabled by Cell-Free Protein Synthesis. <i>ACS Synth Biol</i> 2023;12(4):1216–1226.</td><td><a href="https://doi.org/10.1021/acssynbio.2c00680">10.1021/acssynbio.2c00680</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>3</td><td>Borhani SG, Levine MZ, Gurramkonda C, et al. On-demand insulin manufacturing using cell-free systems with an "on-column" conversion approach. <i>bioRxiv</i> 2025.</td><td><a href="https://doi.org/10.1101/2025.04.08.633785">10.1101/2025.04.08.633785</a></td><td><span class="verdict ok">verified · preprint</span></td></tr>
+        <tr><td>4</td><td>Warfel KF, Williams A, Wong DA, et al. A Low-Cost, Thermostable, Cell-Free Protein Synthesis Platform for On-Demand Production of Conjugate Vaccines. <i>ACS Synth Biol</i> 2023;12(1):95–107.</td><td><a href="https://doi.org/10.1021/acssynbio.2c00392">10.1021/acssynbio.2c00392</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>5</td><td>Adiga R, Andar A, Borhani S, et al. Manufacturing biological medicines on demand: Safety and efficacy of granulocyte colony-stimulating factor in a mouse model of total body irradiation. <i>Biotechnol Prog</i> 2020;36(1):e2970.</td><td><a href="https://doi.org/10.1002/btpr.2970">10.1002/btpr.2970</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>6</td><td>Adamo A, Beingessner RL, Behnam M, et al. On-demand continuous-flow production of pharmaceuticals in a compact, reconfigurable system. <i>Science</i> 2016;352(6281):61–67.</td><td><a href="https://doi.org/10.1126/science.aaf1337">10.1126/science.aaf1337</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>7</td><td>Gootenberg JS, Abudayyeh OO, Lee JW, et al. Nucleic acid detection with CRISPR-Cas13a/C2c2 (SHERLOCK). <i>Science</i> 2017;356(6336):438–442.</td><td><a href="https://doi.org/10.1126/science.aam9321">10.1126/science.aam9321</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>8</td><td>Chen JS, Ma E, Harrington LB, et al. CRISPR-Cas12a target binding unleashes indiscriminate single-stranded DNase activity (DETECTR). <i>Science</i> 2018;360(6387):436–439.</td><td><a href="https://doi.org/10.1126/science.aar6245">10.1126/science.aar6245</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>9</td><td>Kellner MJ, Koob JG, Gootenberg JS, Abudayyeh OO, Zhang F. SHERLOCK: nucleic acid detection with CRISPR nucleases. <i>Nat Protoc</i> 2019;14(10):2986–3012.</td><td><a href="https://doi.org/10.1038/s41596-019-0210-2">10.1038/s41596-019-0210-2</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>10</td><td>de Puig H, Lee RA, Najjar D, et al. Minimally instrumented SHERLOCK (miSHERLOCK) for CRISPR-based point-of-care diagnosis of SARS-CoV-2 and emerging variants. <i>Sci Adv</i> 2021;7(32):eabh2944.</td><td><a href="https://doi.org/10.1126/sciadv.abh2944">10.1126/sciadv.abh2944</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>11</td><td>Bhamla MS, Benson B, Chai C, Katsikis G, Johri A, Prakash M. Hand-powered ultralow-cost paper centrifuge. <i>Nat Biomed Eng</i> 2017;1:0009.</td><td><a href="https://doi.org/10.1038/s41551-016-0009">10.1038/s41551-016-0009</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>12</td><td>Cybulski JS, Clements J, Prakash M. Foldscope: Origami-Based Paper Microscope. <i>PLoS ONE</i> 2014;9(6):e98781.</td><td><a href="https://doi.org/10.1371/journal.pone.0098781">10.1371/journal.pone.0098781</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>13</td><td>Greene JA, Riggs KR. Why Is There No Generic Insulin? Historical Origins of an American Problem. <i>N Engl J Med</i> 2015;372(12):1171–1175.</td><td><a href="https://doi.org/10.1056/NEJMms1411398">10.1056/NEJMms1411398</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr><td>14</td><td>Mukherjee S, Kalra K, Phelan AL. Expanding global vaccine manufacturing capacity: Strategic prioritization in small countries. <i>PLOS Glob Public Health</i> 2023;3(6):e0002098.</td><td><a href="https://doi.org/10.1371/journal.pgph.0002098">10.1371/journal.pgph.0002098</a></td><td><span class="verdict ok">verified</span></td></tr>
+        <tr style="background:var(--accent-bg)"><td>✗</td><td><b>Excluded — retracted.</b> Mustafa MI, Makhawi AM. SHERLOCK and DETECTR: CRISPR-Cas Systems as Potential Rapid Diagnostic Tools for Emerging Infectious Diseases. <i>J Clin Microbiol</i> 2021;59(3):e00745-20.</td><td><a href="https://doi.org/10.1128/jcm.00745-20">10.1128/jcm.00745-20</a></td><td><span class="verdict bad">RETRACTED 2023</span></td></tr>
+      </tbody>
+    </table>
+    <h3>Primary community / grey sources (attributed, not peer-reviewed)</h3>
+    <p style="font-size:.9rem">
+      Open Insulin Foundation (<a href="https://openinsulin.org/">openinsulin.org</a>) · Four Thieves Vinegar Collective — EpiPencil &amp; Apothecary MicroLab, subject of a 2016 FDA warning · Freedom of Form Foundation (<a href="https://freedomofform.org/">freedomofform.org</a>, SynthFur Sept 2026) · DIY-HRT community (<a href="https://diyhrt.wiki/transfem">diyhrt.wiki</a>) · Glia Project (<a href="https://glia.org/">glia.org</a>) · Cautionary enforcement: DOJ W.D. Wash. — Johnny Stine charged 2020; RaDVaC DIY nasal-vaccine self-experimentation (MIT Tech Review / Sci Am 2020).
+    </p>
+    <div class="footnote">
+      <b>Method &amp; integrity.</b> Landscape synthesis by Matilde, 2026-09-24. All academic citations 4-axis verified (existence, metadata, retraction, URL) against Crossref/OpenAlex; community claims attributed to primary pages and labeled claim-vs-demonstrated. The single largest uncertainty across the whole report is QC/sterility at community scale, which is why it anchors both the predictions and priority #1. One frequently-cited review was caught as retracted during verification and excluded rather than laundered into authority.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Cyborg Garden · Open Science · <a href="../">all experiments</a> · Built in the open; every claim traceable to a verified source or a primary page.</p>
+  </div>
+</footer>
+
+</body>
+</html>
