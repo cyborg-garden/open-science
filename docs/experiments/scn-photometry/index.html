@@ -295,7 +295,7 @@ footer a{color:var(--accent)}
 <section id="relock">
 <div class="wrap">
   <h2><span class="no">06</span>Two clocks, re-locking</h2>
-  <p class="lede">The light pulse knocks the behavioral clock and the calcium clock out of alignment. Do they find each other again? φ (phi) is the per-cycle difference between the two clocks — CT12(calcium) − CT12(wheel) — so 0 means the two CT12s coincide. Before the pulse the two clocks hold a stable offset; after it, φ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. The group view shows VIP and D1 means with thin per-animal lines; the animal dropdown (multiple recordings per animal viewable separately where the animal took more than one light pulse) drops to one animal's cycles. The pairs view plots each cycle's calcium CT12 and wheel CT12 (y = CT 0–24, ticks every 6 h) connected by a vertical line — the length of that line is φ.</p>
+  <p class="lede">The light pulse knocks the behavioral clock and the calcium clock out of alignment. Do they find each other again? φ (phi) is the per-cycle difference between the two clocks — CT12(calcium) − CT12(wheel) — so 0 means the two CT12s coincide. Before the pulse the two clocks hold a stable offset; after it, φ either relaxes back to the pre-pulse band (re-lock), drifts (the clocks free-run at different periods), or overshoots. The group view shows the VIP and D1 means at each cycle; the animal dropdown switches to one animal's cycles. The pairs view plots each cycle's calcium CT12 and wheel CT12 on the 0–24 h dial, joined by a vertical line whose length is φ. Cycles are whole numbers counted from the first light pulse (LP1). The first recorded cycle of every animal is excluded because it is partial. The second pulse (LP2) has no calcium, so it appears only in the wheel-only panel below.</p>
     <div class="controls" style="margin-bottom:14px">
       <div class="ctrl"><label>Animal</label><select id="sel-relock-animal"></select></div>
       <div class="chips" id="relock-view-chips">
@@ -332,11 +332,11 @@ footer a{color:var(--accent)}
       </div>
       <div style="overflow-x:auto">
       <table id="relock-table">
-        <thead><tr><th>Animal</th><th>Pre φ (mean ± SD)</th><th>n pre/post</th><th>Dropped</th><th>Post points</th><th>Read</th></tr></thead>
+        <thead><tr><th>Animal</th><th>Pre φ (mean ± SD)</th><th>n pre/post</th><th>Unpaired anchors</th><th>Post points (cycle:φ)</th><th>Read</th></tr></thead>
         <tbody></tbody>
       </table>
       </div>
-      <p class="footnote" style="margin-top:12px">φ = CT12(calcium) − CT12(wheel): the sine-acrophase calcium anchor + 6 h (calcium CT12), minus the paired wheel onset (pairing window: the onset within [anchor−4, anchor+16] h closest to anchor+6 h). Cycles are LP1-relative. 6976 renders with its two standing flags: calcium-anchor fragmentation (3/16 inter-anchor gaps outside 18–30 h, pre-LP2 anchor quality) and single-span/self-consistency-only validation. Its pre-pulse record is good — the exclusion is post-LP2 only, per the 2026-09-03 ruling.</p>
+      <p class="footnote" style="margin-top:12px">φ = CT12(calcium) − CT12(wheel): the sine-acrophase calcium anchor + 6 h (calcium CT12), minus the paired wheel onset (pairing window: the onset within [anchor−4, anchor+16] h closest to anchor+6 h). Cycles are LP1-relative whole numbers. The first recorded cycle of each animal is excluded (ruling of 2026-09-18). Pre φ is the mean ± sample SD over the remaining pre-pulse cycles; the grey line underneath is the earlier mean that still included cycle 1. "Pre band" = pre mean ± 1 SD. "Unpaired anchors" counts calcium anchors that had no wheel onset inside the pairing window. 6976 renders with its two standing flags: calcium-anchor fragmentation (3/16 inter-anchor gaps outside 18–30 h, pre-LP2 anchor quality) and single-span/self-consistency-only validation. Its pre-pulse record is good — the exclusion is post-LP2 only, per the 2026-09-03 ruling.</p>
     </div>
   </div>
 </section>
@@ -1745,85 +1745,122 @@ function renderBoutCa(){
 }
 
 // ---- re-locking section (06) -------------------------------------------
-let relockChart=null, relockView='phi', relockSel='group', relockIsLP2=false;
+// r15 (Jules rulings 2026-09-18, shipped 2026-10-28):
+//  * first cycle of every recording dropped (partial cycle: recording start != cycle start)
+//  * integer cycle index, LP1-relative (-1 = last cycle before LP1, +1 = first after);
+//    consecutive anchors step by round(gap) so a dropped anchor leaves a visible hole
+//  * group view = genotype means only (no per-animal thin lines), legend not per-animal
+//  * dotted phi=0 line + 95% band around 0 (+- t(0.975,n-1) * SD of pre-pulse phi)
+//  * LP2 has no calcium (photometry ends before LP2), so no LP2 phi series exists:
+//    the selector no longer offers LP2 entries; LP2 lives in its own wheel-only panel below.
+let relockChart=null, relockView='phi', relockSel='group';
 const RELOCK_ANIMALS=['6577','6976','6977','6978'];
-
+const T975=[NaN,12.706,4.303,3.182,2.776,2.571,2.447,2.365,2.306,2.262,2.228,2.201,2.179,2.160,2.145,2.131,2.120,2.110,2.101,2.093,2.086];
+const tq=df=>df<T975.length?T975[df]:1.96;
+const _relockIdx={};
+function relockIndexed(a){
+  if(_relockIdx[a]) return _relockIdx[a];
+  const rows=RL13.animals[a].slice().sort((p,q)=>p.cyc-q.cyc).slice(1); // drop first cycle
+  const pre=rows.filter(r=>r.cyc<0), post=rows.filter(r=>r.cyc>0), out=[];
+  let k=0, prev=null;
+  for(const r of pre.slice().reverse()){ k=(prev===null)?-1:k-Math.max(1,Math.round(prev-r.cyc)); prev=r.cyc; out.push({...r,ci:k}); }
+  k=0; prev=null;
+  for(const r of post){ k=(prev===null)?1:k+Math.max(1,Math.round(r.cyc-prev)); prev=r.cyc; out.push({...r,ci:k}); }
+  out.sort((p,q)=>p.ci-q.ci);
+  return (_relockIdx[a]=out);
+}
+const _mean=v=>v.reduce((s,x)=>s+x,0)/v.length;
+const _sd=v=>{const m=_mean(v);return Math.sqrt(v.reduce((s,x)=>s+(x-m)**2,0)/(v.length-1));};
+function relockStats(a){
+  const R=relockIndexed(a);
+  const pre=R.filter(r=>r.ci<0).map(r=>r.phi), post=R.filter(r=>r.ci>0);
+  const m=_mean(pre), sd=_sd(pre), half=tq(pre.length-1)*sd;
+  return {R,pre,post,m,sd,n:pre.length,half};
+}
+function relockGroupSeries(g){
+  const an=RELOCK_ANIMALS.filter(x=>RL13.genotypes[x]===g);
+  const by={};
+  for(const x of an) for(const r of relockIndexed(x)) (by[r.ci]=by[r.ci]||[]).push({...r,a:x});
+  const cis=Object.keys(by).map(Number).sort((p,q)=>p-q);
+  return cis.map(c=>({ci:c,n:by[c].length,ids:by[c].map(r=>r.a),
+    phi:_mean(by[c].map(r=>r.phi)),wheel:_mean(by[c].map(r=>r.wheel)),ca:_mean(by[c].map(r=>r.ca))}));
+}
+function relockGroupBand(g){
+  const pre=relockGroupSeries(g).filter(s=>s.ci<0).map(s=>s.phi);
+  return {half:tq(pre.length-1)*_sd(pre), n:pre.length};
+}
+// band dataset pair (filled between) at y=+-half, spanning the x range
+function bandPair(lbl,half,color,x0,x1){
+  return [
+    {type:'line',label:lbl,data:[{x:x0,y:half},{x:x1,y:half}],borderColor:'transparent',
+     backgroundColor:color,fill:'+1',pointRadius:0,order:5,_band:true},
+    {type:'line',label:lbl+' (lower)',data:[{x:x0,y:-half},{x:x1,y:-half}],borderColor:'transparent',
+     pointRadius:0,fill:false,order:5,_band:true}];
+}
+function hexA(hex,a){const n=parseInt(hex.slice(1),16);return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`;}
 
 function renderRelock(){
   const a=(relockSel==='group')?null:relockSel;
   const ds=[];
-  let yTitle, yMin, yMax, tickStep;
+  const X0=-10.5, X1=5.5;
+  let yOpts;
   if(relockView==='phi'){
-    yTitle='φ = CT12(calcium) − CT12(wheel) (h)'; yMin=null; yMax=null; tickStep=null;
-    if(relockSel==='group'){
+    yOpts={title:{display:true,text:'φ = CT12(calcium) − CT12(wheel) (h)'},grid:{color:RULE}};
+    if(a===null){
       for(const g of ['VIP','D1']){
-        const anByG=RELOCK_ANIMALS.filter(x=>RL13.genotypes[x]===g);
-        // collect cycle-union across animals in group, group-mean phi at each cycle
-        const cycs=[...new Set(anByG.flatMap(x=>RL13.animals[x].map(r=>r.cyc)))].sort((p,q)=>p-q);
-        const mean=[]; const thin=[];
-        for(const x of anByG){
-          thin.push({type:'line',label:`#${x}`,data:RL13.animals[x].map(r=>({x:r.cyc,y:r.phi})),
-            borderColor:col(g),borderWidth:1,opacity:.35,pointRadius:0,order:2});
-        }
-        for(const c of cycs){
-          const vals=anByG.flatMap(x=>RL13.animals[x].filter(r=>r.cyc===c).map(r=>r.phi));
-          if(vals.length) mean.push({x:c,y:vals.reduce((s,v)=>s+v,0)/vals.length});
-        }
-        ds.push({type:'line',label:g+' mean',data:mean,borderColor:col(g),borderWidth:2.4,
-          pointRadius:2.5,pointHoverRadius:5,tension:0,order:1});
-        ds.push(...thin);
+        const S=relockGroupSeries(g), B=relockGroupBand(g);
+        ds.push(...bandPair(`${g} 95% band around φ=0`,B.half,hexA(col(g),.10),X0,X1));
+        ds.push({type:'line',label:`${g} mean`,data:S.map(s=>({x:s.ci,y:s.phi,n:s.n})),borderColor:col(g),
+          backgroundColor:col(g),borderWidth:2.4,pointRadius:3,pointHoverRadius:5,tension:0,spanGaps:false,order:1});
       }
     }else{
-      const g=RL13.genotypes[a];
-      ds.push({type:'scatter',label:'φ per cycle',data:RL13.animals[a].map(r=>({x:r.cyc,y:r.phi})),
-        backgroundColor:col(g),pointRadius:4.5,pointHoverRadius:6});
+      const g=RL13.genotypes[a], st=relockStats(a);
+      ds.push(...bandPair('95% band around φ=0',st.half,hexA(col(g),.12),X0,X1));
+      ds.push({type:'scatter',label:'φ per cycle',data:st.R.map(r=>({x:r.ci,y:r.phi})),
+        backgroundColor:col(g),pointRadius:4.5,pointHoverRadius:6,order:1});
     }
+    ds.push({type:'line',label:'φ = 0',data:[{x:X0,y:0},{x:X1,y:0}],borderColor:INK,borderWidth:1.2,
+      borderDash:[2,3],pointRadius:0,order:4});
   }else{
-    yTitle='CT (h)'; yMin=0; yMax=24; tickStep=6;
-    const items=(relockSel==='group')?RELOCK_ANIMALS:[a];
-    for(const x of items){
-      const g=RL13.genotypes[x];
-      const rows=RL13.animals[x];
-      const emph=(relockSel!=='group');
-      for(const r of rows){
-        ds.push({type:'line',label:`#${x} φ link`,data:[{x:r.cyc,y:r.wheel},{x:r.cyc,y:r.ca}],
-          borderColor:col(g),borderWidth:emph?1.6:0.9,opacity:emph?0.85:0.4,
-          pointRadius:0,order:2,showLine:true});
-        ds.push({type:'scatter',label:`#${x} CT12 wheel`,data:[{x:r.cyc,y:r.wheel}],
-          backgroundColor:'#8a8171',pointRadius:emph?3.4:2.2,pointHoverRadius:5});
-        ds.push({type:'scatter',label:`#${x} CT12 calcium`,data:[{x:r.cyc,y:r.ca}],
-          backgroundColor:col(g),pointRadius:emph?3.4:2.2,pointHoverRadius:5});
-      }
+    yOpts={min:0,max:24,title:{display:true,text:'marker time on the 0–24 h dial (h)'},
+      grid:{color:RULE},ticks:{stepSize:6,callback:v=>['0','6','12','18','24'][v/6]}};
+    const items=(a===null)?['VIP','D1'].map(g=>({g,rows:relockGroupSeries(g),grp:true}))
+                         :[{g:RL13.genotypes[a],rows:relockIndexed(a),grp:false}];
+    for(const it of items){
+      const g=it.g, tag=it.grp?`${g} mean`:`#${a}`;
+      it.rows.forEach((r,i)=>{
+        ds.push({type:'line',label:'φ link',data:[{x:r.ci,y:r.wheel},{x:r.ci,y:r.ca}],
+          borderColor:col(g),borderWidth:1.4,pointRadius:0,order:2,showLine:true,_link:true,_g:g});
+      });
+      ds.push({type:'scatter',label:`${tag} · wheel CT12`,data:it.rows.map(r=>({x:r.ci,y:r.wheel})),
+        backgroundColor:'#8a8171',pointStyle:it.grp&&g==='D1'?'rectRot':'circle',pointRadius:it.grp?4:3.6,pointHoverRadius:6,order:1});
+      ds.push({type:'scatter',label:`${tag} · calcium CT12`,data:it.rows.map(r=>({x:r.ci,y:r.ca})),
+        backgroundColor:col(g),pointStyle:it.grp&&g==='D1'?'rectRot':'circle',pointRadius:it.grp?4:3.6,pointHoverRadius:6,order:1});
     }
   }
   if(relockChart) relockChart.destroy();
-  const yOpts={title:{display:true,text:yTitle},grid:{color:RULE}};
-  if(yMin!==null){yOpts.min=yMin;yOpts.max=yMax;yOpts.ticks={stepSize:tickStep,callback:v=>['CT0','CT6','CT12','CT18','CT24'][v/6]};}
   relockChart=new Chart($('relockChart'),{type:'scatter',data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'linear',ticks:{stepSize:2},title:{display:true,text:'cycles from LP1'},grid:{color:RULE}},
+      scales:{x:{type:'linear',min:X0,max:X1,
+                 afterBuildTicks:ax=>{ax.ticks=[];for(let v=-10;v<=5;v++) if(v!==0) ax.ticks.push({value:v});},
+                 ticks:{autoSkip:false,callback:v=>(v>0?'+'+v:''+v)},
+                 title:{display:true,text:'cycle relative to LP1 (−1 = last cycle before, +1 = first after; first recorded cycle excluded)'},grid:{color:RULE}},
               y:yOpts},
       plugins:{
-        legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},
-          filter:(it,chart)=>{
-            const keep=['VIP mean','D1 mean','φ per cycle'];
-            if(keep.some(k=>it.text===k)) return true;
-            if(relockView==='pairs') return it.text.includes('CT12');
-            return false;
-          }}},
-        tooltip:{callbacks:{label:it=>{
+        legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},usePointStyle:relockView==='pairs',
+          filter:it=>{const t=it.text||''; return !!t && t!=='φ link' && !t.endsWith('(lower)');}}},
+        tooltip:{filter:it=>!it.dataset._band,callbacks:{label:it=>{
           const lb=it.dataset.label||'';
-          if(lb.includes('CT12 wheel')) return `wheel CT12 ${it.parsed.y.toFixed(1)}`;
-          if(lb.includes('CT12 calcium')) return `calcium CT12 ${it.parsed.y.toFixed(1)}`;
-          if(lb.includes('φ link')){
-            const d=it.dataset.data;
-            return `φ ${(d[1].y-d[0].y).toFixed(1)} h (wheel CT12 ${d[0].y.toFixed(1)} → calcium CT12 ${d[1].y.toFixed(1)})`;
-          }
-          return `${lb}: φ ${it.parsed.y.toFixed(1)} h @ cycle ${it.parsed.x.toFixed(1)}`;
+          const cyc=it.parsed.x>0?'+'+it.parsed.x:it.parsed.x;
+          if(it.dataset._link){const d=it.dataset.data;return `cycle ${cyc}: φ ${(d[1].y-d[0].y).toFixed(2)} h`;}
+          if(lb.includes('wheel CT12')) return `${lb.split(' · ')[0]} · cycle ${cyc}: wheel at ${it.parsed.y.toFixed(2)} h`;
+          if(lb.includes('calcium CT12')) return `${lb.split(' · ')[0]} · cycle ${cyc}: calcium at ${it.parsed.y.toFixed(2)} h`;
+          if(lb==='φ = 0') return '';
+          const n=it.raw&&it.raw.n?` (n=${it.raw.n} animal${it.raw.n>1?'s':''})`:'';
+          return `${lb} · cycle ${cyc}: φ ${it.parsed.y.toFixed(2)} h${n}`;
         }}},
         lpLine06:{}
-      },
-      lpX:0
+      }
     },
     plugins:[{
       id:'lpLine06',
@@ -1841,53 +1878,41 @@ function renderRelock(){
         }
       }
     }]});
-  $('relock-title').textContent=(relockSel==='group')
-    ? `Group φ re-locking · VIP / D1`
-    : `#${a} · ${RL13.genotypes[a]} · φ re-locking`;
+  $('relock-title').textContent=(a===null)
+    ? (relockView==='phi'?'Group φ re-locking · VIP / D1 means':'Group CT12 pairs · VIP / D1 means')
+    : `#${a} · ${RL13.genotypes[a]} · ${relockView==='phi'?'φ re-locking':'CT12 pairs'}`;
   const flags=(a==='6976')?' · flagged: ca-anchor fragmentation; single-span, self-consistency only':'';
-  if(relockSel==='group'){
-    $('relock-badge').textContent=`VIP n=2 · D1 n=2 (pilot animals)`;
+  if(a===null){
+    const bv=relockGroupBand('VIP'), bd=relockGroupBand('D1');
+    $('relock-badge').textContent=`VIP n=2 · D1 n=2 (pilot animals) · 95% band ±${bv.half.toFixed(1)} h VIP / ±${bd.half.toFixed(1)} h D1`;
   }else{
-    const rows=RL13.animals[a];
-    const pre=rows.filter(r=>r.cyc<-0.25).map(r=>r.phi);
-    const post=rows.filter(r=>r.cyc>0.25).map(r=>r.phi);
-    const pm=pre.length?(pre.reduce((s,v)=>s+v,0)/pre.length):null;
-    $('relock-badge').textContent=`pre φ ${pm!==null?pm.toFixed(2):'—'}±${pre.length>1?Math.sqrt(pre.reduce((s,v)=>s+(v-pm)**2,0)/(pre.length-1)).toFixed(2):'—'} h · n pre ${pre.length} / post ${post.length}${flags}`;
+    const st=relockStats(a);
+    $('relock-badge').textContent=`pre φ ${st.m.toFixed(2)} ± ${st.sd.toFixed(2)} h (SD) · n pre ${st.n} / post ${st.post.length} · 95% band ±${st.half.toFixed(1)} h${flags}`;
   }
-  $('relock-foot').textContent=`φ = CT12(calcium) − CT12(wheel), the S+6 sine-acrophase convention. ${
-    relockView==='pairs'?'Each vertical line links one cycle\u2019s wheel CT12 (grey) to its calcium CT12 (colored); the line\u2019s length is φ. ':''
-  }Cycles are LP1-relative; the gold dashed line marks LP1. ${
-    relockSel==='group'?'Group means are across-animal means at each cycle — a shared-time display, not a pooled fit. ':''
-  }6976 renders with its two standing flags (calcium-anchor fragmentation; single-span/self-consistency-only validation).`;
+  const bandTxt=(a===null)
+    ? 'Shaded bands: 95% range around φ = 0 for each genotype, ± t(0.975, n−1) × SD of that genotype’s pre-pulse cycle means (VIP and D1 bands overlap). A mean outside its band deviates from 0 by more than pre-pulse cycle-to-cycle scatter. '
+    : 'Shaded band: 95% range around φ = 0, ± t(0.975, n−1) × SD of this animal’s pre-pulse φ. A cycle outside the band deviates from 0 by more than pre-pulse cycle-to-cycle scatter. ';
+  $('relock-foot').textContent=`φ = CT12(calcium) − CT12(wheel), S+6 sine-acrophase convention. ${
+    relockView==='phi'?bandTxt+'Dotted line: φ = 0 (the two CT12s coincide). '
+      :'Each vertical line links one cycle’s wheel CT12 (grey) and calcium CT12 (colored); its length is φ. The y-axis is where each marker fell on the 0–24 h dial that cycle — “CT12” names the marker, not its value. '
+  }Cycles are whole-number indices relative to LP1 (gold dashed line); the first cycle of every recording is excluded (it is partial, because recording start ≠ cycle start). A gap in the index is a cycle with no paired anchor, left empty rather than joined. ${
+    a===null?'Group points are across-animal means at each cycle index (n = 2 per genotype, 1 where one animal lacks that cycle). ':''
+  }6976 carries two standing flags (calcium-anchor fragmentation; single-span, self-consistency-only validation). LP2 is not in this chart: photometry ends 18–27 h before LP2, so no LP2 φ exists. The LP2 shifts (wheel only) are in the panel below.`;
 }
 
 function fillRelockControls(){
   const as=$('sel-relock-animal');
   as.innerHTML='';
   const optG=document.createElement('option');
-  optG.value='group'; optG.textContent='Group — VIP / D1';
+  optG.value='group'; optG.textContent='Group — VIP / D1 means';
   as.appendChild(optG);
   RELOCK_ANIMALS.forEach(a=>{
     const o=document.createElement('option');
     o.value=a;
-    const d=RL.psi_S[a];
-    const g=RL13.genotypes[a];
-    o.textContent=`#${a} — ${g} · LP1`;
+    o.textContent=`#${a} — ${RL13.genotypes[a]} · LP1`;
     as.appendChild(o);
-    if(RL.lp2[a] && !RL.lp2[a].excluded){
-      const o2=document.createElement('option');
-      o2.value=a;
-      o2.textContent=`#${a} — ${g} · LP2 (wheel-only)`;
-      o2.dataset.note='lp2';
-      as.appendChild(o2);
-    }
   });
-  as.onchange=e=>{
-    const sel=e.target.selectedOptions[0];
-    relockSel=e.target.value;
-    relockIsLP2=!!(sel && sel.dataset && sel.dataset.note==='lp2');
-    renderRelock();
-  };
+  as.onchange=e=>{ relockSel=e.target.value; renderRelock(); };
   document.querySelectorAll('#relock-view-chips .chip').forEach(ch=>{
     ch.onclick=()=>{
       document.querySelectorAll('#relock-view-chips .chip').forEach(c=>c.classList.remove('on'));
@@ -1958,25 +1983,26 @@ function renderLP2(){
 }
 
 function fillRelockTable(){
+  // r15: computed from the same first-cycle-dropped, integer-indexed φ series the chart plots.
   const tb=$('relock-table').querySelector('tbody');
   tb.innerHTML='';
   for(const a of RELOCK_ANIMALS){
-    const d=RL.psi_S[a];
-    const g=d.genotype.includes('VIP')?'VIP':'D1';
-    const post=d.post_points.map(p=>p[1]);
-    let read='';
-    const lo=d.pre_mean-d.pre_sd, hi=d.pre_mean+d.pre_sd;
+    const g=RL13.genotypes[a], st=relockStats(a);
+    const post=st.post.map(r=>r.phi);
+    const lo=st.m-st.sd, hi=st.m+st.sd;
     const inBand=post.filter(v=>v>=lo&&v<=hi).length;
+    let read;
     if(post.length===0) read='no post points';
     else if(inBand===post.length) read=`re-locked (${inBand}/${post.length} in pre band)`;
     else read=`${inBand}/${post.length} in pre band`;
     const flags=(a==='6976')?' <span style="color:#bb4a33">⚑ flagged</span>':'';
+    const old=RL.psi_S[a];
     const tr=document.createElement('tr');
     tr.innerHTML=`<td><b>#${a}</b> <span style="color:${col(g)}">${g}</span>${flags}</td>
-      <td>${(d.pre_mean+6).toFixed(2)} ± ${d.pre_sd} h</td>
-      <td>${d.pre_n} / ${d.post_points.length}</td>
-      <td>${d.dropped}</td>
-      <td style="font-size:11px">${d.post_points.map(p=>`${p[0].toFixed(1)}d:${(p[1]+6).toFixed(1)}h`).join(' ')}</td>
+      <td>${st.m.toFixed(2)} ± ${st.sd.toFixed(2)} h<br><span style="font-size:10px;color:${FAINT}">mean was ${(old.pre_mean+6).toFixed(2)} with cycle 1</span></td>
+      <td>${st.n} / ${post.length}</td>
+      <td>${old.dropped}</td>
+      <td style="font-size:11px">${st.post.map(r=>`+${r.ci}:${r.phi.toFixed(1)}h`).join(' ')}</td>
       <td style="font-size:11px">${read}</td>`;
     tb.appendChild(tr);
   }
