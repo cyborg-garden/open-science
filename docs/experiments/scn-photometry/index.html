@@ -199,7 +199,7 @@ footer a{color:var(--accent)}
 <section id="lightpulse">
   <div class="wrap">
     <h2><span class="no">04</span>The light pulse</h2>
-    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). The GFP controls (#7382, #7386 — ΔF/F is movement artifact, not biology, per the Methods §12 QC screen) join every triggered average as their own n=2 series: a light-evoked deflection in GFP indicts movement artifact in the GCaMP response; its absence certifies signal. And the deflection is here: GFP 7382's pulse-triggered peak is +15.2% above baseline at +22 min — larger than any GCaMP animal (cohort max: 7390 at +13.7%), the movement-artifact signature the control exists to expose. This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
+    <p class="lede">Zoomed to ±12 h around the pulse (15-second resolution). The GFP controls (#7382, #7386 — ΔF/F is movement artifact, not biology, per the Methods §12 QC screen) join every triggered average as their own n=2 series: a light-evoked deflection in GFP indicts movement artifact in the GCaMP response; its absence certifies signal. And the deflection is here: GFP 7382's pulse-triggered peak is +16.0% above baseline at +19.5 min — slightly above every GCaMP animal (cohort max: 7390 at +15.6%; peak definition in the per-animal panel below), the movement-artifact signature the control exists to expose. This is photic phase resetting in action: a 30-min light pulse in the behavioral night acutely suppresses then releases SCN calcium, and the clock's phase is rewritten for the days that follow.</p>
     <div class="card">
       <div class="chart-head">
         <span class="chart-title" id="lp-title">—</span>
@@ -240,10 +240,10 @@ footer a{color:var(--accent)}
   <div class="card" style="margin-top:20px">
     <div class="chart-head">
       <span class="chart-title">Peak response, per animal</span>
-      <span class="badge">ΔF/F₀ % · first minute</span>
+      <span class="badge">ΔF/F₀ % · 3-min rolling mean · first 30 min</span>
     </div>
     <div class="chart-box"><canvas id="lpPeakChart"></canvas></div>
-    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">First-minute ΔF/F: the single 1-min bin after pulse onset (baseline as above). At 1-min resolution the “first 60 s” holds exactly one sample — this is a single-bin read, not a peak-finding window, and it is noise-dominated at that scale (GFP 7386 reads −0.75%). No latency axis: with one bin there is no latency to report. Troughs are not shown (retired 2026-09-18); the sustained post-pulse trough is described in the group-means footnote above. Hover for the animal's numbers.</p>
+    <p class="footnote" style="margin-top:10px" id="lp-peak-foot">Peak = the highest 3-minute rolling mean of ΔF/F₀ (three 1-min bins, baseline as above) within the first 30 min after pulse onset, which is the length of the pulse. Latency = the centre of that 3-min window, so 1.5 min is the earliest possible value. 6977 and 6978 peak in the first bins, so their true latency is "under about 2 min" rather than exactly 1.5. Smoothing lowers the sharp first-minute spike in the GCaMP animals but leaves their order unchanged. GFP control 7382 peaks late (+16.0% at 19.5 min). That slow rise during the pulse is the movement-artifact signature the control exists to show; the single-bin read used before this ruling (2026-10-28) hid it. No peak sits at the 30-min window edge. A 20-min window gives the same values for every animal except 7382, which is still rising at 20 min. Troughs are not shown (retired 2026-09-18). Hover for each animal&#39;s numbers.</p>
   </div>
 </section>
 
@@ -487,7 +487,7 @@ footer a{color:var(--accent)}
       <p><b>Port validation.</b> The Python demux was compared sample-for-sample against the MATLAB <i>FullTrace.mat</i> outputs: raw channels matched to ~1e-16, corrected signal r = 0.9998, ΔF/F r = 1.0000 (max abs diff ≈ 1.4e-6) on the pilot animal; the cross-session check runs live below against a second-session animal.</p>
       <p><b>Average cycle (§02).</b> Cycles are consecutive activity onsets (the shipped 18–30 h guard); the pulse-containing cycle is excluded and all others kept. The axis is elapsed hours from onset (CT12) — cycles occupy their native length; no resampling. Per-bin calcium = mean ΔF/F over the cycles that reach the bin (animal-first, then group mean ± SEM across animals). Wheel-running probability = fraction of reaching cycles with ≥1 event in the bin; cycles that end before the bin never enter its denominator. The 23–24 h tail thins because τ < 24 h in most animals — the count is on the badge, not smoothed away.</p>
       <p><b>GFP controls (§04, §08).</b> #7382 and #7386 express GFP/tdTomato (no GCaMP); their ΔF/F is movement artifact by the §12 QC screen — that is exactly what makes them the right control. A light-evoked deflection in a triggered GFP average indicts movement artifact in the GCaMP response; a bout-onset deflection is the expected movement signature; absence certifies signal. GFP appears as its own labeled n=2 series in every triggered average, never pooled into D1 despite the D1-Cre genotype. The calcium-clock (S+6) frame never ran on GFP calcium (QC-excluded), so GFP bout bins are behavior-frame only.</p>
-      <p><b>Light-pulse-triggered traces (§04).</b> Group means are per-animal curves from the native 15-s ΔF/F (1-min rebin, per-animal baseline = mean over the 2 h to 30 min before pulse onset); the peak/trough readouts use an 8-min rolling mean (8×1-min bins) over the first 40 min from pulse onset (the 30-min pulse + 10 min after), latency measured from onset. Each animal contributes one pulse — ZT12 for the four 221014 animals, ZT8 for 7390 and the GFP pair (7382/7386, second session) — so the group curves are displays, not statistics.</p>
+      <p><b>Light-pulse-triggered traces (§04).</b> Group means are per-animal curves from the native 15-s ΔF/F (1-min rebin, per-animal baseline = mean over the 2 h to 30 min before pulse onset); the per-animal peak is the maximum of a 3-min rolling mean (3×1-min bins) within the first 30 min from pulse onset (the pulse itself), with latency at the centre of the winning window (ruling of 2026-10-28; it replaced the 8-min/40-min readout and the interim single-bin read). Troughs are no longer reported. Each animal contributes one pulse — ZT12 for the four 221014 animals, ZT8 for 7390 and the GFP pair (7382/7386, second session) — so the group curves are displays, not statistics.</p>
     <p><b>Circadian metrics.</b> χ² periodogram (Sokolove &amp; Bushell 1978) on 10-min wheel histograms, 20–28 h period window (trial periods on a 0.1 h grid), computed separately pre/post light pulse.</p>
       <p><b>How calcium circadian time (CT) is computed — the S+6 convention (updated 2026-09-03).</b> The calcium clock's phase marker is the <i>acrophase of a per-cycle least-squares sine fit</i> (period fitted per animal — a global free-period sine fit on the same 30-min ΔF/F-weighted, 3-h-smoothed profile the published pipeline uses), with the CT12 marker placed at acrophase + 6 h. The shift is the pre-vs-post regression difference through the marker series evaluated at the pulse cycle, converted to circadian hours (×24/τ<sub>pre</sub>); the continuity unwrap (consecutive marker differences constrained to 12–36 h) is part of the estimator definition. <b>Why it changed:</b> the previous anchor — the daily ΔF/F minimum, labeled CT18 — degrades on these traces because the calcium trough is a 5.5–9.5 h plateau: the argmin lands anywhere on the plateau, and on 6977's span it double-sampled one physical trough and missed another entirely, pushing that animal's published shift to +6.62 CT where the clean estimate is −0.54. The sine acrophase is not artifact-immune in principle — it needed the unwrap on two spans — but its failure mode is repairable, while a double-sampled plateau cannot be un-double-sampled. <b>Numbers under the switch (canonical dashboard path, era-A cache):</b> 6577 +0.93 → +0.40, 6976 −1.32 → −0.87, 6977 −2.59 → −0.54 (the published +6.62 checkpoint value was argmin-artifact-corrupted; corrected here with the artifact documented in the repeat-recordings appendix below), 6978 +3.40 → +2.16, 7390 −0.75 → +2.05. <b>Fitted-period update (2026-09-14):</b> the per-cycle acrophase fits now carry each animal's fitted τ rather than a fixed 24 h — the swap moved every published S-basis number by ≤0.12 CT h (shifts), ≤0.003 z (bout bins), +0.0004 (compensation pooled r), and ≤0.13 h (relock ψ). No reading changes. The daily-minimum anchor is retained as a labeled diagnostic — S-vs-T disagreement is how the 6977 artifact was caught — and all published numbers reproduce exactly under it (parity gate: 5/5 animals, d = 0.0000). The sine fit is absent from the in-vivo photometry phase-extraction literature (the field uses threshold/midpoint markers on smoothed ΔF), so this choice rests on the benchmark below, not on precedent. <b>Path provenance:</b> an earlier benchmark run on the era-B re-cut files (30-min bins, different F₀ window) gave S shifts of +0.63 / −0.13 / +1.87 for the three pilots; the numbers above ride the era-A cache arrays that feed this dashboard, and the 0.2–0.7 h differences between the two sets are bin-grid and F₀ path effects, not biology — both sets are archived with the estimator suite.</p>
       <p><b>Estimator comparison, rendered from the data.</b> The chart below overlays the three candidate calcium markers — daily-minimum argmin (T, the retired anchor), per-cycle sine acrophase (S, the current anchor), and a Brancaccio-style midrise crossing (M, diagnostic) — on the actual per-cycle series, per animal. The companion table gives the numbers: marker jitter (median interval deviation), wrap-flip counts, sine fit R², plateau occupancy, and the S-vs-T shift deltas. On clean spans T and S agree within 0.1–1.8 h; the divergence is exactly where the plateau artifacts live.</p>
@@ -1249,48 +1249,46 @@ function renderLpGroup(){
 }
 function renderLpPeak(){
   if(!LPG) return;
-  const byG={};
-  for(const [a,p] of Object.entries(LPG.peaks)){(byG[p.group]=byG[p.group]||[]).push({a,p});}
-  // r14 fix (Matilde review finding 1): the shipped peaks block has NO
-  // peak60_dF — the old fallback silently plotted the retired 40-min
-  // rolling peaks under a "first 60 s" label. Compute the true raw 0-60 s
-  // peak HERE from the 1-min lp_trig traces (the shipped source of truth),
-  // and drop the degenerate latency axis (raw 1-min max lands at the first
-  // covered bin for every animal — latency carries no information).
-  const peak60={};
+  // r15 (Jules ruling 2026-10-28, option 3): peak = max of a 3-min rolling mean
+  // (3 contiguous 1-min bins) within the first 30 min after pulse onset (the pulse).
+  // Latency = centre of the winning window. Computed in-page from the shipped,
+  // baseline-subtracted 1-min lp_trig traces. Supersedes the r14 single-bin read.
+  const W=30, K=3;
+  const pk={};
   for(const [a,e] of Object.entries(LPG.lp_trig)){
-    const t=e.t, d=e.d;
-    let m=null;
-    // r14 units fix (Matilde catch): 'first 60 s' at 1-min bins = the single
-    // (0,1] bin. The earlier (0,60]-MINUTES window was the first HOUR.
-    for(let i=0;i<t.length;i++){
-      const tt=t[i], v=d[i];
-      if(v==null) continue;
-      if(tt>0&&tt<=1){ if(m===null||v>m) m=v; }
+    const t=e.t, d=e.d, idx=[];
+    for(let i=0;i<t.length;i++) if(t[i]>0&&t[i]<=W&&d[i]!=null) idx.push(i);
+    let best=null;
+    for(let k=0;k+K<=idx.length;k++){
+      const w=idx.slice(k,k+K);
+      if(w[K-1]-w[0]!==K-1) continue;
+      const m=w.reduce((s,i)=>s+d[i],0)/K;
+      if(best===null||m>best.v) best={v:m,lat:t[w[1]]};
     }
-    peak60[a]=m;
+    pk[a]=best;
   }
+  const byG={};
+  for(const [a,p] of Object.entries(LPG.peaks)){(byG[p.group]=byG[p.group]||[]).push(a);}
   const ds=[];
   for(const [g,arr] of Object.entries(byG)){
-    ds.push({type:'scatter',label:`${g} first-minute \u0394F/F`,
-      data:arr.map(({a})=>({x:a,y:(peak60[a]!=null?peak60[a]*100:null)})),
-      backgroundColor:col(g),pointRadius:7,pointHoverRadius:9});
+    ds.push({type:'scatter',label:g==='GFP'?'GFP control':`${g}-Cre`,
+      data:arr.filter(a=>pk[a]).map(a=>({x:pk[a].lat,y:pk[a].v*100,a})),
+      backgroundColor:col(g),pointStyle:g==='GFP'?'rectRot':'circle',pointRadius:7,pointHoverRadius:9});
   }
-  const animalIds=Object.keys(LPG.peaks);
+  window._lpPeak=pk;
   if(lpPeakChart) lpPeakChart.destroy();
   lpPeakChart=new Chart($('lpPeakChart'),{
     type:'scatter',
     data:{datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,animation:false,
-      scales:{x:{type:'category',labels:animalIds.map(a=>'#'+a),
-              title:{display:true,text:'animal (first-minute ΔF/F, single 1-min bin after pulse onset)'}},
-              y:{title:{display:true,text:'first-minute ΔF/F₀ (%)'},grid:{color:RULE}}}},
-      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10}}},
+      scales:{x:{type:'linear',min:0,max:W,ticks:{stepSize:5},
+              title:{display:true,text:'latency to peak (min after pulse onset, centre of 3-min window)'},grid:{color:RULE}},
+              y:{title:{display:true,text:'peak ΔF/F₀ vs baseline (%)'},grid:{color:RULE}}},
+      plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:10},usePointStyle:true}},
         tooltip:{callbacks:{label:it=>{
-          const a=animalIds[it.dataIndex];
-          const v=peak60[a];
-          return `#${a}: first-minute ΔF/F ${v!=null?(v>=0?'+':'')+(v*100).toFixed(2):'n/a'}%`;
-        }}}}});
+          const r=it.raw;
+          return `#${r.a}: peak ${(r.y>=0?'+':'')+r.y.toFixed(2)}% at ${r.x.toFixed(1)} min`;
+        }}}}}});
 }
 function renderActogram(a){
   const cv=$('actogram-canvas'), ctx=cv.getContext('2d');
