@@ -1,0 +1,182 @@
+{
+  "bpm": 96,
+  "t0": 0.3,
+  "vibrato": 28,
+  "lyrics": "A sprite holds the greenhouse door. I bring one seed and you bring two. My copper roots curl round yours. We bloom in blue ~ ~ .",
+  "display_lyrics": [
+    "A sprite holds the greenhouse door.",
+    "I bring one seed and you bring two.",
+    "My copper roots curl round yours.",
+    "We bloom in blue."
+  ],
+  "notes": [
+    [
+      0,
+      1
+    ],
+    [
+      62,
+      0.5
+    ],
+    [
+      64,
+      0.5
+    ],
+    [
+      66,
+      1
+    ],
+    [
+      67,
+      0.5
+    ],
+    [
+      69,
+      0.5
+    ],
+    [
+      67,
+      1
+    ],
+    [
+      62,
+      2
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      66,
+      1
+    ],
+    [
+      64,
+      0.5
+    ],
+    [
+      62,
+      0.5
+    ],
+    [
+      66,
+      0.5
+    ],
+    [
+      67,
+      0.5
+    ],
+    [
+      66,
+      1
+    ],
+    [
+      64,
+      0.5
+    ],
+    [
+      59,
+      1.5
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      62,
+      0.5
+    ],
+    [
+      64,
+      0.5
+    ],
+    [
+      66,
+      1
+    ],
+    [
+      69,
+      1
+    ],
+    [
+      67,
+      0.5
+    ],
+    [
+      66,
+      1
+    ],
+    [
+      62,
+      1.5
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      64,
+      1
+    ],
+    [
+      66,
+      1.5
+    ],
+    [
+      67,
+      0.5
+    ],
+    [
+      74,
+      1
+    ],
+    [
+      76,
+      1
+    ],
+    [
+      78,
+      3
+    ],
+    [
+      0,
+      1
+    ]
+  ],
+  "composition": {
+    "key": "D major",
+    "meter": "6/4",
+    "written_words": 26,
+    "lyric_events": 28,
+    "note_names": [
+      "D4",
+      "E4",
+      "F#4",
+      "G4",
+      "A4",
+      "G4",
+      "D4",
+      "F#4",
+      "E4",
+      "D4",
+      "F#4",
+      "G4",
+      "F#4",
+      "E4",
+      "B3",
+      "D4",
+      "E4",
+      "F#4",
+      "A4",
+      "G4",
+      "F#4",
+      "D4",
+      "E4",
+      "F#4",
+      "G4",
+      "D5",
+      "E5",
+      "F#5"
+    ]
+  }
+}

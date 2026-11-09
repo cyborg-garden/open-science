@@ -1,0 +1,258 @@
+{
+  "bpm": 96,
+  "t0": 0.3,
+  "notes": [
+    {
+      "midi": 62,
+      "beats": 0.5,
+      "t0": 0.3,
+      "t1": 0.6125,
+      "note": "D4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 64,
+      "beats": 0.5,
+      "t0": 0.6125,
+      "t1": 0.925,
+      "note": "E4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 1,
+      "t0": 0.925,
+      "t1": 1.55,
+      "note": "F#4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 67,
+      "beats": 0.5,
+      "t0": 1.55,
+      "t1": 1.8625,
+      "note": "G4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 69,
+      "beats": 0.5,
+      "t0": 1.8625,
+      "t1": 2.175,
+      "note": "A4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 67,
+      "beats": 1,
+      "t0": 2.175,
+      "t1": 2.8,
+      "note": "G4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 62,
+      "beats": 2,
+      "t0": 2.8,
+      "t1": 4.05,
+      "note": "D4",
+      "line": 0,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 1,
+      "t0": 4.675,
+      "t1": 5.3,
+      "note": "F#4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 64,
+      "beats": 0.5,
+      "t0": 5.3,
+      "t1": 5.6125,
+      "note": "E4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 62,
+      "beats": 0.5,
+      "t0": 5.6125,
+      "t1": 5.925,
+      "note": "D4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 0.5,
+      "t0": 5.925,
+      "t1": 6.2375,
+      "note": "F#4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 67,
+      "beats": 0.5,
+      "t0": 6.2375,
+      "t1": 6.55,
+      "note": "G4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 1,
+      "t0": 6.55,
+      "t1": 7.175,
+      "note": "F#4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 64,
+      "beats": 0.5,
+      "t0": 7.175,
+      "t1": 7.4875,
+      "note": "E4",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 59,
+      "beats": 1.5,
+      "t0": 7.4875,
+      "t1": 8.425,
+      "note": "B3",
+      "line": 1,
+      "melisma": false
+    },
+    {
+      "midi": 62,
+      "beats": 0.5,
+      "t0": 9.05,
+      "t1": 9.3625,
+      "note": "D4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 64,
+      "beats": 0.5,
+      "t0": 9.3625,
+      "t1": 9.675,
+      "note": "E4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 1,
+      "t0": 9.675,
+      "t1": 10.3,
+      "note": "F#4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 69,
+      "beats": 1,
+      "t0": 10.3,
+      "t1": 10.925,
+      "note": "A4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 67,
+      "beats": 0.5,
+      "t0": 10.925,
+      "t1": 11.2375,
+      "note": "G4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 1,
+      "t0": 11.2375,
+      "t1": 11.8625,
+      "note": "F#4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 62,
+      "beats": 1.5,
+      "t0": 11.8625,
+      "t1": 12.8,
+      "note": "D4",
+      "line": 2,
+      "melisma": false
+    },
+    {
+      "midi": 64,
+      "beats": 1,
+      "t0": 13.425,
+      "t1": 14.05,
+      "note": "E4",
+      "line": 3,
+      "melisma": false
+    },
+    {
+      "midi": 66,
+      "beats": 1.5,
+      "t0": 14.05,
+      "t1": 14.9875,
+      "note": "F#4",
+      "line": 3,
+      "melisma": false
+    },
+    {
+      "midi": 67,
+      "beats": 0.5,
+      "t0": 14.9875,
+      "t1": 15.3,
+      "note": "G4",
+      "line": 3,
+      "melisma": false
+    },
+    {
+      "midi": 74,
+      "beats": 1,
+      "t0": 15.3,
+      "t1": 15.925,
+      "note": "D5",
+      "line": 3,
+      "melisma": false
+    },
+    {
+      "midi": 76,
+      "beats": 1,
+      "t0": 15.925,
+      "t1": 16.55,
+      "note": "E5",
+      "line": 3,
+      "melisma": true
+    },
+    {
+      "midi": 78,
+      "beats": 3,
+      "t0": 16.55,
+      "t1": 18.425,
+      "note": "F#5",
+      "line": 3,
+      "melisma": true
+    }
+  ]
+}
