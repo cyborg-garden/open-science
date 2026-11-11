@@ -1,9 +1,0 @@
-{
-  "slug": "chimera-greenhouse",
-  "title": "We bloom in blue",
-  "blurb": "A tiny original song for a sprite, two seeds, and a greenhouse door, sung by Chimera's physical-model voice synthesizer.",
-  "emoji": "🌱",
-  "status": "staging",
-  "updated": "2026-11-09",
-  "source": "Original melody and Chimera offline renders: scripts/chimera-greenhouse/render.py; Chimera eed4a5ff2695ad151df2210d012b2a4ab584f099."
-}
