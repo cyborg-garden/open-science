@@ -51,6 +51,15 @@ case "$SLUG" in */*|.*) die "slug must be a plain directory name, got: $SLUG" ;;
 DEST="$REPO_ROOT/docs/experiments/$SLUG"
 META="$DEST/meta.json"
 
+# A stale build directory must never silently revert reviewed repo content.
+# Abort BEFORE rsync --delete; rebuild/refresh the source or explicitly ack
+# the complete diff with PUBLISH_ACK_CONTENT_REVIEW=1.
+if [ "${PUBLISH_ACK_CONTENT_REVIEW:-0}" != "1" ] && [ -d "$DEST" ]; then
+  if ! diff -qr --exclude=meta.json --exclude=.DS_Store -- "$SRC" "$DEST"; then
+    die "source differs from the deployed tree; refusing to overwrite reviewed content. Refresh the dist from the repo, or review the complete diff and set PUBLISH_ACK_CONTENT_REVIEW=1"
+  fi
+fi
+
 # --- refuse oversized files before anything is copied ---------------------------
 OVERSIZED="$(find "$SRC" -type f -size +${MAX_BYTES}c -print 2>/dev/null || true)"
 if [ -n "$OVERSIZED" ]; then
