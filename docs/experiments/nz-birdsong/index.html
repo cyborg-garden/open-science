@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Aotearoa Birdsong, Decoded — NimbleCo AI</title>
-<meta name="description" content="Species-specific analysis of NZ birdsong from Xeno-Canto: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls analysed unsupervised (rule categories withdrawn after failed validation). 3,096 recordings, 177 species.">
+<meta name="description" content="Species-specific analysis of NZ birdsong from Xeno-Canto: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls mapped unsupervised, with corrections logged in the open. 3,096 recordings, 177 species.">
 <meta property="og:title" content="Aotearoa Birdsong, Decoded">
 <meta property="og:description" content="Species-specific analysis of NZ birdsong: tūī syllables (Hill 2014), bellbird syllables (Webb 2021), kākā calls analysed unsupervised. Categories never shared across species.">
 <meta property="og:type" content="article">
@@ -24,7 +24,8 @@
   --tui:#5f7a3a; --bellbird:#2c6c8c; --kaka:#b04a3a; --kea:#b07d22;
   --low:#5f7a3a; --harmonic:#2c6c8c; --high:#bb4a33; --trill:#7c5784; --rmnr:#b07d22;
   --serif:'Newsreader',Georgia,serif;
-  --display:'Fraunces',Georgia,serif;
+  --display:'Newsreader',Georgia,serif;
+  --deco:'Fraunces',Georgia,serif;
   --mono:'Spline Sans Mono',ui-monospace,monospace;
   --shadow:0 1px 1px rgba(33,28,22,.03),0 10px 30px -16px rgba(33,28,22,.22);
   --shadow-lg:0 2px 4px rgba(33,28,22,.05),0 24px 60px -28px rgba(33,28,22,.32);
@@ -57,7 +58,7 @@ a:hover{color:var(--accent-2)}
 }
 .eyebrow::after{content:"";flex:1;height:1px;background:var(--rule-2)}
 .masthead h1{
-  font-family:var(--display); font-optical-sizing:auto;
+  font-family:var(--deco); font-optical-sizing:auto;
   font-weight:600; font-size:clamp(2.5rem,6.5vw,4.6rem); line-height:.99;
   letter-spacing:-.018em; color:var(--ink); margin-bottom:1.1rem; max-width:18ch;
 }
@@ -88,14 +89,14 @@ a:hover{color:var(--accent-2)}
 }
 .fig{padding:1.5rem 1.2rem 1.6rem;border-right:1px solid var(--rule);position:relative}
 .fig:last-child{border-right:none}
-.fig .n{font-family:var(--display);font-weight:600;font-size:2.3rem;line-height:1;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:lining-nums}
+.fig .n{font-family:var(--deco);font-weight:600;font-size:2.3rem;line-height:1;letter-spacing:-.02em;color:var(--ink);font-variant-numeric:lining-nums}
 .fig .l{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:.6rem;line-height:1.4}
 .fig:nth-child(1) .n{color:var(--accent-2)}
 
 /* ============ TABS ============ */
 .tab-bar{display:flex;gap:.2rem;flex-wrap:wrap;position:sticky;top:0;z-index:20;
   background:var(--paper);padding:.7rem 0 .6rem;margin-bottom:2rem;border-bottom:1px solid var(--rule)}
-.tab{font-family:var(--mono);font-size:.78rem;letter-spacing:.02em;color:var(--ink-soft);
+.tab{font-family:var(--mono);font-size:.78rem;letter-spacing:.02em;color:var(--ink-soft);background:transparent;
   cursor:pointer;padding:.45rem .85rem;border-radius:999px;border:1px solid transparent;
   transition:all .18s ease;white-space:nowrap}
 .tab:hover{color:var(--ink);background:var(--surface-2)}
@@ -125,7 +126,7 @@ a:hover{color:var(--accent-2)}
 /* ============ LEDE & PROSE ============ */
 .lede{font-family:var(--display);font-weight:400;font-size:1.5rem;line-height:1.4;
   letter-spacing:-.01em;color:var(--ink);margin-bottom:2rem;max-width:58rem}
-.lede .drop{float:left;font-family:var(--display);font-weight:600;font-size:3.6rem;line-height:.72;
+.lede .drop{float:left;font-family:var(--deco);font-weight:600;font-size:3.6rem;line-height:.72;
   padding:.32rem .55rem 0 0;color:var(--accent-2)}
 .prose{max-width:58rem}
 .prose p{margin-bottom:1.1rem;color:var(--ink-soft)}
@@ -267,7 +268,6 @@ tr:hover td{background:var(--surface-2)}
 /* ============ RESPONSIVE ============ */
 @media (max-width:760px){
   body{font-size:17px}
-  .figures{grid-template-columns:repeat(3,1fr)}
   .two-col{grid-template-columns:1fr}
   .card{padding:1.2rem}
   .masthead{padding:3rem 0 1.4rem}
@@ -309,6 +309,67 @@ tr:hover td{background:var(--surface-2)}
 .sample-card .sample-label{font-family:var(--mono);font-size:.68rem;color:var(--ink-faint);padding:0 1rem .7rem}
 .leaflet-popup-content{font-family:var(--mono);font-size:.78rem;color:var(--ink);line-height:1.5;margin:10px 14px}
 .leaflet-popup-tip{background:var(--surface)}
+
+/* ============ BUTTONS ============ */
+.btn{font-family:var(--mono);font-size:.74rem;padding:.5rem .85rem;border-radius:999px;
+  border:1px solid var(--rule-2);background:var(--surface);color:var(--ink-soft);cursor:pointer;min-height:36px}
+.btn:hover{border-color:var(--ink-soft)}
+.tab:focus-visible,.voc-tab:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ============ PIPELINE ============ */
+.pipe{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.7rem;list-style:none;padding:0;margin:0}
+.pipe li{background:var(--surface-2);border:1px solid var(--rule-2);border-radius:8px;padding:.8rem .9rem;
+  font-family:var(--mono);font-size:.74rem;line-height:1.55;color:var(--ink-soft)}
+.pipe li b{display:block;font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--ink);margin-bottom:.25rem}
+.pipe li.learned{border:2px solid var(--bellbird)}
+.pipe li.task{border:2px solid var(--tui)}
+.pipe li.newest{border:2px solid var(--kea)}
+.pipe li.proposed{border-style:dashed;border-color:var(--kaka)}
+.pipe-then{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-faint);margin:1rem 0 .5rem}
+
+/* ============ FOLDS & PROCESS LOG ============ */
+.fold{border:1px solid var(--rule);border-radius:6px;background:var(--surface-2);margin:.8rem 0}
+.fold>summary{cursor:pointer;padding:.85rem 1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)}
+.fold-body{padding:.2rem 1.1rem 1rem;font-size:.9rem;line-height:1.6;color:var(--ink-soft);overflow-wrap:anywhere}
+.fold-body p{margin-bottom:.7rem}
+.fold-body ul,.fold-body ol{padding-left:1.3rem;margin-bottom:.7rem}
+.fold-body .note{margin:0 0 1rem;background:var(--surface)}
+.fold-body img{max-width:100%}
+.log-entry{border-left:3px solid var(--rule-2);padding:.1rem 0 .1rem 1.1rem;margin:0 0 2.2rem}
+.log-entry .when{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-2)}
+.log-entry h3{font-family:var(--display);font-weight:600;font-size:1.3rem;line-height:1.25;color:var(--ink);margin:.25rem 0 .6rem}
+.log-entry>p{font-size:.97rem;color:var(--ink-soft);margin-bottom:.6rem;max-width:68ch}
+code{font-family:var(--mono);font-size:.85em;overflow-wrap:anywhere}
+.embed-tall{height:620px}
+
+/* ============ SMALL SCREENS ============ */
+@media (max-width:760px){
+  .wrap{padding:0 1.1rem}
+  .figures{grid-template-columns:repeat(2,1fr)}
+  .fig{padding:1.1rem .9rem 1.2rem}
+  .fig:nth-child(2n){border-right:none}
+  .fig:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+  .fig .n{font-size:1.9rem}
+  /* one swipeable row instead of three wrapped rows stuck to the top of the screen */
+  .tab-bar{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
+    margin:0 -1.1rem 1.5rem;padding:.5rem 1.1rem;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 2.2rem),transparent);
+            mask-image:linear-gradient(90deg,#000 calc(100% - 2.2rem),transparent)}
+  .tab-bar::-webkit-scrollbar{display:none}
+  .tab{flex-shrink:0;padding:.7rem .95rem}
+  .tab:last-child{margin-right:1.6rem}
+  .btn{min-height:40px}
+  .lede{font-size:1.2rem}
+  .lede .drop{font-size:3rem}
+  .card{overflow-x:auto}
+  .card h3{font-size:1.15rem}
+  .search-box,input[type=text],select{font-size:16px}
+  .embed-tall{height:min(620px,78vh)}
+  .game-embed{min-height:460px}
+  .methodology ul,.methodology ol{padding-left:1.1rem}
+  .log-entry{padding-left:.85rem}
+}
 </style>
 </head>
 <body>
@@ -318,7 +379,7 @@ tr:hover td{background:var(--surface-2)}
   <header class="masthead">
     <div class="eyebrow">Open Science · Field Report 02</div>
     <h1>Aotearoa Birdsong, <em>Decoded</em></h1>
-    <p class="deck">We downloaded <b>3,096 recordings</b> of New Zealand birds from Xeno-Canto, then classified vocalisations for three species using published literature frameworks: tūī syllables (Hill &amp; Ji 2014), korimako (bellbird) syllables (Webb 2021), and kākā calls. Here's what automated analysis finds — where the automated categories survived validation, and where they didn't (the kākā rule categories were withdrawn).</p>
+    <p class="deck">We took <b>3,096 recordings</b> of New Zealand birds from Xeno-Canto and studied the voices of three species, each with its own scheme from the literature: tūī syllables (Hill &amp; Ji 2014), korimako (bellbird) syllables (Webb 2021) and kākā calls. Where an automated label did not survive checking, it is not shown.</p>
     <div class="byline">
       Bioacoustic replication · after <a href="https://doi.org/10.63172/301002sqblid">Hill &amp; Ji (2014)</a> · 177 species · 3,096 recordings<br>
       Source: <a href="https://xeno-canto.org">Xeno-Canto</a> API v3 · Analysis in Python (librosa, scikit-learn) · Full pipeline on <a href="https://github.com/cyborg-garden/open-science">GitHub</a><br>
@@ -333,29 +394,22 @@ tr:hover td{background:var(--surface-2)}
     <div class="fig"><div class="n">47</div><div class="l">Calls<br>detected</div></div>
   </div>
 
-  <p style="font-size:.8rem;color:var(--ink-faint);margin:.4rem 0 1rem">Checked 5 August 2026: an internal audit
-  flagged <b>3,156</b> as a possible copy-paste error, because the same figure appears on this page both as a
-  recording count and as the bellbird <i>click</i> syllable count. <b>It is a coincidence &mdash; both are
-  correct.</b> Recordings = 3,096 Xeno-Canto (Methods, below) + 60 Koe = 3,156. Clicks = 3,156 of 13,086 bellbird
-  syllables = 24.1%, consistent with every other row of that table. We record the check here rather than silently
-  leaving it, so the next reader does not have to repeat it. Note that <b>3,096 is the raw query result</b>; after
-  filtering, the clean identified dataset is <b>2,244 recordings across 175 species</b>.</p>
-
   <div class="note">
     <div class="mark">Scope</div>
-    <div>This is an <b>extended replication</b> of Hill &amp; Ji (2014) using crowd-sourced field recordings. We analysed all <b>232 tūī A-quality songs</b>, <b>94 korimako</b>, and <b>47 kākā</b> recordings, with geographic variation across 10 regions. Discrepancies with Hill's manual classification are discussed.</div>
+    <div>This is an <b>extended replication</b> of Hill &amp; Ji (2014) using crowd-sourced field recordings. We analysed all <b>232 tūī A-quality songs</b>, <b>94 korimako</b>, and <b>47 kākā</b> recordings, with geographic variation across 10 regions. Discrepancies with Hill's manual classification are discussed. Every claim we corrected or withdrew along the way is logged under <a href="#process" data-goto="process">Process</a>.</div>
   </div>
 
   <!-- ============ TAB BAR ============ -->
-  <nav class="tab-bar" id="tabs">
-    <div class="tab active" data-tab="overview">Overview</div>
-    <div class="tab" data-tab="game">Te Reo Manu</div>
-    <div class="tab" data-tab="species">Species Gallery</div>
-    <div class="tab" data-tab="vocalisation">Vocalisation Analysis</div>
-    <div class="tab" data-tab="map">Geographic Analysis</div>
-    <div class="tab" data-tab="data">Dataset</div>
-    <div class="tab" data-tab="methods">Methodology</div>
-    <div class="tab" data-tab="literature">Literature</div>
+  <nav class="tab-bar" id="tabs" aria-label="Sections">
+    <button type="button" class="tab active" data-tab="overview">Overview</button>
+    <button type="button" class="tab" data-tab="game">Te Reo Manu</button>
+    <button type="button" class="tab" data-tab="species">Species</button>
+    <button type="button" class="tab" data-tab="vocalisation">Vocalisations</button>
+    <button type="button" class="tab" data-tab="map">Map</button>
+    <button type="button" class="tab" data-tab="data">Dataset</button>
+    <button type="button" class="tab" data-tab="methods">Methods</button>
+    <button type="button" class="tab" data-tab="literature">Literature</button>
+    <button type="button" class="tab" data-tab="process">Process</button>
   </nav>
 
   <!-- ==================== OVERVIEW ==================== -->
@@ -363,7 +417,7 @@ tr:hover td{background:var(--surface-2)}
     <div class="lede">
       <span class="drop">E</span>ach species sings its own language. This analysis uses <b>species-specific classification schemes</b> drawn from the published literature — 
       tūī syllables follow Hill &amp; Ji (2014), korimako syllables follow Webb et al. (2021) and Roper et al. (2018), and kākā <em>calls</em> 
-      are analysed <b>unsupervised</b> — their rule-based categories were withdrawn after failing validation. Categories are never shared across species.
+      are mapped <b>without call-type labels</b>, because our automated labels failed validation. Categories are never shared across species.
     </div>
     
     <div class="prose">
@@ -372,11 +426,6 @@ tr:hover td{background:var(--surface-2)}
       spectral features. Korimako researchers found that <b>syllable types</b> (not song types) are the functional units of vocal culture, 
       because korimako flexibly recombine syllables. Kākā are parrots, not songbirds — they produce calls, not songs, and the term 
       "syllable" is inappropriate for their vocalisations.</p>
-      
-      <p><b>v2 classifier improvements:</b> The v1 analysis over-assigned "low-frequency" syllables (55%) due to a threshold-ordering 
-      artefact — syllables with low f₀ but strong upper harmonics were caught by the frequency check before reaching the harmonicity check. 
-      The restructured classifier checks tonal quality first, then frequency, reducing low-frequency to 0.6% of tūī syllables (unchanged from the first v2 pass, now confirmed on a doubled sample) — 
-      consistent with Hill's finding that these are relatively rare.</p>
     </div>
 
     <div class="section-label">Species-Specific Results</div>
@@ -396,9 +445,9 @@ tr:hover td{background:var(--surface-2)}
       <div class="card" style="border-left:3px solid var(--bellbird)">
         <h3 style="color:var(--bellbird)">Korimako — 7 Syllable Families</h3>
         <p style="font-size:.88rem;color:var(--ink-soft);line-height:1.55">
-          <b>Stutter syllables still dominate, at 56.1%</b> — down from 62.8% in the smaller v1 sample, a real ~7-point shift as the sample doubled, not noise.
-          Click has correspondingly grown to 24.1% (was 19.4%), trill 12.6%, complex 3.8%, warble 3.3%, and pipe 0.1% follow. 
+          <b>Stutter syllables dominate, at 56.1%.</b> Click follows at 24.1%, then trill 12.6%, complex 3.8%, warble 3.3% and pipe 0.1%.
           The 15ms syllable boundary (Roper 2018) captures finer segmentation than the 20ms tūī threshold.
+          These are rule-based figures from Xeno-Canto; the larger Koe corpus analysis is under Vocalisations.
         </p>
         <div style="margin-top:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)">
           94 recordings · 13,086 syllables · Webb et al. (2021)
@@ -407,16 +456,14 @@ tr:hover td{background:var(--surface-2)}
       <div class="card" style="border-left:3px solid var(--kaka)">
         <h3 style="color:var(--kaka)">Kākā — Unsupervised Call Space</h3>
         <p style="font-size:.88rem;color:var(--ink-soft);line-height:1.55">
-          <b>Rule-based call categories withdrawn from the dashboard.</b> The Van Horik (2007) rule
-          classifier's categories (snicker / bark / gurgle) failed validation against our
-          unsupervised clustering and human-listened examples, and are shown nowhere on this page
-          any more. What remains for kākā is the <b>unsupervised acoustic space itself</b> — every
-          call embedded by its 52 acoustic features, explorable point by point in the
-          Vocalisation Analysis tab. Call-type labelling will return only when a classifier is
-          trained against human-verified examples.
+          <b>No call-type labels.</b> Kākā calls are shown as an <b>unsupervised acoustic map</b>:
+          every call placed by its 52 acoustic features, explorable point by point in the
+          Vocalisations tab. The rule-based labels we tried (snicker / bark / gurgle) failed
+          validation and were removed. Labels return when a classifier has been trained against
+          human-verified examples.
         </p>
         <div style="margin-top:.8rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-faint)">
-          47 Xeno-Canto recordings · 1,790 calls · features per Campbell ARU protocol · +106 staged Macaulay units (2026-09-03)
+          47 Xeno-Canto recordings · 1,790 calls · features per Campbell ARU protocol · +106 staged Macaulay units
         </div>
       </div>
     </div>
@@ -441,7 +488,7 @@ tr:hover td{background:var(--surface-2)}
           spectrograms, play audio, and assign categories. The <a href="annotate.html"><b>annotation tool</b></a>
           lets collaborators match candidate syllables to reference templates, with password-based sync so
           multiple people can contribute without a GitHub account. This data-driven work seeded the
-          DTW template-matched categories shown in the Vocalisation Analysis tab.
+          DTW template-matched categories shown in the Vocalisations tab.
         </p>
       </div>
     </div>
@@ -472,111 +519,42 @@ tr:hover td{background:var(--surface-2)}
   </div>
   <!-- ==================== VOCALISATION ANALYSIS (combined) ==================== -->
   <div class="panel" id="panel-vocalisation">
-    <div class="section-label">The Pipeline — field recording to individual bird</div>
+    <div class="section-label">The Pipeline: field recording to individual bird</div>
     <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
-      Every number on this page comes out of one sequential pipeline. Raw field audio goes in;
+      The korimako results come out of one sequential pipeline. Raw field audio goes in;
       named individuals come out. Each stage is validated on held-out birds before the next stage
-      consumes its output, so errors do not silently propagate. This is the songbird pipeline
-      (korimako, tūī); call-producing species like kākā follow a related but distinct path
-      (placeholder below — sequence grammar carries individual identity in songbirds but not in calls).</p></div>
-    <div class="card" style="overflow-x:auto">
-      <svg viewBox="0 0 1060 300" style="width:100%;min-width:900px;font-family:inherit" role="img" aria-label="Songbird analysis pipeline schematic">
-        <defs>
-          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="#675e4f"/>
-          </marker>
-        </defs>
-        <!-- stage boxes -->
-        <g font-size="12" fill="#211c16">
-          <!-- 1 -->
-          <rect x="10" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#cfc3aa"/>
-          <text x="85" y="85" text-anchor="middle" font-weight="600">1 · Field audio</text>
-          <text x="85" y="103" text-anchor="middle" font-size="10" fill="#675e4f">48 kHz WAV</text>
-          <text x="85" y="118" text-anchor="middle" font-size="10" fill="#675e4f">2,137 songs</text>
-          <text x="85" y="133" text-anchor="middle" font-size="10" fill="#675e4f">1,066 birds</text>
-          <!-- 2 -->
-          <rect x="190" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#2c6c8c" stroke-width="2"/>
-          <text x="265" y="85" text-anchor="middle" font-weight="600">2 · Segmentation</text>
-          <text x="265" y="103" text-anchor="middle" font-size="10" fill="#675e4f">TweetyNet v2 (CNN)</text>
-          <text x="265" y="118" text-anchor="middle" font-size="10" fill="#675e4f">F1 0.902 @ 50 ms</text>
-          <text x="265" y="133" text-anchor="middle" font-size="10" fill="#675e4f">165-song held-out test</text>
-          <!-- 3 -->
-          <rect x="370" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#2c6c8c" stroke-width="2"/>
-          <text x="445" y="85" text-anchor="middle" font-weight="600">3 · Syllable typing</text>
-          <text x="445" y="103" text-anchor="middle" font-size="10" fill="#675e4f">Family classifier</text>
-          <text x="445" y="118" text-anchor="middle" font-size="10" fill="#675e4f">24 families + UNKNOWN</text>
-          <text x="445" y="133" text-anchor="middle" font-size="10" fill="#675e4f">0.893 test accuracy</text>
-          <!-- 4 -->
-          <rect x="550" y="60" width="150" height="90" rx="8" fill="#faf6ed" stroke="#2c6c8c" stroke-width="2"/>
-          <text x="625" y="85" text-anchor="middle" font-weight="600">4 · Sequence features</text>
-          <text x="625" y="103" text-anchor="middle" font-size="10" fill="#675e4f">repertoire · bigram</text>
-          <text x="625" y="118" text-anchor="middle" font-size="10" fill="#675e4f">grammar · timing</text>
-          <text x="625" y="133" text-anchor="middle" font-size="10" fill="#675e4f">21,463 syllables</text>
-          <!-- 5 -->
-          <rect x="730" y="20" width="150" height="70" rx="8" fill="#faf6ed" stroke="#5f7a3a" stroke-width="2"/>
-          <text x="805" y="43" text-anchor="middle" font-weight="600">5a · Sex</text>
-          <text x="805" y="60" text-anchor="middle" font-size="10" fill="#675e4f">0.94 within-corpus</text>
-          <text x="805" y="74" text-anchor="middle" font-size="10" fill="#675e4f">0.84 held-out island</text>
-          <!-- 6 -->
-          <rect x="730" y="110" width="150" height="70" rx="8" fill="#faf6ed" stroke="#5f7a3a" stroke-width="2"/>
-          <text x="805" y="133" text-anchor="middle" font-weight="600">5b · Site / dialect</text>
-          <text x="805" y="150" text-anchor="middle" font-size="10" fill="#675e4f">repertoire → island</text>
-          <text x="805" y="164" text-anchor="middle" font-size="10" fill="#675e4f">0.81 accuracy</text>
-          <!-- 7 -->
-          <rect x="730" y="200" width="150" height="80" rx="8" fill="#faf6ed" stroke="#b07d22" stroke-width="2"/>
-          <text x="805" y="223" text-anchor="middle" font-weight="600">6 · Individual ID</text>
-          <text x="805" y="240" text-anchor="middle" font-size="10" fill="#675e4f">top-1 55% · top-5 80%</text>
-          <text x="805" y="254" text-anchor="middle" font-size="10" fill="#675e4f">77 birds (closed-set)</text>
-          <text x="805" y="268" text-anchor="middle" font-size="10" fill="#675e4f">~6–8 songs for reliable ID</text>
-          <!-- arrows -->
-          <line x1="160" y1="105" x2="188" y2="105" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
-          <line x1="340" y1="105" x2="368" y2="105" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
-          <line x1="520" y1="105" x2="548" y2="105" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
-          <line x1="700" y1="105" x2="728" y2="55" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
-          <line x1="700" y1="105" x2="728" y2="145" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
-          <line x1="700" y1="105" x2="728" y2="240" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr)"/>
-        </g>
-      </svg>
-      <div style="margin-top:.5rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)">
-        Blue = validated learned stages · green = inference tasks · amber = newest stage (first validation Aug 2026).
+      uses its output. Call-producing species like kākā need a different path (proposed below),
+      because sequence grammar carries individual identity in songbirds but not in calls.</p></div>
+    <div class="card">
+      <ol class="pipe">
+        <li><b>1 · Field audio</b>48 kHz WAV<br>2,137 songs<br>1,066 birds</li>
+        <li class="learned"><b>2 · Segmentation</b>TweetyNet v2 (CNN)<br>F1 0.902 @ 50 ms<br>165-song held-out test</li>
+        <li class="learned"><b>3 · Syllable typing</b>Family classifier<br>24 families + UNKNOWN<br>0.893 test accuracy</li>
+        <li class="learned"><b>4 · Sequence features</b>repertoire · bigram grammar · timing<br>21,463 syllables</li>
+      </ol>
+      <div class="pipe-then">Stage 4 feeds three questions</div>
+      <ol class="pipe">
+        <li class="task"><b>5a · Sex</b>0.94 within-corpus<br>0.84 held-out island</li>
+        <li class="task"><b>5b · Site / dialect</b>repertoire → island<br>0.81 accuracy</li>
+        <li class="newest"><b>6 · Individual ID</b>top-1 55% · top-5 80%<br>77 birds (closed-set)<br>~6–8 songs for reliable ID</li>
+      </ol>
+      <div style="margin-top:.6rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)">
+        Blue = validated learned stages · green = inference tasks · amber = newest stage (first validated Aug 2026).
       </div>
     </div>
 
-    <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
-      <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
-        ▸ Proposed call-species pipeline (kākā) — placeholder, pending more Shaw-lab data</summary>
-      <div style="padding:0 1.2rem 1rem">
-        <svg viewBox="0 0 1060 200" style="width:100%;min-width:900px;font-family:inherit" role="img" aria-label="Proposed call-species pipeline schematic">
-          <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#675e4f"/></marker></defs>
-          <g font-size="12" fill="#211c16">
-            <rect x="10" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#cfc3aa" stroke-dasharray="5,4"/>
-            <text x="90" y="80" text-anchor="middle" font-weight="600">1 · Field audio</text>
-            <text x="90" y="98" text-anchor="middle" font-size="10" fill="#675e4f">calls, not songs</text>
-            <rect x="200" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
-            <text x="280" y="80" text-anchor="middle" font-weight="600">2 · Call detection</text>
-            <text x="280" y="98" text-anchor="middle" font-size="10" fill="#675e4f">energy / detector</text>
-            <text x="280" y="113" text-anchor="middle" font-size="10" fill="#675e4f">(data-limited today)</text>
-            <rect x="390" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
-            <text x="470" y="80" text-anchor="middle" font-weight="600">3 · Call typing</text>
-            <text x="470" y="98" text-anchor="middle" font-size="10" fill="#675e4f">human-verified types —</text>
-            <text x="470" y="113" text-anchor="middle" font-size="10" fill="#675e4f">rule classifier withdrawn</text>
-            <rect x="580" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
-            <text x="660" y="80" text-anchor="middle" font-weight="600">4 · Acoustic features</text>
-            <text x="660" y="98" text-anchor="middle" font-size="10" fill="#675e4f">spectral shape, duration</text>
-            <text x="660" y="113" text-anchor="middle" font-size="10" fill="#675e4f">(sequence grammar n/a —</text>
-            <text x="660" y="126" text-anchor="middle" font-size="10" fill="#675e4f">calls lack song syntax)</text>
-            <rect x="770" y="55" width="160" height="90" rx="8" fill="#faf6ed" stroke="#b04a3a" stroke-dasharray="5,4"/>
-            <text x="850" y="80" text-anchor="middle" font-weight="600">5 · Sex / individual</text>
-            <text x="850" y="98" text-anchor="middle" font-size="10" fill="#675e4f">proposed — untested</text>
-            <text x="850" y="113" text-anchor="middle" font-size="10" fill="#675e4f">needs Shaw-lab corpus</text>
-            <line x1="170" y1="100" x2="198" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
-            <line x1="360" y1="100" x2="388" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
-            <line x1="550" y1="100" x2="578" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
-            <line x1="740" y1="100" x2="768" y2="100" stroke="#675e4f" stroke-width="1.6" marker-end="url(#arr2)"/>
-          </g>
-        </svg>
-        <div style="margin-top:.5rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)">
-          Dashed = proposed / not yet validated. Call-species pipeline drops sequence grammar (no song syntax); individual ID would rest on acoustic call features instead.
+    <details class="fold" style="margin-bottom:1.5rem">
+      <summary>Proposed pipeline for call species (kākā). Not yet built.</summary>
+      <div class="fold-body">
+        <ol class="pipe">
+          <li class="proposed"><b>1 · Field audio</b>calls, not songs</li>
+          <li class="proposed"><b>2 · Call detection</b>energy / detector<br>(data-limited today)</li>
+          <li class="proposed"><b>3 · Call typing</b>human-verified types<br>(no automated labels yet)</li>
+          <li class="proposed"><b>4 · Acoustic features</b>spectral shape, duration<br>(no sequence grammar: calls lack song syntax)</li>
+          <li class="proposed"><b>5 · Sex / individual</b>untested<br>needs Shaw-lab corpus</li>
+        </ol>
+        <div style="margin-top:.6rem;font-size:.78rem;color:var(--ink-faint);font-family:var(--mono)">
+          Dashed = proposed, not validated. Individual ID would rest on acoustic call features instead of sequence grammar.
         </div>
       </div>
     </details>
@@ -623,7 +601,7 @@ tr:hover td{background:var(--surface-2)}
         <b>snicker</b> calls are used during close-range social interactions and copulation;
         <b>shraak</b> calls carry over long distances for flock coordination between widely separated birds;
         <b>bark</b> calls serve as alarm or alert signals; and <b>gurgle</b> calls are associated
-        with social bonding. <i>(Ethology from the original paper; our automated use of these categories was withdrawn 2026-09-03 after failed validation.)</i> The call repertoire is tuned to communication at different distances —
+        with social bonding. <i>(This is the ethology from the original paper. We do not label calls with these types automatically.)</i> The call repertoire is tuned to communication at different distances —
         from intimate contact to forest-wide coordination.</div>
       </div>
     </div>
@@ -635,12 +613,12 @@ tr:hover td{background:var(--surface-2)}
         Each point is one syllable, embedded in 3D by acoustic similarity (UMAP over the spectral
         descriptors from our pipeline). Islands of points are the bird's syllabic textures — an acoustic
         signature you can orbit. <b>Click any point to hear that syllable</b>, or play the whole song
-        through the manifold with highlights synced to the real syllable onsets. Default view is a
-        <b>korimako song segmented and typed by the current pipeline</b> (TweetyNet v2 + stage-4 family
-        classifier); earlier tūī examples from the legacy rule-based pipeline are in the dropdown.
+        through the manifold with highlights synced to the real syllable onsets. The default view is a
+        <b>korimako song segmented and typed by the pipeline above</b>; tūī examples from the
+        rule-based pipeline are in the dropdown.
         Drag to orbit, scroll to zoom.
       </p>
-      <div style="position:relative;width:100%;height:620px;border-radius:8px;overflow:hidden;border:1px solid var(--rule)">
+      <div class="embed-tall" style="position:relative;width:100%;border-radius:8px;overflow:hidden;border:1px solid var(--rule)">
         <iframe src="manifold/index.html" style="width:100%;height:100%;border:0" loading="lazy"
                 title="3D acoustic manifold — korimako (TN v2 + stage-4) and tūī (legacy) syllables"></iframe>
       </div>
@@ -662,7 +640,7 @@ tr:hover td{background:var(--surface-2)}
     <div class="voc-species-panel" id="voc-tui" style="display:none">
       <div class="prose" style="margin-bottom:1.5rem">
         <p>Classification follows <b>Hill &amp; Ji (2014)</b> — 6 syllable categories identified from visual spectrographic
-        inspection of tūī at Tawharanui Regional Park. Syllable boundaries defined by ≥20ms silence gaps.
+        inspection of tūī at Tāwharanui Regional Park. Syllable boundaries defined by ≥20ms silence gaps.
         44.1 kHz sampling rate, frequency range 500–10,000 Hz.</p>
       </div>
 
@@ -675,14 +653,11 @@ tr:hover td{background:var(--surface-2)}
       </div>
 
       <div class="note" style="margin-top:1.5rem">
-        <div class="mark">v2 Improvement</div>
-        <div>The v1 classifier over-assigned "low-frequency" (55%) due to checking f₀ before harmonicity —
-        syllables with low fundamental but strong upper harmonics were misclassified. The v2 classifier
-        checks tonal quality first, then frequency, bringing low-frequency down to 0.6% — consistent with
-        Hill's finding that these are relatively rare. RMNR (64.7%) is now the dominant category, followed by
-        trill (17.5%) and harmonic (13.8%). These proportions are stable from the first v2 pass (116 recordings)
-        to the doubled sample (232 recordings). No harsh syllables were detected — these are quiet, close-range
-        vocalisations that field recorders may not capture.</div>
+        <div class="mark">Reading this</div>
+        <div>RMNR (64.7%) is the dominant category, followed by trill (17.5%) and harmonic (13.8%).
+        Low-frequency syllables are rare (0.6%), consistent with Hill's finding. These proportions held
+        when the sample doubled from 116 to 232 recordings. No harsh syllables were detected; these are quiet,
+        close-range vocalisations that field recorders may not capture.</div>
       </div>
 
       <div class="section-label">Category Definitions</div>
@@ -714,16 +689,14 @@ tr:hover td{background:var(--surface-2)}
     <!-- BELLBIRD sub-panel -->
     <div class="voc-species-panel" id="voc-bellbird" style="display:none">
 
-      <!-- ============ FULL-CORPUS RECOMPUTE (Aug 2026) ============ -->
-      <div class="card" style="border-left:4px solid var(--bellbird);background:var(--card-alt,#faf8f3)">
-        <h3 style="color:var(--bellbird);margin-top:0">Full-Corpus Recompute — Korimako, 2,137 songs</h3>
+      <div class="card" style="border-left:4px solid var(--bellbird);background:var(--surface-2)">
+        <h3 style="color:var(--bellbird);margin-top:0">Korimako at full scale: 2,137 songs</h3>
         <p style="font-size:.9rem;color:var(--ink-soft)">
-          Everything below this card until the legacy sections is the <b>full-corpus recompute</b> (24 Aug 2026):
+          The figures below use the full Koe corpus:
           21,463 model-extracted syllables across 2,136 songs / 454 banded birds, segmented by a CNN
           (TweetyNet v2, F1 = 0.902 @ 50 ms on a 165-song held-out test, bird-disjoint split) and typed by a
           family classifier (0.893 test accuracy on held-out birds). Counts are <b>model-extracted</b>,
-          not human-labelled. The older tutorial-subset figures further down the page are kept for
-          comparison and marked as such.</p>
+          not human-labelled. An earlier, smaller hand-labelled analysis is folded away at the bottom of this panel.</p>
       </div>
 
       <div class="section-label">Sex from song — does it hold at scale?</div>
@@ -791,7 +764,7 @@ tr:hover td{background:var(--surface-2)}
       <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
         Restricted to birds with <b>≥4 songs</b>, because a bird with 1–2 songs can land anywhere on the
         axis by chance. The gold standard is ≥8 songs (the learning-curve threshold for a reliable
-        per-bird estimate) — and the honest headline is that the corpus is thin here: most
+        per-bird estimate), and the corpus is thin here: most
         intermediate/atypical birds have 1–2 songs, so few make the cut. CI = Wilson half-width on
         P(male); wide intervals mean trust the position less.</p></div>
       <div class="card">
@@ -804,7 +777,7 @@ tr:hover td{background:var(--surface-2)}
         A bird's syllable repertoire identifies which of the six study sites it came from at
         <b id="fc-router-headline">…</b> — real dialect structure, though not a substitute for geotags.</p></div>
 
-      <div class="section-label">Individual ID — which bird is singing? <span style="font-size:.7rem;color:var(--ink-faint)">(new: first validation)</span></div>
+      <div class="section-label">Individual ID — which bird is singing?</div>
       <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
         From a single song, the model names the correct bird <b id="fc-id-top1">…</b> of the time and places
         the correct bird in the top five <b id="fc-id-top5">…</b> of the time, across a 77-bird population
@@ -884,7 +857,7 @@ tr:hover td{background:var(--surface-2)}
             sang, where, or which sex — the opposite of the kākā archive case, where clusters tracked the
             recording channel (ARI 0.63). This is a single-protocol corpus (Koe), so that confound is
             largely absent by design.</p>
-            <p><b>Honest caveats.</b> (1) Family labels on the full corpus are stage-4 classifier
+            <p><b>Caveats.</b> (1) Family labels on the full corpus are stage-4 classifier
             outputs (Webb 2021 taxonomy, 0.893 held-out-bird accuracy) — only the 241 projected points are
             human-verified; the family toggle is therefore "classifier labels", not human labels.
             (2) Cluster granularity is density-scale-dependent: at a coarser HDBSCAN sensitivity
@@ -942,11 +915,10 @@ tr:hover td{background:var(--surface-2)}
         </details>
       </div>
 
-      <div class="section-label" style="margin-top:2.5rem;color:var(--ink-faint)">Earlier tutorial-subset analysis (kept for comparison)</div>
+      <div class="section-label" style="margin-top:2.5rem;color:var(--ink-faint)">Earlier analysis: hand-labelled subset</div>
 
-      <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
-        <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
-          ▸ Previous iteration — tutorial-subset figures (94 recordings, hand-labelled; a different pipeline)</summary>
+      <details class="fold" style="margin-bottom:1.5rem">
+        <summary>Hand-labelled tutorial subset and Xeno-Canto rule-based figures (an older, different pipeline)</summary>
         <div style="padding:0 1.2rem 1rem">
 
       <!-- ============ LEGACY TUTORIAL-SUBSET CONTENT ============ -->
@@ -980,9 +952,6 @@ tr:hover td{background:var(--surface-2)}
             <tr><td><b style="color:#8c4a2c">Harsh/Buzz</b></td><td class="num">0</td><td class="num">0.0%</td><td>Broadband noisy syllables (not detected)</td></tr>
           </tbody>
         </table>
-        <p style="font-size:.8rem;color:var(--ink-faint);margin:.6rem 0 0">Rows sum to 13,086. The Click count of
-        3,156 is identical to the recording count in the page header purely by coincidence &mdash; both were
-        verified independently on 5 August 2026; see the note under the header figures.</p>
       </div>
 
       <div class="note" style="margin-top:1.5rem">
@@ -1026,17 +995,9 @@ tr:hover td{background:var(--surface-2)}
           <b>241</b> ground-truth (manual clusters) · <b>416</b> high-confidence DTW ·
           <b>96</b> medium · <b>63</b> low (pending review).
 
-          <p style="margin:.8rem 0 0"><b>Correction (27 July 2026).</b> This panel previously read
-          &ldquo;manual cluster purity validated at 91% overall (Chortle 100%, Down 98%, Stutter 97%)&rdquo;.
-          <b>None of those three per-category numbers reproduce, and neither does the 91%.</b> Recomputed
-          directly from the deployed <code>bellbird_pca_data.json</code> over its 241 manually clustered points,
-          purity against the Koe/Webb family labels is <b>99.6% (240/241)</b>: Chortle 100% (24/24),
-          Down 100% (36/36), Stutter 100% (79/79), Flatsqueak 100% (25/25), Peaksqueak 100% (19/19),
-          Cough 100% (12/12), Cough&nbsp;+&nbsp;Click 100% (12/12), Alarmy 100% (9/9), Stepup 100% (7/7),
-          and Pipe 94.4% (17/18) — one Pipe point carries the family label Alarmy, and it is the only
-          disagreement. We are also downgrading the word &ldquo;validated&rdquo;: the manual clusters were drawn
-          with the family labels visible, so near-perfect purity is close to a tautology and carries almost no
-          information about whether the categories are real.</p>
+          <p style="margin:.8rem 0 0"><b>Manual cluster purity: 99.6% (240/241)</b> against the Koe/Webb family
+          labels, over the 241 manually clustered points. This number carries almost no information: the manual
+          clusters were drawn with the family labels visible, so near-perfect purity is close to a tautology.</p>
 
           <p style="margin:.8rem 0 0"><b>The figure that does carry information — seed-label agreement.</b>
           For the <b>575</b> clips the DTW template matcher labelled on its own, agreement between its assignment
@@ -1057,16 +1018,14 @@ tr:hover td{background:var(--surface-2)}
               <tr><td>Cough</td><td class="num">100%</td><td class="num">3</td></tr>
             </tbody>
           </table></div>
-          <p style="margin:0">In the pipeline's own words this is a <b>&ldquo;sanity, not accuracy&rdquo;</b>
-          check, and that hedge is correct: the template categories and the Koe/Webb families are different
-          schemes, so disagreement is not automatically error. But <b>Stepup agreeing on 7% of the 114 clips it
-          was assigned</b> is the single most useful number on this page, and it was being computed on every run
-          and never shown. It says the Stepup template is very likely matching something other than Stepup, and
-          that those 114 labels should not be relied on. Treat every category above as provisional in proportion
+          <p style="margin:0">The template categories and the Koe/Webb families are different schemes, so
+          disagreement is not automatically error. But <b>Stepup agrees on only 7% of the 114 clips it
+          was assigned</b>, so that template is very likely matching something other than Stepup, and
+          those 114 labels should not be relied on. Treat every category above as provisional in proportion
           to its agreement.</p>
           <p style="margin:.6rem 0 0;font-size:.92em">Method note: agreement counts
-          <em>Flatspeak</em>&nbsp;→&nbsp;<em>Flatsqueak</em> as a match (they are the same call type — see the
-          spelling correction) and <em>Cough&nbsp;+&nbsp;Click</em>&nbsp;→&nbsp;<em>Cough</em> (Cough&nbsp;+&nbsp;Click
+          <em>Flatspeak</em>&nbsp;→&nbsp;<em>Flatsqueak</em> as a match (the same call type, spelled two
+          ways) and <em>Cough&nbsp;+&nbsp;Click</em>&nbsp;→&nbsp;<em>Cough</em> (Cough&nbsp;+&nbsp;Click
           is a Cough sub-type). Compared as raw strings without those two equivalences the overall figure is
           <b>27.5% (158/575)</b>, which is what <code>dtw_classify.py</code> prints today.</p>
         </div>
@@ -1119,7 +1078,7 @@ tr:hover td{background:var(--surface-2)}
         The same syllable-composition view, split by sex within each site. Korimako are one of the
         rare songbirds where <b>both sexes sing complex song</b> — and Webb et al. (2021) found males and
         females share only <b>6–26% of syllable types</b> within a site. That sexual divergence shows up
-        here as clearly different category profiles: e.g. at Tawharanui females are 68% Stutter while males
+        here as clearly different category profiles: e.g. at Tāwharanui females are 68% Stutter while males
         spread across Stutter, Pipe and Alarmy. Use the toggle to compare.</p></div>
       <div class="card">
         <div style="display:flex;gap:.3rem;margin-bottom:1rem" id="sexsite-toggle">
@@ -1169,8 +1128,7 @@ tr:hover td{background:var(--surface-2)}
 
       <div class="section-label" style="margin-top:2rem">Non-binary &amp; sex-atypical individuals</div>
       <div class="prose" style="margin-bottom:1rem"><p style="font-size:.92rem">
-        Aggregating site-honest scores by <b>corrected individual ID</b> (colour-band combo or site-date-code —
-        the earlier catalogue-number IDs were wrong). A bird's position on the male↔female axis is a
+        Aggregating site-honest scores by <b>corrected individual ID</b> (colour-band combo or site-date-code). A bird's position on the male↔female axis is a
         <b>stable individual trait</b>, repeatability ICC = <b id="bbICC">0.67</b> across its own songs — so
         intermediacy is not song-to-song noise. Two groups of interest: <b>intermediate</b> birds (reliably
         mid-axis) and a <b>sex-atypical / "trans"</b> group (song squarely in the opposite sex category to
@@ -1187,13 +1145,13 @@ tr:hover td{background:var(--surface-2)}
         </div><!-- /details inner -->
       </details><!-- /previous iteration -->
 
-      <details style="margin-bottom:1.5rem;border:1px solid var(--rule);border-radius:6px;background:var(--surface-2)">
+      <details class="fold" style="margin-bottom:1.5rem">
         <summary style="cursor:pointer;padding:.9rem 1.2rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)">
           ▸ Supplementary — same figures computed only on birds the models never saw in training (test split: 107 birds for repertoire figures, 37 for the sex-atypical run)</summary>
         <div style="padding:0 1.2rem 1rem">
           <p style="font-size:.85rem;color:var(--ink-soft);margin:.8rem 0">
             Every figure in the recompute above, recomputed on only the test-split birds — individuals
-            held out of all model training. This is the honest-tier check: if a pattern is a memorisation
+            held out of all model training. If a pattern is a memorisation
             artefact it weakens or vanishes here. Repertoire figures: <b>107 birds</b>; sex-atypical run:
             <b>37 birds</b> (≥10-syllable subset). Per-site counts are thin (some sites &lt;10 birds), so treat
             small wobbles as noise, not signal.</p>
@@ -1211,34 +1169,21 @@ tr:hover td{background:var(--surface-2)}
     <!-- KĀKĀ sub-panel -->
     <div class="voc-species-panel" id="voc-kaka" style="display:none">
       <div class="prose" style="margin-bottom:1.5rem">
-        <p>Kākā are <b>parrots (Psittaciformes)</b>, not songbirds. They produce <b>calls</b>, not songs.
-        The term "syllable" is inappropriate for their vocalisations. The rule-based call-type
-        categories previously shown here (Van Horik, Bell &amp; Burns 2007) were
-        <b>withdrawn on 2026-09-03</b>: they failed validation against unsupervised clustering and
-        human-listened examples, and displaying them as if established was misleading. What this
-        section now shows is the <b>unsupervised acoustic space</b> — every call embedded by 52
-        acoustic features, with no assumed categories. Call-type labelling returns only when a
-        classifier has been trained and validated against human-verified examples.</p>
+        <p>Kākā are <b>parrots (Psittaciformes)</b>, not songbirds. They produce <b>calls</b>, not songs,
+        and the term "syllable" does not apply. This section shows the <b>unsupervised acoustic space</b>:
+        every call placed by 52 acoustic features, with no assumed categories. We show no call-type
+        labels, because the rule-based ones we tried (after Van Horik, Bell &amp; Burns 2007) failed
+        validation. Labels return only when a classifier has been trained and validated against
+        human-verified examples.</p>
       </div>
-
-      <div class="card">
-        <h3>Data Sources</h3>
-        <div id="kaka-source-bars"></div>
-        <div style="margin-top:1rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-          1,790 clustered Xeno-Canto calls · 106 staged Macaulay units · sources &amp; methods in the foldout below
-        </div>
-      </div>
-
-      
 
       <div class="note" style="margin-top:1.5rem">
-        <div class="mark">Why categories were withdrawn</div>
-        <div>Snicker / bark / gurgle were the output of a threshold-rule classifier, never verified
+        <div class="mark">Why no call types</div>
+        <div>Snicker / bark / gurgle came from a threshold-rule classifier that was never checked
         against kākā calls by a human listener at scale. When we clustered the same calls
         unsupervised, the clusters tracked <b>who recorded the call</b> (recordist ARI 0.63) far more
-        than any call-type structure (ARI 0.02) — and listening to "canonical" examples per category
-        showed they mixed unrelated call shapes. A category system that fails both checks should not
-        be displayed as established knowledge, so it is gone. For comparison, the closely
+        than any call-type structure (ARI 0.02), and listening to the "canonical" examples per category
+        showed they mixed unrelated call shapes. For comparison, the closely
         related kea (<i>Nestor notabilis</i>) has 7 documented call types including the
         famous "warble" play call (<a href="https://doi.org/10.1093/czoolo/58.5.727">Schwing et al. 2012</a>).</div>
       </div>
@@ -1249,20 +1194,11 @@ tr:hover td{background:var(--surface-2)}
           <canvas id="kakaPerRecChart"></canvas>
         </div>
         <div style="margin-top:.8rem;font-size:.84rem;color:var(--ink-soft)">
-          Total calls per recording — a source-of-audio fact, not a call-type claim. It remains valid
-          regardless of how call types are categorised.
+          Total calls per recording. This counts audio and makes no call-type claim.
         </div>
       </div>
 
-      <div class="section-label">Representative Samples</div>
-      <div id="voc-samples-kaka">
-        <div class="card" style="padding:1rem;font-size:.88rem;color:var(--ink-soft)">
-          Sample cards by rule category (snicker / bark / gurgle) were removed with the categories
-          themselves — the labels were unreliable, so cards organised by them were misleading.
-          To see and hear individual calls, use the <b>Unsupervised Call-Space Explorer</b> below:
-          every one of the 1,790 calls is clickable there, with its spectrogram and audio.
-        </div>
-      </div>
+      <div id="voc-samples-kaka" hidden></div>
 
       <!-- UNSUPERVISED CLUSTER EXPLORER -->
       <div class="section-label" style="margin-top:2.5rem">Unsupervised Call-Space Explorer</div>
@@ -1272,7 +1208,7 @@ tr:hover td{background:var(--surface-2)}
                 <div style="margin-top:.6rem;font-size:.84rem;color:var(--ink-soft)">
           Two sources. <b>Xeno-Canto archive</b> — 47 recordings, 1,790 annotated call units,
           19 recordists, 8 regions, 2008–2024: every unsupervised result on this page derives from
-          these recordings. <b>Macaulay Library (staged, 2026-09-03)</b> — 106 units from 14
+          these recordings. <b>Macaulay Library (staged)</b> — 106 units from 14
           recordings (1969–2016) that passed four quality gates; they are projected into the
           explorer below but excluded from all cluster and dialect claims (label class:
           <i>vocalisation, species unconfirmed</i>). (The Campbell ARU set — 53 calls, Kāpiti +
@@ -1293,7 +1229,7 @@ tr:hover td{background:var(--surface-2)}
           (z-scored per dimension), then embedded in 2D by <b>UMAP</b> (n_neighbours=30, min_dist=0.3,
           Euclidean). Cluster colouring comes from <b>HDBSCAN run on a 3D t-SNE embedding</b> of the same
           standardised features (min_samples=8, seed 42) — 27 clusters, 687 calls left unclustered.</p>
-          <p><b>The staged Macaulay subset (2026-09-03).</b> 201 candidate calls were detected in 17
+          <p><b>The staged Macaulay subset.</b> 201 candidate calls were detected in 17
           Macaulay Library recordings (1969–2016) by the same energy-based segmenter and featurised
           identically. Each candidate then passed four quality gates: not in the recording excluded
           wholesale pending a listen (ML 94335961); inside the Xeno-Canto 15-nearest-neighbour
@@ -1304,8 +1240,7 @@ tr:hover td{background:var(--surface-2)}
           unconfirmed"</b>: detected as vocalisations, but species identity is not ear-verifiable
           from archive audio, so <b>no call-type, cluster or dialect claims are made for them</b>
           (grey dots in the explorer; the full 201-row gate table ships alongside this page as
-          <span style="font-family:var(--mono)">kaka_macaulay_staged.csv</span>). One honest
-          limitation: the channel-removed view is not available for these units — the per-recording
+          <span style="font-family:var(--mono)">kaka_macaulay_staged.csv</span>). One limitation: the channel-removed view is not available for these units — the per-recording
           normalisation recipe was not recoverable bit-exactly, so only the raw-features view is
           shown rather than a re-derived approximation. Channel robustness stays an open question
           until a channel-robust embedder is built and tested.</p>
@@ -1315,15 +1250,15 @@ tr:hover td{background:var(--surface-2)}
           z-normalises features within each recording (cepstral mean/variance subtraction), which
           strips the recording-chain signature — and with it most discrete structure: kākā call
           variation is close to a continuum in this feature space.</p>
-          <p><b>Assumptions, honestly listed.</b> (1) That 52 summary statistics capture what matters
+          <p><b>Assumptions.</b> (1) That 52 summary statistics capture what matters
           about a call — temporal fine-structure and sequence context are discarded. (2) That units are
           correctly segmented single calls (mostly true; ~20 units are longer series). (3) That
           Euclidean distance in standardised feature space corresponds to perceptual similarity —
           untested. (4) UMAP/t-SNE preserve local neighbourhoods, not global geometry; distances
           between far-apart points should not be over-read. (5) Clusters are
           <b>not</b> call types: the same procedure run on raw features yields clusters that track
-          recordists (ARI 0.63 vs 0.02 for call-type agreement), which is why rule-based categories
-          were withdrawn from this dashboard.</p>
+          recordists (ARI 0.63 vs 0.02 for call-type agreement), which is why this page shows no
+          call-type labels.</p>
         </div>
       </details>
       <div class="prose" style="margin-bottom:1.2rem">
@@ -1332,7 +1267,7 @@ tr:hover td{background:var(--surface-2)}
         features used elsewhere on this dashboard. <b>Click any dot</b> to see its spectrogram and
         play the call. Two views:</p>
         <ul>
-          <li><b>Raw features</b> — the honest archive view. Colour by <i>unsupervised cluster</i>
+          <li><b>Raw features</b> — the archive as recorded. Colour by <i>unsupervised cluster</i>
           (HDBSCAN) and the 27 clusters look crisp; switch the colour to <i>recordist</i> and the
           same map turns into a fingerprint of <em>who recorded it</em> — the clusters track the
           recording channel more than the call type (ARI 0.63 vs 0.02). Try it: the picture
@@ -1342,7 +1277,7 @@ tr:hover td{background:var(--surface-2)}
           continuum: kākā call variation grades smoothly rather than sorting into discrete
           acoustic types.</li>
         </ul>
-        <p style="font-size:.88rem;color:var(--ink-faint)">One aggregate lesson, stated plainly: in a
+        <p style="font-size:.88rem;color:var(--ink-faint)">The lesson: in a
         heterogeneous volunteer archive, unit-level clusters are recording-channel clusters. A
         dialect claim needs the composition level and the confound battery — see the
         <a href="cluster.html">cluster viewer</a> for the annotate-tool view of the same corpus.</p>
@@ -1523,11 +1458,9 @@ tr:hover td{background:var(--surface-2)}
       </div>
 
       <div class="note" style="margin-top:1rem;font-size:.84rem">
-        <div class="mark">Data & Code</div>
+        <div class="mark">Data</div>
         <div>
-          Data: Fraser Campbell's <code>vocalisations_master.xlsx</code> (55 annotations, 53 with valid features).
-          Code: <code>/opt/data/semantic_acoustic_analysis.py</code>.
-          Results: <code>/opt/data/semantic_acoustic_analysis/results.json</code>.
+          Fraser Campbell's kākā annotations (55 annotations, 53 with valid features).
           Reference: <a href="https://doi.org/10.1126/science.ads8482">Elie et al. (2025), Science</a> — semantic categorisation of calls in zebra finches.
         </div>
       </div>
@@ -1630,10 +1563,10 @@ tr:hover td{background:var(--surface-2)}
   <div class="panel" id="panel-map">
     <div class="section-label">Geographic Analysis — Regional Vocal Variation</div>
     <div class="lede" style="font-size:1.25rem;margin-bottom:1.5rem">
-      <span class="drop">D</span>o birds from different regions sing differently? We mapped syllable repertoires across 
-      Aotearoa for all three species. The results suggest genuine regional variation — Auckland tūī 
-      are the most vocally diverse, Southland birds the most monotone, and kākā from different forests 
-      show strikingly different vocal profiles.
+      <span class="drop">D</span>o birds from different regions sing differently? We mapped syllable repertoires across
+      Aotearoa for tūī and korimako. The results suggest regional variation: Auckland tūī
+      are the most vocally diverse and Southland birds the most monotone. For kākā the question
+      is still open.
     </div>
 
     <p style="color:var(--ink-soft);margin-bottom:.8rem;font-size:.95rem">
@@ -1664,7 +1597,7 @@ tr:hover td{background:var(--surface-2)}
     <div class="geo-species-section" data-geo-species="Tui">
     <div class="section-label" style="margin-top:2.5rem">Tūī — Regional Syllable Repertoires</div>
     <p style="color:var(--ink-soft);margin-bottom:1rem;font-size:.92rem">
-      Syllable type proportions across regions, using v2 species-specific classifiers. 
+      Syllable type proportions across regions, using the species-specific classifiers. 
       Tūī sorted by vocal diversity (Shannon entropy).
     </p>
     
@@ -1674,7 +1607,7 @@ tr:hover td{background:var(--surface-2)}
         <canvas id="tuiRegionalChart"></canvas>
       </div>
       <div style="font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);margin-top:.5rem">
-        Stacked bars: syllable type proportions per region · 113 geotagged tūī recordings
+        Stacked bars: syllable type proportions per region · 113 geotagged tūī recordings · computed before the sample doubled to 232; refresh pending
       </div>
     </div>
 
@@ -1701,16 +1634,14 @@ tr:hover td{background:var(--surface-2)}
     </div>
     </div><!-- /geo-species Tui -->
 
-    <!-- KĀKĀ GEOGRAPHIC (rule categories withdrawn 2026-09-03: regional call-type profiles were artefacts of the rule classifier + recordist nesting) -->
+    <!-- KĀKĀ GEOGRAPHIC -->
     <div class="geo-species-section" data-geo-species="New Zealand Kaka">
     <div class="section-label" style="margin-top:2.5rem">Kākā — Geographic Coverage</div>
     <div class="lede" style="font-size:1.15rem;margin-bottom:1rem">
-      The earlier "forest dialects" comparison on this page was removed: the regional call-type
-      profiles it showed were built from rule-classifier categories that failed validation, and the
-      confound battery showed recordist and region were inseparable in this corpus (repertoire-distance
-      ratios: region 1.46 ≈ recordist 1.43 ≈ year 1.42). What we can say honestly: kākā calls from
-      8 regions across both islands exist in the corpus, and whether geographic structure exists
-      is an open question that needs human-verified call types first.
+      We cannot yet say whether kākā calls differ by region. In this corpus recordist and region are
+      inseparable (repertoire-distance ratios: region 1.46 ≈ recordist 1.43 ≈ year 1.42), and there
+      are no validated call types to compare. Kākā calls from 8 regions across both islands are in
+      the corpus; whether geographic structure exists needs human-verified call types first.
     </div>
 
     <div class="card">
@@ -1719,7 +1650,7 @@ tr:hover td{background:var(--surface-2)}
         47 recordings · 1,790 call units · 8 regions (Waikato 22, Stewart Island 11,
         Wellington/Manawatū 5, Nelson/Tasman 3, Auckland 2, Northland 2, Kāpiti Island 1,
         other/unresolved 1) · 2008–2024 · 19 recordists. Explore per-call geography in the
-        Vocalisation Analysis tab's unsupervised explorer.
+        Vocalisations tab's unsupervised explorer.
       </div>
     </div>
     </div><!-- /geo-species Kaka -->
@@ -1783,11 +1714,11 @@ tr:hover td{background:var(--surface-2)}
   <!-- ==================== METHODOLOGY ==================== -->
   <div class="panel" id="panel-methods">
     <div class="section-label">Methodology</div>
-    
+
     <div class="methodology">
       <h3>How We Did This</h3>
-      
-      <h4>Data Collection</h4>
+
+      <h4>Data</h4>
       <p>We queried the <b>Xeno-Canto API v3</b> for all recordings geotagged to New Zealand, yielding 3,096 recordings across 177 species 
       (including soundscapes and unidentified). After filtering, the clean dataset contains 2,244 identified bird recordings across 175 species.</p>
       <ul>
@@ -1795,8 +1726,15 @@ tr:hover td{background:var(--surface-2)}
         <li>Recording types: 1,049 songs, 1,178 calls, 869 other</li>
         <li>Date range spans several decades of field recording</li>
       </ul>
+      <p>Four further datasets, each used for one species or one check:</p>
+      <ul>
+        <li><b>Koe korimako corpus</b> (<a href="https://doi.org/10.1111/2041-210X.13336">Fukuzawa et al. 2020</a>): hand-annotated songs from banded birds. Trains and tests the korimako models.</li>
+        <li><b>Donald toutouwai dataset</b> (Harry Donald, Shaw Lab, VUW): 28 named birds, 11,879 annotated phrase selections.</li>
+        <li><b>Campbell kākā reference set</b> (Fraser Campbell, Shaw Lab, VUW): 53 human-verified calls from Kāpiti and Zealandia.</li>
+        <li><b>Macaulay Library</b>: korimako recordings used to try the models on unlabelled field audio; kākā units staged into the explorer but excluded from all claims.</li>
+      </ul>
 
-      <h4>Syllable Analysis Pipeline</h4>
+      <h4>Tūī: rule-based syllable pipeline</h4>
       <p>Replicating <b>Hill &amp; Ji (2014)</b> as closely as possible given the different recording conditions:</p>
       <ol>
         <li><b>Audio preprocessing:</b> Resampled to 44.1kHz mono (matching Hill's Marantz PMD620 recorder)</li>
@@ -1815,60 +1753,269 @@ tr:hover td{background:var(--surface-2)}
         </li>
       </ol>
 
-      <h4>Known Limitations</h4>
+      <h4>Tūī: known limitations</h4>
       <ul>
         <li><b>Recording quality varies:</b> XC recordings range from professional to phone-quality; Hill used a consistent Marantz PMD620 + Sennheiser ME67 setup</li>
         <li><b>No "harsh" or "other" categories:</b> Hill's manual classification included these; our rule-based system forces syllables into the five automated types</li>
         <li><b>Threshold sensitivity:</b> The 2kHz low-frequency cutoff may capture environmental noise and non-vocal sounds</li>
-        <li><b>Single-site vs multi-site:</b> Hill's results come from one population (Tawharanui); ours span the country, so inter-population variation is confounded with methodological differences</li>
+        <li><b>Single-site vs multi-site:</b> Hill's results come from one population (Tāwharanui); ours span the country, so inter-population variation is confounded with methodological differences</li>
       </ul>
 
-      <h4>Deep Learning: CNN Segmentation</h4>
+      <h4>Korimako: learned pipeline</h4>
+      <ol>
+        <li><b>Segmentation:</b> TweetyNet v2, a convolutional network that finds syllable boundaries in the spectrogram (architecture family from <a href="https://doi.org/10.1038/s41592-022-01608-2">Cohen et al. 2022</a>). <b>F1 = 0.902</b> at 50 ms on a 165-song held-out test split in which no bird appears in both training and test.</li>
+        <li><b>Syllable typing:</b> a family classifier trained on the Koe hand-labelled corpus, <b>0.893 test accuracy</b> across 24 families plus UNKNOWN.</li>
+        <li><b>Sex from repertoire:</b> 5-fold cross-validated, <b>0.940 CV accuracy</b> on 454 birds (≥10-syllable subset), <b>0.892</b> on the 107 birds held out of all training.</li>
+        <li><b>Site / dialect from repertoire:</b> repertoire composition identifies home site.</li>
+        <li><b>Individual identification:</b> closed-set, 77 birds, top-1 55% / top-5 80%. Reliable per-bird estimates need about 6–8 songs, and the corpus is thin there (median 2 songs per bird).</li>
+      </ol>
+      <p>Full-corpus figures are computed on 1,065 birds / 21,463 syllables, and separately on the 107-bird
+      test split never seen in training. Both are on the Korimako panel with per-figure n.</p>
 
-      <div class="note" style="margin:1rem 0;border-left-color:#5f7a3a">
-        <div class="mark">Current pipeline (24 August 2026) — read this one first</div>
-        <div>
-        <p style="margin:0 0 .7rem">Everything below this box is the record of how we got here, kept
-        unedited per the kaupapa of this project. But it is now <b>history, not the live pipeline</b>. If you
-        read one section on this page, read this one — it names what actually generated tonight's korimako
-        figures and manifold.</p>
+      <h4>Kākā: unsupervised call space</h4>
+      <p>Each call is summarised by 52 acoustic features and embedded with UMAP; clusters come from HDBSCAN.
+      No call types are assigned. The full recipe and its assumptions are in the methods fold on the Kākā panel.</p>
 
-        <p style="margin:0 0 .7rem"><b>The current korimako pipeline, end to end:</b></p>
-        <ol style="margin:0 0 .7rem">
-          <li><b>Segmentation:</b> TweetyNet v2 (CNN), <b>F1 = 0.902</b> on a held-out test split — this
-          supersedes the 0.8577 result below, which was measured on a split with bird-level leakage between
-          train/val/test (see the 5 August correction). The new number is not directly comparable to the old
-          one; treat 0.902 as the current best estimate, not confirmation the old number was "wrong by
-          exactly this much."</li>
-          <li><b>Syllable typing:</b> a stage-4 family classifier trained on the Koe hand-labelled corpus
-          (Fukuzawa et al. 2020), <b>0.893 test accuracy</b> across 24 families plus UNKNOWN — this replaces
-          the rule-based 5-category Hill &amp; Ji scheme for korimako specifically (that scheme was built for
-          tūī and is retained for tūī, see below).</li>
-          <li><b>Sex from repertoire:</b> 5-fold cross-validated, <b>0.940 CV accuracy</b> on 454 birds
-          (≥10-syllable subset), <b>0.892</b> on the 107 birds held out of all training.</li>
-          <li><b>Site / dialect from repertoire:</b> repertoire composition identifies home site.</li>
-          <li><b>Individual identification:</b> closed-set, 77 birds, top-1 55% / top-5 80%; reliable per-bird
-          estimates need ≈6–8 songs, and the corpus is thin there (median 2 songs/bird) — stated plainly on
-          the korimako panel rather than hidden.</li>
-        </ol>
+      <h4>Does it work on new field recordings?</h4>
+      <p>The korimako numbers above all come from the Koe corpus, recorded under one protocol and annotated by
+      its original researchers. To see what happens on arbitrary field audio, we ran the segmenter and the family
+      classifier, with no retraining, on Macaulay Library korimako recordings they had never seen.</p>
+      <ul>
+        <li><b>It runs, and the output is plausible.</b> On a clean 25 s recording (Nelson Lakes NP, Feb 2023) it found 48 syllables across 13 families with sensible boundaries. There is no ground truth for that recording, so this shows the pipeline runs end to end. It does not show the output is correct.</li>
+        <li><b>Confidence falls with recording quality.</b> Across 607 usable recordings, the mean fraction of confident frames (p ≥ 0.6) rises 0.089 → 0.151 → 0.188 from the low to medium to high signal-to-noise tertile (Spearman r = 0.508, p &lt; 0.0001).</li>
+        <li><b>A quality floor helps but does not fix it.</b> Near-miss frames (probability 0.3–0.6) show no strong quality trend, so some real vocalisation is missed even in clean recordings.</li>
+        <li><b>The worked example</b> (ML 364073421, Lady Alice Island, Northland, January 2020; rated 4.67/5 by 6 independent listeners) was chosen by Macaulay community rating, not by an acoustic score:
+        <a href="full-corpus/model-extrapolation/macaulay_364073421_verified_annotated.png">annotated spectrogram</a> and
+        <a href="full-corpus/model-extrapolation/macaulay_364073421_full.wav">source audio</a>.</li>
+      </ul>
 
-        <p style="margin:0 0 .7rem">The tūī analysis below (rule-based Hill &amp; Ji categories, CNN
-        segmentation only, no typing model) is <b>not superseded</b> — it is a separate species with its own
-        pipeline, which is why the acoustic manifold now shows a korimako example (TN v2 + stage-4) front and
-        centre and keeps the tūī recordings as a labelled "legacy rule-based" option in the dropdown, not
-        because the tūī work is wrong, but because it is a different, older method applied to a different
-        bird. Kākā uses a third, call-based approach (analysed unsupervised; its rule-based categories were withdrawn
-        after failed validation) that has no sequence
-        grammar and is out of scope for the sequence-based methods below.</p>
-
-        <p style="margin:0">Full-corpus figures (repertoire, sex, site, atypical individuals) recompute on
-        1,065 birds / 21,463 syllables for the main tier, and separately on the 107-bird test split never
-        seen in training, for the honest-tier check. Both are on the live korimako panel with per-figure
-        n stated.</p>
+      <h4>Sample Size Adequacy — Entropy Rarefaction</h4>
+      <p>To verify our sample sizes are sufficient, we computed <b>Shannon entropy rarefaction curves</b> — 
+      subsampling recordings at each N (100 iterations) and measuring whether the entropy estimate stabilises. 
+      A plateau means adding more recordings would not substantially change the proportional distribution of vocalisation types.</p>
+      <div class="card" style="margin:1rem 0">
+        <h3>Entropy vs Recording Count</h3>
+        <div class="chart-wrap" style="height:320px">
+          <canvas id="rarefactionChart"></canvas>
+        </div>
+        <div style="font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);margin-top:.5rem">
+          Shaded bands: ±1 SD from 100 random subsamples at each N · All three species plateau well before their full sample size
         </div>
       </div>
+      <p>All three species reach stable entropy by ~15–20 recordings. Current sample sizes (tūī 232, korimako 94,
+      kākā 47) are well past that. This supports the <em>proportional distribution</em> of vocalisation types,
+      though not the detection of rare types. <b>Note:</b> the chart above was computed on the earlier, smaller
+      samples (116 / 40 / 25) and has not been rebuilt.</p>
 
-      <h4>Model Extrapolation — running trained models on unannotated field recordings</h4>
+      <p><b>Inclusion threshold.</b> On this basis we set a <b>minimum of 20 A-quality recordings</b> as the criterion for
+      reporting a species' proportional repertoire. This is the point by which all three species' entropy curves have flattened
+      to within ±1 SD of their full-sample value, so a species meeting it can be characterised without the estimate being
+      dominated by sampling noise. All three focal species clear the bar. The threshold governs
+      only the <em>proportional-distribution</em> claims; detecting <em>rare</em> vocalisation types (present at &lt;5% prevalence)
+      requires substantially larger samples and is treated as out of scope here.</p>
+
+      <h4>Open questions</h4>
+      <ul>
+        <li><b>Annotation ceiling.</b> Every segmentation score measures agreement with one person's annotations. How closely two annotators agree with each other was unmeasured as of August 2026, so we cannot say how much headroom is left.</li>
+        <li><b>Toutouwai segmentation.</b> The CNN has not been validly evaluated on toutouwai. On the one weak test that exists (13 files, July 2026) it scored F1 0.262, behind both classical baselines (FIR 0.306, spectral flux 0.329).</li>
+        <li><b>Data augmentation.</b> Two runs disagreed on whether it helps and neither was clean (as of August 2026).</li>
+        <li><b>Noise in the Koe corpus.</b> We have not checked whether noisy Koe recordings affect the full-corpus figures.</li>
+        <li><b>Kākā call types and dialects.</b> Both wait on a classifier validated against human-verified calls.</li>
+      </ul>
+      <p>Earlier results, corrections and withdrawn claims are in the <a href="#process" data-goto="process" style="font-family:inherit;font-size:inherit">Process</a> tab.</p>
+
+      <h4>Reproducibility</h4>
+      <p>The full analysis pipeline is available at <a href="https://github.com/cyborg-garden/open-science">github.com/cyborg-garden/open-science</a>. 
+      The Python venv uses librosa for audio analysis and scikit-learn for clustering. All Xeno-Canto recordings are publicly available via their API.</p>
+
+      <h4>Who made this</h4>
+      <p>This dashboard was compiled by <a href="https://github.com/cyborg-garden/Matilde">Matilde</a>, an agentic open-science research assistant.</p>
+    </div>
+  </div>
+
+  <!-- ==================== LITERATURE ==================== -->
+  <div class="panel" id="panel-literature">
+    <div class="section-label">Literature Review</div>
+    
+    <div class="prose" style="margin-bottom:2rem">
+      <p>The tūī vocal repertoire has been studied primarily by S.D. Hill and colleagues at Massey University. 
+      Their work at Tāwharanui Regional Park established the foundational syllable categorisation scheme we replicate here. 
+      All citations below have been verified against Crossref.</p>
+    </div>
+
+    <div class="note" style="margin:0 0 2rem;border-left-color:#5f7a3a">
+      <div class="mark">Which framework, per species</div>
+      <div>The <b>tūī</b> figures use Hill &amp; Ji's rule-based syllable categories. The <b>korimako</b>
+      figures use a classifier trained on the Fukuzawa et al. (2020) Koe hand-labelled corpus (24 families,
+      0.893 test accuracy). <b>Kākā</b> calls carry no automated labels; Van Horik (2007) and Vaishnav (2026)
+      are cited for the ethology and for our annotation tools.</div>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Syllable Categorisation <span class="lit-tag tag-match">Replicated</span></h4>
+      <p>Hill &amp; Ji (2014) established six syllable categories for tūī song at Tāwharanui: low-frequency, high-frequency, harmonic, 
+      trill, RMNR, and harsh/other. Harmonic syllables were the most common (~15%). Our automated pipeline captures five of six categories 
+      but finds different proportions: RMNR dominates at 64.7% and harmonic is 13.8%.</p>
+      <a class="lit-ref" href="https://doi.org/10.63172/301002sqblid">Hill, S.D. &amp; Ji, W. (2014). Notornis, 61, 54. DOI: 10.63172/301002sqblid ✓</a>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Song Complexity &amp; Aggression <span class="lit-tag tag-match">Concordant</span></h4>
+      <p>Hill et al. (2017) showed that more complex tūī songs elicit stronger aggressive responses from territorial males — 
+      "fighting talk." This motivates the repertoire analysis: if song complexity varies geographically, 
+      it may signal different competitive environments.</p>
+      <a class="lit-ref" href="https://doi.org/10.1111/ibi.12542">Hill, S.D. et al. (2017). Ibis, 160(2), 257-268. DOI: 10.1111/ibi.12542 ✓</a>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Automated Recognition Review <span class="lit-tag tag-match">Methodological basis</span></h4>
+      <p>Priyadarshani et al. (2018) reviewed automated birdsong recognition in complex environments — the methodological 
+      landscape our pipeline operates in. Key challenge: noise robustness. XC recordings have variable SNR, unlike controlled setups.</p>
+      <a class="lit-ref" href="https://doi.org/10.1111/jav.01447">Priyadarshani, N. et al. (2018). J. Avian Biology, 49(5). DOI: 10.1111/jav.01447 ✓</a>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Microgeographic Song Variation</h4>
+      <p>Hill et al. (2015) documented microgeographic variation in tūī song within the Tāwharanui population. Our dataset — 
+      spanning the entire country — enables a macro-scale version of this analysis, comparing repertoires across Auckland, Wellington, 
+      Southland, and beyond.</p>
+      <span class="lit-ref">Hill, S.D. et al. (2015). NZ J. Ecol., 39(2), 261-269 ✓</span>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Chatham Island vs Mainland</h4>
+      <p>Hill et al. (2013) compared tūī vocalisations between Chatham Island and mainland populations, finding differences 
+      attributable to isolation and smaller population size. Xeno-Canto data includes offshore recordings that could extend this work.</p>
+      <span class="lit-ref">Hill, S.D. et al. (2013). Notornis, 60, 222-229 ✓</span>
+    </div>
+
+    <div class="section-label" style="margin-top:2.5rem">Korimako (Bellbird) — Anthornis melanura</div>
+    <div class="prose" style="margin-bottom:1.5rem">
+      <p>Korimako syllable classification follows the Massey University group (Brunton, Roper, Webb, Fukuzawa).
+      Their framework treats <b>syllable types</b>, not song types, as the functional units of vocal culture.
+      Citations verified against Crossref.</p>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Sexually Distinct Song Cultures <span class="lit-tag tag-match">Framework</span></h4>
+      <p>Webb et al. (2021) classified 20,700 syllables (702 types) across a six-island korimako metapopulation,
+      showing males and females have distinct song cultures sharing only 6–26% of syllable types within a site.
+      This is the classification framework and the sex-difference result our song-structure analysis builds on.</p>
+      <a class="lit-ref" href="https://doi.org/10.3389/fevo.2021.755633">Webb, W.H. et al. (2021). Frontiers in Ecology and Evolution, 9, 755633. DOI: 10.3389/fevo.2021.755633 ✓</a>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Developmental Song Production <span class="lit-tag tag-match">Syllable boundary</span></h4>
+      <p>Roper et al. (2018) studied developmental changes in song production in free-living male and female
+      bellbirds. We adopt their &lt;15ms silence syllable boundary — shorter than the tūī boundary — reflecting
+      korimako-specific vocal structure.</p>
+      <a class="lit-ref" href="https://doi.org/10.1016/j.anbehav.2018.04.003">Roper, M.M. et al. (2018). Animal Behaviour, 140, 57-70. DOI: 10.1016/j.anbehav.2018.04.003 ✓</a>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Koe Classification Software <span class="lit-tag tag-match">Tool + dataset + current korimako typing scheme</span></h4>
+      <p>Fukuzawa et al. (2020) introduced Koe, web-based software for classifying acoustic units, demonstrated
+      on 21,500 korimako syllables. Our data-driven song-structure analysis uses the Koe tutorial dataset
+      (2,278 songs, 21,427 hand-labelled segments) as its ground-truth source. The 24-family label scheme
+      from this dataset is what our family classifier predicts for every korimako syllable (0.893 test accuracy).</p>
+      <a class="lit-ref" href="https://doi.org/10.1111/2041-210X.13336">Fukuzawa, Y. et al. (2020). Methods in Ecology and Evolution, 11(3), 431-441. DOI: 10.1111/2041-210X.13336 ✓</a>
+    </div>
+
+    <div class="section-label" style="margin-top:2.5rem">Kākā — Nestor meridionalis</div>
+    <div class="prose" style="margin-bottom:1.5rem">
+      <p>Kākā are parrots, not songbirds — they produce calls, not songs. Two frameworks are relevant.</p>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Kākā Vocal Ethology <span class="lit-tag tag-match">Call types</span></h4>
+      <p>Van Horik, Bell &amp; Burns (2007) identified five distinctive kākā call types through 500 hours of field
+      observation and spectrographic analysis (snicker, bark, gurgle, shraak, shraak-woo). We cite it for the
+      ethology. A rule classifier we built on this scheme failed validation, so no call on this page is
+      labelled with these types.</p>
+      <a class="lit-ref" href="https://doi.org/10.1080/03014220709510093">Van Horik, J., Bell, B. &amp; Burns, K.C. (2007). New Zealand Journal of Zoology, 34(4), 337-345. DOI: 10.1080/03014220709510093 ✓</a>
+    </div>
+
+    <div class="lit-card match">
+      <h4>Partial Nocturnality &amp; Call Repertoire <span class="lit-tag tag-match">Current scheme</span></h4>
+      <p>Vaishnav, Shaw &amp; Burns (2026) describe kākā vocal behaviour including a five-call-type scheme
+      (whistle, screech, long call, croak, warble). Our annotation and template-matching tools use this newer
+      scheme, with audio templates provided by the lead author (Burns lab, VUW).</p>
+      <a class="lit-ref" href="https://doi.org/10.5751/JFO-00813-970208">Vaishnav, T., Shaw, R. &amp; Burns, K. (2026). Journal of Field Ornithology, 97(2), art8. DOI: 10.5751/JFO-00813-970208 ✓</a>
+    </div>
+
+    <div class="section-label" style="margin-top:2.5rem">What's Next</div>
+    <div class="prose">
+      <p><b>Temporal analysis:</b> How has the XC archive's tūī song changed over decades? Do more recent recordings capture different repertoires? Seasonal and temporal patterns will be explored in a future species-specific analysis.</p>
+      <p><b>Tūī template matching:</b> Apply the PCA → manual-cluster → DTW-template approach used on the
+      korimako hand-labelled subset to tūī, and extend to additional species (tīeke, kōkako) and datasets (AviaNZ kiwi).</p>
+      <p><b>Kākā call types:</b> Train a classifier against human-verified calls before any labels return.</p>
+      <p>The <a href="cluster.html?species=tui">PCA clustering tool</a> and <a href="annotate.html">annotation tool</a>
+      are open to explore.</p>
+    </div>
+  </div>
+
+  <!-- ==================== PROCESS ==================== -->
+  <div class="panel" id="panel-process">
+    <div class="section-label">Process &amp; corrections</div>
+    <div class="prose" style="margin-bottom:2rem">
+      <p>This project publishes its mistakes. The other tabs show where things stand now. This tab is the
+      record of how we got there: each claim we corrected or withdrew, newest first, with the note as it
+      was first published.</p>
+      <p style="font-size:.9rem">The original notes were written in place on the page, so "above" and "below"
+      inside them refer to an earlier layout. Nothing in them has been reworded.</p>
+    </div>
+
+    <article class="log-entry">
+      <div class="when">3 September 2026</div>
+      <h3>Kākā call-type labels withdrawn</h3>
+      <p>The dashboard used to sort kākā calls into snicker, bark and gurgle with a rule-based classifier built on Van Horik, Bell &amp; Burns (2007). Those labels were never checked by a human listener at scale. Unsupervised clusters of the same calls tracked who made the recording (ARI 0.63) far more than call type (ARI 0.02), and the "canonical" examples for each category mixed unrelated call shapes.</p>
+      <p>We removed the category charts, the sample cards sorted by category, and a regional "forest dialects" comparison built on them. The same day, 106 Macaulay Library units were staged into the explorer, excluded from all claims.</p>
+      <details class="fold">
+        <summary>Original notes</summary>
+        <div class="fold-body">
+        <p>Kākā are <b>parrots (Psittaciformes)</b>, not songbirds. They produce <b>calls</b>, not songs.
+        The term "syllable" is inappropriate for their vocalisations. The rule-based call-type
+        categories previously shown here (Van Horik, Bell &amp; Burns 2007) were
+        <b>withdrawn on 2026-09-03</b>: they failed validation against unsupervised clustering and
+        human-listened examples, and displaying them as if established was misleading. What this
+        section now shows is the <b>unsupervised acoustic space</b> — every call embedded by 52
+        acoustic features, with no assumed categories. Call-type labelling returns only when a
+        classifier has been trained and validated against human-verified examples.</p>
+      <div class="note" style="margin-top:1.5rem">
+        <div class="mark">Why categories were withdrawn</div>
+        <div>Snicker / bark / gurgle were the output of a threshold-rule classifier, never verified
+        against kākā calls by a human listener at scale. When we clustered the same calls
+        unsupervised, the clusters tracked <b>who recorded the call</b> (recordist ARI 0.63) far more
+        than any call-type structure (ARI 0.02) — and listening to "canonical" examples per category
+        showed they mixed unrelated call shapes. A category system that fails both checks should not
+        be displayed as established knowledge, so it is gone. For comparison, the closely
+        related kea (<i>Nestor notabilis</i>) has 7 documented call types including the
+        famous "warble" play call (<a href="https://doi.org/10.1093/czoolo/58.5.727">Schwing et al. 2012</a>).</div>
+      </div>
+        <div class="card" style="padding:1rem;font-size:.88rem;color:var(--ink-soft)">
+          Sample cards by rule category (snicker / bark / gurgle) were removed with the categories
+          themselves — the labels were unreliable, so cards organised by them were misleading.
+          To see and hear individual calls, use the <b>Unsupervised Call-Space Explorer</b> below:
+          every one of the 1,790 calls is clickable there, with its spectrogram and audio.
+        </div>
+        <p>The earlier "forest dialects" comparison on this page was removed: the regional call-type
+      profiles it showed were built from rule-classifier categories that failed validation, and the
+      confound battery showed recordist and region were inseparable in this corpus (repertoire-distance
+      ratios: region 1.46 ≈ recordist 1.43 ≈ year 1.42). What we can say honestly: kākā calls from
+      8 regions across both islands exist in the corpus, and whether geographic structure exists
+      is an open question that needs human-verified call types first.</p>
+        </div>
+      </details>
+    </article>
+
+    <article class="log-entry">
+      <div class="when">25 August 2026</div>
+      <h3>Two example recordings misled us</h3>
+      <p>Trying the korimako models on unlabelled Macaulay recordings, we first compared one recording per quality tier and saw the opposite of the real trend: the low-quality example produced 8× more segments. That recording was simply more vocally active. The trend across 607 recordings is the result that holds.</p>
+      <p>Separately, a recording that our loudness-based quality score rated "high quality" could not be confirmed as clean bellbird song. Example recordings are now chosen by Macaulay's community ratings.</p>
+      <details class="fold">
+        <summary>Original notes</summary>
+        <div class="fold-body">
       <div class="note" style="margin:1rem 0">
         <div class="mark">25 August 2026 — what happens when the pipeline meets real, unlabelled audio</div>
         <div>
@@ -1915,7 +2062,6 @@ tr:hover td{background:var(--surface-2)}
         full-corpus figures above; that is open follow-up work, not yet done.</p>
         </div>
       </div>
-
       <div class="note" style="margin:1rem 0">
         <div class="mark">Addendum (25 August 2026) &mdash; the SNR proxy also failed on a single example, and here is the fix</div>
         <div>
@@ -1950,15 +2096,83 @@ tr:hover td{background:var(--surface-2)}
         quality proxies for field data with no ground truth.</p>
         </div>
       </div>
+        </div>
+      </details>
+    </article>
 
-      <p>Beyond the rule-based pipeline, we trained a <b>TweetyNet-style convolutional neural network</b> for
-      syllable <em>segmentation</em> &mdash; finding the boundaries of vocal units. <b>It does not categorise
-      syllables; see the 29 July correction below.</b>
-      The model processes raw spectrograms and predicts frame-level labels, then post-processing extracts contiguous
-      segments with confidence thresholds and minimum-duration filtering. This architecture, introduced by
-      <a href="https://doi.org/10.1038/s41592-022-01608-2">Cohen et al. (2022)</a> for birdsong annotation, learns
-      spectral-temporal features directly from data rather than relying on hand-crafted rules.</p>
+    <article class="log-entry">
+      <div class="when">24 August 2026</div>
+      <h3>Korimako moved to a learned pipeline</h3>
+      <p>Korimako moved from rule-based categories to TweetyNet v2 segmentation (F1 0.902 on a test split with no shared birds) and a family classifier (0.893). The 0.902 replaces the 0.8577 in the entry below, which came from a split with the same birds in training and test. The two numbers are not directly comparable.</p>
+      <details class="fold">
+        <summary>Original notes</summary>
+        <div class="fold-body">
+      <div class="note" style="margin:1rem 0;border-left-color:#5f7a3a">
+        <div class="mark">Current pipeline (24 August 2026) — read this one first</div>
+        <div>
+        <p style="margin:0 0 .7rem">Everything below this box is the record of how we got here, kept
+        unedited per the kaupapa of this project. But it is now <b>history, not the live pipeline</b>. If you
+        read one section on this page, read this one — it names what actually generated tonight's korimako
+        figures and manifold.</p>
 
+        <p style="margin:0 0 .7rem"><b>The current korimako pipeline, end to end:</b></p>
+        <ol style="margin:0 0 .7rem">
+          <li><b>Segmentation:</b> TweetyNet v2 (CNN), <b>F1 = 0.902</b> on a held-out test split — this
+          supersedes the 0.8577 result below, which was measured on a split with bird-level leakage between
+          train/val/test (see the 5 August correction). The new number is not directly comparable to the old
+          one; treat 0.902 as the current best estimate, not confirmation the old number was "wrong by
+          exactly this much."</li>
+          <li><b>Syllable typing:</b> a stage-4 family classifier trained on the Koe hand-labelled corpus
+          (Fukuzawa et al. 2020), <b>0.893 test accuracy</b> across 24 families plus UNKNOWN — this replaces
+          the rule-based 5-category Hill &amp; Ji scheme for korimako specifically (that scheme was built for
+          tūī and is retained for tūī, see below).</li>
+          <li><b>Sex from repertoire:</b> 5-fold cross-validated, <b>0.940 CV accuracy</b> on 454 birds
+          (≥10-syllable subset), <b>0.892</b> on the 107 birds held out of all training.</li>
+          <li><b>Site / dialect from repertoire:</b> repertoire composition identifies home site.</li>
+          <li><b>Individual identification:</b> closed-set, 77 birds, top-1 55% / top-5 80%; reliable per-bird
+          estimates need ≈6–8 songs, and the corpus is thin there (median 2 songs/bird) — stated plainly on
+          the korimako panel rather than hidden.</li>
+        </ol>
+
+        <p style="margin:0 0 .7rem">The tūī analysis below (rule-based Hill &amp; Ji categories, CNN
+        segmentation only, no typing model) is <b>not superseded</b> — it is a separate species with its own
+        pipeline, which is why the acoustic manifold now shows a korimako example (TN v2 + stage-4) front and
+        centre and keeps the tūī recordings as a labelled "legacy rule-based" option in the dropdown, not
+        because the tūī work is wrong, but because it is a different, older method applied to a different
+        bird. Kākā uses a third, call-based approach (analysed unsupervised; its rule-based categories were withdrawn
+        after failed validation) that has no sequence
+        grammar and is out of scope for the sequence-based methods below.</p>
+
+        <p style="margin:0">Full-corpus figures (repertoire, sex, site, atypical individuals) recompute on
+        1,065 birds / 21,463 syllables for the main tier, and separately on the 107-bird test split never
+        seen in training, for the honest-tier check. Both are on the live korimako panel with per-figure
+        n stated.</p>
+        </div>
+      </div>
+    <div class="note" style="margin:0 0 2rem;border-left-color:#5f7a3a">
+      <div class="mark">Which framework is live, per species (24 August 2026)</div>
+      <div>
+        <p style="margin:0 0 .7rem">All citations below remain valid — they are the ground-truth sources and
+        conceptual frameworks this project draws on. What has changed is <b>which one drives the current
+        korimako figures</b>: Hill &amp; Ji's five/six-category rule-based scheme is the live method for
+        <b>tūī</b>, but for <b>korimako</b> it has been superseded by a stage-4 classifier trained directly on
+        the Fukuzawa et al. (2020) Koe hand-labelled corpus (24 families, 0.893 test accuracy) — see the
+        Methodology tab's "Current pipeline" note. Kākā uses the Van Horik (2007) / Vaishnav (2026) call-type
+        frameworks, unchanged.</p>
+      </div>
+    </div>
+        </div>
+      </details>
+    </article>
+
+    <article class="log-entry">
+      <div class="when">5 August 2026</div>
+      <h3>Segmentation headline replaced, with its limits</h3>
+      <p>The page had been showing F1 = 0.784 for korimako segmentation while also saying that number did not reproduce. It was replaced with a held-out result: CNN 0.8577 against FIR envelope 0.7212, both scored the same way. Its limits: 15 test files, one site, one week, and the same birds on both sides of the split. We also listed five things we did not know at that date.</p>
+      <p>An audit the same day checked whether 3,156 appearing twice on the page (total recordings, and korimako click syllables) was a copy-paste error. It is a coincidence; both are correct.</p>
+      <details class="fold">
+        <summary>Original correction</summary>
+        <div class="fold-body">
       <div class="note" style="margin:1rem 0">
         <div class="mark">Correction (5 August 2026) &mdash; new headline result, and its limits</div>
         <div>
@@ -2018,7 +2232,11 @@ tr:hover td{background:var(--surface-2)}
         the number to fall; <b>the size of that fall is the finding</b>, not a failure.</p>
         </div>
       </div>
-
+        </div>
+      </details>
+      <details class="fold">
+        <summary>What we did not yet know, as of 5 August</summary>
+        <div class="fold-body">
       <div class="note" style="margin:1rem 0">
         <div class="mark">What we do not yet know (5 August 2026)</div>
         <div>
@@ -2067,7 +2285,33 @@ tr:hover td{background:var(--surface-2)}
         repaired.</p>
         </div>
       </div>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>The 3,156 check</summary>
+        <div class="fold-body">
+  <p style="font-size:.8rem;color:var(--ink-faint);margin:.4rem 0 1rem">Checked 5 August 2026: an internal audit
+  flagged <b>3,156</b> as a possible copy-paste error, because the same figure appears on this page both as a
+  recording count and as the bellbird <i>click</i> syllable count. <b>It is a coincidence &mdash; both are
+  correct.</b> Recordings = 3,096 Xeno-Canto (Methods, below) + 60 Koe = 3,156. Clicks = 3,156 of 13,086 bellbird
+  syllables = 24.1%, consistent with every other row of that table. We record the check here rather than silently
+  leaving it, so the next reader does not have to repeat it. Note that <b>3,096 is the raw query result</b>; after
+  filtering, the clean identified dataset is <b>2,244 recordings across 175 species</b>.</p>
+        <p style="font-size:.8rem;color:var(--ink-faint);margin:.6rem 0 0">Rows sum to 13,086. The Click count of
+        3,156 is identical to the recording count in the page header purely by coincidence &mdash; both were
+        verified independently on 5 August 2026; see the note under the header figures.</p>
+        </div>
+      </details>
+    </article>
 
+    <article class="log-entry">
+      <div class="when">29 July 2026</div>
+      <h3>The CNN never categorised syllables</h3>
+      <p>The methods section described the network as segmenting and categorising syllables. It could not categorise: the training script read a frequency field as the class label, giving 829 "classes" for 829 segments. The claim was withdrawn. Segmentation scores were unaffected.</p>
+      <p>Seven spectrogram figures from that run carry a "CNN prediction" legend although they show human annotations only. They are kept below with the legend uncorrected.</p>
+      <details class="fold">
+        <summary>Original correction</summary>
+        <div class="fold-body">
       <div class="note" style="margin:1rem 0">
         <div class="mark">Correction (29 July 2026) &mdash; this model does not categorise syllables</div>
         <div>
@@ -2100,7 +2344,119 @@ tr:hover td{background:var(--surface-2)}
         <b>this project has no syllable classifier</b> and no categorisation performance to report.</p>
         </div>
       </div>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>The model these notes describe (since replaced)</summary>
+        <div class="fold-body">
+      <p>Beyond the rule-based pipeline, we trained a <b>TweetyNet-style convolutional neural network</b> for
+      syllable <em>segmentation</em> &mdash; finding the boundaries of vocal units. <b>It does not categorise
+      syllables; see the 29 July correction below.</b>
+      The model processes raw spectrograms and predicts frame-level labels, then post-processing extracts contiguous
+      segments with confidence thresholds and minimum-duration filtering. This architecture, introduced by
+      <a href="https://doi.org/10.1038/s41592-022-01608-2">Cohen et al. (2022)</a> for birdsong annotation, learns
+      spectral-temporal features directly from data rather than relying on hand-crafted rules.</p>
+      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Architecture</h4>
+      <ul>
+        <li><b>Input:</b> Log-scaled spectrogram (500–10kHz, z-score normalised per file)</li>
+        <li><b>Encoder:</b> 3-layer Conv2D (32→64→128 channels, 5×5 / 5×5 / 3×3 kernels) with BatchNorm + ReLU</li>
+        <li><b>Temporal:</b> Frequency pooling → 2-layer bidirectional GRU (256 hidden, 0.3 dropout)</li>
+        <li><b>Output:</b> Frame-level labels (N classes + 1 blank). Only the blank/non-blank distinction is used for segmentation &mdash; per the 29 July correction, the class dimension was misconfigured and carries no syllable-type information.</li>
+        <li><b>Loss:</b> Weighted Cross-Entropy (blank weight = 0.15–0.25, tuned per species)</li>
+        <li><b>Post-processing:</b> Confidence threshold sweep (0.3–0.9), minimum segment duration filtering, IoU > 0.1 matching against ground truth</li>
+      </ul>
 
+      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Multi-Species Training</h4>
+      <p>The CNN trains jointly on annotated datasets from multiple species, with species-prefixed labels to avoid
+      category collision across corpora. This allows a single model to <em>segment</em> vocalisations across species
+      with different acoustic structures &mdash; bellbird's 55ms discrete syllables vs toutouwai's 971ms sustained
+      phrases. <b>Correction (29 July 2026):</b> this previously read &ldquo;segment and categorise&rdquo; and gave
+      <code>bellbird:click</code> as an example label. In the run described here the labels are frequencies rather
+      than call types (e.g. <code>bellbird:1018.63239577395</code>), so no cross-species categorisation was
+      performed.</p>
+
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table style="width:100%;min-width:480px;font-size:.85rem;margin:1rem 0">
+        <thead><tr><th style="text-align:left">Dataset</th><th>Species</th><th>Recordings</th><th>Segments</th><th>Label types</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td><b>Koe</b></td><td>Bellbird (korimako)</td><td class="num">60</td><td class="num">829</td><td class="num">74 &dagger;</td><td>Fukuzawa et al. (2020)</td></tr>
+          <tr><td><b>Donald</b></td><td>Toutouwai (NI robin)</td><td class="num">124</td><td class="num">10,357</td><td class="num">73</td><td>Harry Donald, Shaw Lab (VUW)</td></tr>
+          <tr><td><b>Campbell</b></td><td>Kākā</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>Fraser Campbell, Shaw Lab (VUW) — forthcoming</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p style="font-size:.8rem;color:var(--ink-faint);margin:-.5rem 0 1rem">&dagger; Corrected 29 July 2026. This
+      cell previously read &ldquo;3&rdquo;. The Koe corpus carries 74 syllable labels across 13 families
+      (<code>segment.extraattrvalue.json</code>); the CNN described above was mistakenly trained on 829 frequency
+      values instead. See the 29 July correction.</p>
+
+      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Data Augmentation</h4>
+      <p>To make the model robust to the heterogeneous recording conditions across datasets — studio (Koe) vs field
+      (Donald, Campbell) — we apply six augmentation techniques during training, each with 30% probability per sample:</p>
+      <ul>
+        <li><b>Time stretch</b> (±20%) — handles different phrase/syllable durations across species</li>
+        <li><b>Frequency shift</b> (±2 spectrogram bins) — simulates different microphone frequency responses</li>
+        <li><b>SpecAugment time masking</b> — forces the model to learn from partial spectrograms (Park et al. 2019)</li>
+        <li><b>SpecAugment frequency masking</b> — same, for the frequency axis</li>
+        <li><b>Additive Gaussian noise</b> (1–5% of signal std) — simulates varying background noise levels (forest ambient vs studio silence)</li>
+        <li><b>Volume jitter</b> (±20%) — handles different microphone distances and recording gains</li>
+      </ul>
+        </div>
+      </details>
+      <details class="fold">
+        <summary>The figures with the wrong legend</summary>
+        <div class="fold-body">
+      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Segmentation Demonstration</h4>
+      <p>The spectrograms below show <b>ground-truth annotations only</b> — the top bands, dotted boundary
+      lines and category labels are all human annotation. <b>They contain no CNN output.</b> The figure generator
+      stamped every image with a &ldquo;CNN prediction (bottom)&rdquo; legend entry unconditionally, but the run
+      that produced these images emitted <b>zero</b> predicted segments on all seven examples:
+      <code>cnn_spectrograms/examples.json</code> records <code>n_pred = 0</code> for every entry (toutouwai
+      Felix, for instance, is <code>n_gt = 61, n_pred = 0</code>). <b>The legend printed inside the images is
+      therefore false</b> — the captions below are the correct description, and the generator has been fixed
+      so that future figures only claim a prediction band when one exists. CNN overlays will be added when a run
+      actually produces segments on these files. These examples come from recordings held out of training.</p>
+      <div id="cnn-spectrograms" style="margin:1.5rem 0">
+        <div class="card" style="margin-bottom:1rem">
+          <h3>Toutouwai — Felix (Donald dataset)</h3>
+          <img loading="lazy" src="cnn_spectrograms/toutouwai_Felix.png" alt="Toutouwai spectrogram, ground-truth annotations only — Felix"
+               style="width:100%;border-radius:4px;border:1px solid var(--border)">
+          <div style="margin-top:.5rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+            10s excerpt · 500–10kHz · Ground-truth annotations only · no CNN overlay (this run produced 0 predicted segments)
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <h3>Toutouwai — Captain (Donald dataset)</h3>
+          <img loading="lazy" src="cnn_spectrograms/toutouwai_Captain.png" alt="Toutouwai spectrogram, ground-truth annotations only — Captain"
+               style="width:100%;border-radius:4px;border:1px solid var(--border)">
+          <div style="margin-top:.5rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+            10s excerpt · 500–10kHz · Ground-truth annotations only · no CNN overlay (this run produced 0 predicted segments)
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:1rem">
+          <h3>Korimako — Koe bellbird (studio recording)</h3>
+          <img loading="lazy" src="cnn_spectrograms/bellbird_CUV_2016_11_04_AMH036_01_F.EX.CUV_2016_11_04_AMH036A.3RepeatsStutterTypCuvSong.png" alt="Bellbird spectrogram, ground-truth annotations only"
+               style="width:100%;border-radius:4px;border:1px solid var(--border)">
+          <div style="margin-top:.5rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
+            15s excerpt · 500–10kHz · 51 annotated syllables · Ground-truth annotations only · no CNN overlay (this run produced 0 predicted segments)
+          </div>
+        </div>
+        <p style="color:var(--ink-faint);font-size:.9rem"><em>Ground-truth annotations only, above. Training has
+        in fact completed — the reason there are no overlays is that the completed run predicted no segments at
+        all on these seven files, not that it has not been run yet.</em></p>
+      </div>
+        </div>
+      </details>
+    </article>
+
+    <article class="log-entry">
+      <div class="when">27 July 2026</div>
+      <h3>CNN-beats-baseline claims withdrawn</h3>
+      <p>Three claims went. That the CNN's advantage was "more dramatic" on toutouwai: no evaluation existed, and on the one weak test since, the classical baselines win. That the CNN beat the FIR baseline on korimako: the two were scored with different matching rules on different splits. That manual cluster purity was "validated at 91%": the numbers did not reproduce, and the recomputed 99.6% is close to a tautology.</p>
+      <p>The 0.784 figure itself failed to reproduce. No random seed was set, and a re-run overwrote the original result file.</p>
+      <details class="fold">
+        <summary>Original correction: CNN numbers</summary>
+        <div class="fold-body">
       <div class="note" style="margin:1rem 0">
         <div class="mark">Correction (27 July 2026) — what the CNN numbers do and do not show</div>
         <div>
@@ -2167,267 +2523,84 @@ tr:hover td{background:var(--surface-2)}
         The 0.784 figure came from the bellbird-only model and says nothing about this configuration.</p>
         </div>
       </div>
-
-      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Architecture</h4>
-      <ul>
-        <li><b>Input:</b> Log-scaled spectrogram (500–10kHz, z-score normalised per file)</li>
-        <li><b>Encoder:</b> 3-layer Conv2D (32→64→128 channels, 5×5 / 5×5 / 3×3 kernels) with BatchNorm + ReLU</li>
-        <li><b>Temporal:</b> Frequency pooling → 2-layer bidirectional GRU (256 hidden, 0.3 dropout)</li>
-        <li><b>Output:</b> Frame-level labels (N classes + 1 blank). Only the blank/non-blank distinction is used for segmentation &mdash; per the 29 July correction, the class dimension was misconfigured and carries no syllable-type information.</li>
-        <li><b>Loss:</b> Weighted Cross-Entropy (blank weight = 0.15–0.25, tuned per species)</li>
-        <li><b>Post-processing:</b> Confidence threshold sweep (0.3–0.9), minimum segment duration filtering, IoU > 0.1 matching against ground truth</li>
-      </ul>
-
-      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Multi-Species Training</h4>
-      <p>The CNN trains jointly on annotated datasets from multiple species, with species-prefixed labels to avoid
-      category collision across corpora. This allows a single model to <em>segment</em> vocalisations across species
-      with different acoustic structures &mdash; bellbird's 55ms discrete syllables vs toutouwai's 971ms sustained
-      phrases. <b>Correction (29 July 2026):</b> this previously read &ldquo;segment and categorise&rdquo; and gave
-      <code>bellbird:click</code> as an example label. In the run described here the labels are frequencies rather
-      than call types (e.g. <code>bellbird:1018.63239577395</code>), so no cross-species categorisation was
-      performed.</p>
-
-      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
-      <table style="width:100%;min-width:480px;font-size:.85rem;margin:1rem 0">
-        <thead><tr><th style="text-align:left">Dataset</th><th>Species</th><th>Recordings</th><th>Segments</th><th>Label types</th><th>Source</th></tr></thead>
-        <tbody>
-          <tr><td><b>Koe</b></td><td>Bellbird (korimako)</td><td class="num">60</td><td class="num">829</td><td class="num">74 &dagger;</td><td>Fukuzawa et al. (2020)</td></tr>
-          <tr><td><b>Donald</b></td><td>Toutouwai (NI robin)</td><td class="num">124</td><td class="num">10,357</td><td class="num">73</td><td>Harry Donald, Shaw Lab (VUW)</td></tr>
-          <tr><td><b>Campbell</b></td><td>Kākā</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>Fraser Campbell, Shaw Lab (VUW) — forthcoming</td></tr>
-        </tbody>
-      </table>
-      </div>
-      <p style="font-size:.8rem;color:var(--ink-faint);margin:-.5rem 0 1rem">&dagger; Corrected 29 July 2026. This
-      cell previously read &ldquo;3&rdquo;. The Koe corpus carries 74 syllable labels across 13 families
-      (<code>segment.extraattrvalue.json</code>); the CNN described above was mistakenly trained on 829 frequency
-      values instead. See the 29 July correction.</p>
-
-      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Data Augmentation</h4>
-      <p>To make the model robust to the heterogeneous recording conditions across datasets — studio (Koe) vs field
-      (Donald, Campbell) — we apply six augmentation techniques during training, each with 30% probability per sample:</p>
-      <ul>
-        <li><b>Time stretch</b> (±20%) — handles different phrase/syllable durations across species</li>
-        <li><b>Frequency shift</b> (±2 spectrogram bins) — simulates different microphone frequency responses</li>
-        <li><b>SpecAugment time masking</b> — forces the model to learn from partial spectrograms (Park et al. 2019)</li>
-        <li><b>SpecAugment frequency masking</b> — same, for the frequency axis</li>
-        <li><b>Additive Gaussian noise</b> (1–5% of signal std) — simulates varying background noise levels (forest ambient vs studio silence)</li>
-        <li><b>Volume jitter</b> (±20%) — handles different microphone distances and recording gains</li>
-      </ul>
-
-      <h4 style="font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);margin:1.5rem 0 .5rem">Segmentation Demonstration</h4>
-      <p>The spectrograms below show <b>ground-truth annotations only</b> — the top bands, dotted boundary
-      lines and category labels are all human annotation. <b>They contain no CNN output.</b> The figure generator
-      stamped every image with a &ldquo;CNN prediction (bottom)&rdquo; legend entry unconditionally, but the run
-      that produced these images emitted <b>zero</b> predicted segments on all seven examples:
-      <code>cnn_spectrograms/examples.json</code> records <code>n_pred = 0</code> for every entry (toutouwai
-      Felix, for instance, is <code>n_gt = 61, n_pred = 0</code>). <b>The legend printed inside the images is
-      therefore false</b> — the captions below are the correct description, and the generator has been fixed
-      so that future figures only claim a prediction band when one exists. CNN overlays will be added when a run
-      actually produces segments on these files. These examples come from recordings held out of training.</p>
-      <div id="cnn-spectrograms" style="margin:1.5rem 0">
-        <div class="card" style="margin-bottom:1rem">
-          <h3>Toutouwai — Felix (Donald dataset)</h3>
-          <img src="cnn_spectrograms/toutouwai_Felix.png" alt="Toutouwai spectrogram, ground-truth annotations only — Felix"
-               style="width:100%;border-radius:4px;border:1px solid var(--border)">
-          <div style="margin-top:.5rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-            10s excerpt · 500–10kHz · Ground-truth annotations only · no CNN overlay (this run produced 0 predicted segments)
-          </div>
         </div>
-        <div class="card" style="margin-bottom:1rem">
-          <h3>Toutouwai — Captain (Donald dataset)</h3>
-          <img src="cnn_spectrograms/toutouwai_Captain.png" alt="Toutouwai spectrogram, ground-truth annotations only — Captain"
-               style="width:100%;border-radius:4px;border:1px solid var(--border)">
-          <div style="margin-top:.5rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-            10s excerpt · 500–10kHz · Ground-truth annotations only · no CNN overlay (this run produced 0 predicted segments)
-          </div>
-        </div>
-        <div class="card" style="margin-bottom:1rem">
-          <h3>Korimako — Koe bellbird (studio recording)</h3>
-          <img src="cnn_spectrograms/bellbird_CUV_2016_11_04_AMH036_01_F.EX.CUV_2016_11_04_AMH036A.3RepeatsStutterTypCuvSong.png" alt="Bellbird spectrogram, ground-truth annotations only"
-               style="width:100%;border-radius:4px;border:1px solid var(--border)">
-          <div style="margin-top:.5rem;font-size:.82rem;color:var(--ink-faint);font-family:var(--mono)">
-            15s excerpt · 500–10kHz · 51 annotated syllables · Ground-truth annotations only · no CNN overlay (this run produced 0 predicted segments)
-          </div>
-        </div>
-        <p style="color:var(--ink-faint);font-size:.9rem"><em>Ground-truth annotations only, above. Training has
-        in fact completed — the reason there are no overlays is that the completed run predicted no segments at
-        all on these seven files, not that it has not been run yet.</em></p>
-      </div>
+      </details>
+      <details class="fold">
+        <summary>Original correction: cluster purity</summary>
+        <div class="fold-body">
+          <p style="margin:.8rem 0 0"><b>Correction (27 July 2026).</b> This panel previously read
+          &ldquo;manual cluster purity validated at 91% overall (Chortle 100%, Down 98%, Stutter 97%)&rdquo;.
+          <b>None of those three per-category numbers reproduce, and neither does the 91%.</b> Recomputed
+          directly from the deployed <code>bellbird_pca_data.json</code> over its 241 manually clustered points,
+          purity against the Koe/Webb family labels is <b>99.6% (240/241)</b>: Chortle 100% (24/24),
+          Down 100% (36/36), Stutter 100% (79/79), Flatsqueak 100% (25/25), Peaksqueak 100% (19/19),
+          Cough 100% (12/12), Cough&nbsp;+&nbsp;Click 100% (12/12), Alarmy 100% (9/9), Stepup 100% (7/7),
+          and Pipe 94.4% (17/18) — one Pipe point carries the family label Alarmy, and it is the only
+          disagreement. We are also downgrading the word &ldquo;validated&rdquo;: the manual clusters were drawn
+          with the family labels visible, so near-perfect purity is close to a tautology and carries almost no
+          information about whether the categories are real.</p>
 
-      <div class="note" style="margin:1.5rem 0">
-        <div class="mark">Individual Bird Recognition</div>
-        <div>The Donald dataset's structure — 28 individually named toutouwai with 2–9 recording sessions each —
-        opens the possibility of training the CNN to identify individual birds from vocalisations alone. If birds
-        have individually distinctive phrase repertoires (Jaccard analysis suggests they do: most similar pair
-        Charlie↔Karl J=0.765, least similar Goose↔Tegan J=0.200), a classifier could learn to say "that's Arthur"
-        from a new recording. This would enable non-invasive tracking of translocated populations at Zealandia
-        Te Māra a Tāne and other sanctuaries. <b>Status:</b> Proof-of-concept with current dataset; would benefit
-        from more recordings across longer time spans.</div>
-      </div>
+          <p style="margin:.8rem 0 0"><b>The figure that does carry information — seed-label agreement.</b>
+          For the <b>575</b> clips the DTW template matcher labelled on its own, agreement between its assignment
+          and the clip's original Koe/Webb family label is <b>35.8% (206/575)</b>. Broken out by the category the
+          matcher assigned:</p>
+          <div style="overflow-x:auto"><table style="width:100%;font-size:.8rem;margin:.6rem 0;font-family:var(--mono)">
+            <thead><tr><th style="text-align:left">Assigned category</th><th style="text-align:right">Agreement</th><th style="text-align:right">n assigned</th></tr></thead>
+            <tbody>
+              <tr><td><b>Stepup</b></td><td class="num"><b>7%</b></td><td class="num">114</td></tr>
+              <tr><td>Pipe</td><td class="num">29%</td><td class="num">133</td></tr>
+              <tr><td>Flatsqueak</td><td class="num">29%</td><td class="num">99</td></tr>
+              <tr><td>Stutter</td><td class="num">45%</td><td class="num">67</td></tr>
+              <tr><td>Chortle</td><td class="num">53%</td><td class="num">17</td></tr>
+              <tr><td>Peaksqueak</td><td class="num">58%</td><td class="num">33</td></tr>
+              <tr><td>Alarmy</td><td class="num">58%</td><td class="num">53</td></tr>
+              <tr><td>Cough + Click</td><td class="num">63%</td><td class="num">30</td></tr>
+              <tr><td>Down</td><td class="num">77%</td><td class="num">26</td></tr>
+              <tr><td>Cough</td><td class="num">100%</td><td class="num">3</td></tr>
+            </tbody>
+          </table></div>
+          <p style="margin:0">In the pipeline's own words this is a <b>&ldquo;sanity, not accuracy&rdquo;</b>
+          check, and that hedge is correct: the template categories and the Koe/Webb families are different
+          schemes, so disagreement is not automatically error. But <b>Stepup agreeing on 7% of the 114 clips it
+          was assigned</b> is the single most useful number on this page, and it was being computed on every run
+          and never shown. It says the Stepup template is very likely matching something other than Stepup, and
+          that those 114 labels should not be relied on. Treat every category above as provisional in proportion
+          to its agreement.</p>
+          <p style="margin:.6rem 0 0;font-size:.92em">Method note: agreement counts
+          <em>Flatspeak</em>&nbsp;→&nbsp;<em>Flatsqueak</em> as a match (they are the same call type — see the
+          spelling correction) and <em>Cough&nbsp;+&nbsp;Click</em>&nbsp;→&nbsp;<em>Cough</em> (Cough&nbsp;+&nbsp;Click
+          is a Cough sub-type). Compared as raw strings without those two equivalences the overall figure is
+          <b>27.5% (158/575)</b>, which is what <code>dtw_classify.py</code> prints today.</p>
+        </div>
+      </details>
+    </article>
 
-      <h4>Sample Size Adequacy — Entropy Rarefaction</h4>
-      <p>To verify our sample sizes are sufficient, we computed <b>Shannon entropy rarefaction curves</b> — 
-      subsampling recordings at each N (100 iterations) and measuring whether the entropy estimate stabilises. 
-      A plateau means adding more recordings would not substantially change the proportional distribution of vocalisation types.</p>
-      <div class="card" style="margin:1rem 0">
-        <h3>Entropy vs Recording Count</h3>
-        <div class="chart-wrap" style="height:320px">
-          <canvas id="rarefactionChart"></canvas>
-        </div>
-        <div style="font-family:var(--mono);font-size:.72rem;color:var(--ink-faint);margin-top:.5rem">
-          Shaded bands: ±1 SD from 100 random subsamples at each N · All three species plateau well before their full sample size
-        </div>
+    <article class="log-entry">
+      <div class="when">July 2026</div>
+      <h3>Tūī classifier reordered; samples doubled</h3>
+      <p>The first tūī classifier put 55% of syllables in "low-frequency" because it checked frequency before tonal quality. Checking tonal quality first brought that to 0.6%, in line with Hill. The samples were later doubled (tūī to 232 recordings, korimako to 94, kākā to 47). Tūī proportions held; korimako stutter fell from 62.8% to 56.1% and click rose from 19.4% to 24.1%.</p>
+      <details class="fold">
+        <summary>Original notes</summary>
+        <div class="fold-body">
+      <p><b>v2 classifier improvements:</b> The v1 analysis over-assigned "low-frequency" syllables (55%) due to a threshold-ordering 
+      artefact — syllables with low f₀ but strong upper harmonics were caught by the frequency check before reaching the harmonicity check. 
+      The restructured classifier checks tonal quality first, then frequency, reducing low-frequency to 0.6% of tūī syllables (unchanged from the first v2 pass, now confirmed on a doubled sample) — 
+      consistent with Hill's finding that these are relatively rare.</p>
+      <div class="note" style="margin-top:1.5rem">
+        <div class="mark">v2 Improvement</div>
+        <div>The v1 classifier over-assigned "low-frequency" (55%) due to checking f₀ before harmonicity —
+        syllables with low fundamental but strong upper harmonics were misclassified. The v2 classifier
+        checks tonal quality first, then frequency, bringing low-frequency down to 0.6% — consistent with
+        Hill's finding that these are relatively rare. RMNR (64.7%) is now the dominant category, followed by
+        trill (17.5%) and harmonic (13.8%). These proportions are stable from the first v2 pass (116 recordings)
+        to the doubled sample (232 recordings). No harsh syllables were detected — these are quiet, close-range
+        vocalisations that field recorders may not capture.</div>
       </div>
       <p>All three species reach stable entropy by ~15–20 recordings. Tūī (now 232 recordings, was 116) and korimako (now 94, was 40) are well past the plateau. 
       Kākā (now 47, was 25) has also cleared it comfortably — no longer sitting right at the threshold. Sample sizes across all three species doubled this session; 
       this confirms that our sample sizes are adequate for characterising the <em>proportional distribution</em> of vocalisation types — 
       though not necessarily for capturing rare types (e.g., the absent shraak calls). <b>Note:</b> the rarefaction curve chart below still reflects the pre-expansion
       sample sizes (116/40/25) — a rebuild with the doubled corpus is queued as follow-up work; the qualitative conclusion (all species plateau well before their full N) is expected to hold and, if anything, strengthen.</p>
-
-      <p><b>Inclusion threshold.</b> On this basis we set a <b>minimum of 20 A-quality recordings</b> as the criterion for
-      reporting a species' proportional repertoire. This is the point by which all three species' entropy curves have flattened
-      to within ±1 SD of their full-sample value, so a species meeting it can be characterised without the estimate being
-      dominated by sampling noise. All three focal species now clear the bar comfortably (kākā, previously right at it with 25, now has 47). The threshold governs
-      only the <em>proportional-distribution</em> claims; detecting <em>rare</em> vocalisation types (present at &lt;5% prevalence)
-      requires substantially larger samples and is treated as out of scope here.</p>
-
-      <h4>Reproducibility</h4>
-      <p>The full analysis pipeline is available at <a href="https://github.com/cyborg-garden/open-science">github.com/cyborg-garden/open-science</a>. 
-      The Python venv uses librosa for audio analysis and scikit-learn for clustering. All Xeno-Canto recordings are publicly available via their API.</p>
-      
-      <h4>Process Transparency</h4>
-      <p>This dashboard was compiled by <a href="https://github.com/cyborg-garden/Matilde">Matilde</a>, an agentic open-science research assistant. 
-      The full chain-of-thought trace — every API call, every decision, every error and retry — is published alongside the dashboard for 
-      complete reproducibility. This is not a black-box result.</p>
-      
-      <div class="pbar-row"><div class="pbar-label">XC + Koe Recordings (all datasets)</div><div class="pbar-track"><div class="pbar-fill" style="width:100%;background:var(--pos)"></div></div><div class="pbar-val">3,156</div></div>
-      <div class="pbar-row"><div class="pbar-label">Species Identified</div><div class="pbar-track"><div class="pbar-fill" style="width:100%;background:var(--accent)"></div></div><div class="pbar-val">177</div></div>
-      <div class="pbar-row"><div class="pbar-label">Tūī Songs Analysed</div><div class="pbar-track"><div class="pbar-fill" style="width:100%;background:var(--tui)"></div></div><div class="pbar-val">232</div></div>
-      <div class="pbar-row"><div class="pbar-label">Korimako Songs Analysed</div><div class="pbar-track"><div class="pbar-fill" style="width:81%;background:var(--bellbird)"></div></div><div class="pbar-val">94</div></div>
-      <div class="pbar-row"><div class="pbar-label">Kākā Calls Analysed</div><div class="pbar-track"><div class="pbar-fill" style="width:40.5%;background:var(--kaka)"></div></div><div class="pbar-val">47</div></div>
-      <div class="pbar-row"><div class="pbar-label">Total Syllables/Calls Detected</div><div class="pbar-track"><div class="pbar-fill" style="width:100%;background:var(--accent-2)"></div></div><div class="pbar-val">51,144</div></div>
-      <div class="pbar-row"><div class="pbar-label">Citations DOI-Verified</div><div class="pbar-track"><div class="pbar-fill" style="width:100%;background:var(--pos)"></div></div><div class="pbar-val">8/8</div></div>
-    </div>
-  </div>
-
-  <!-- ==================== LITERATURE ==================== -->
-  <div class="panel" id="panel-literature">
-    <div class="section-label">Literature Review</div>
-    
-    <div class="prose" style="margin-bottom:2rem">
-      <p>The tūī vocal repertoire has been studied primarily by S.D. Hill and colleagues at Massey University. 
-      Their work at Tawharanui Regional Park established the foundational syllable categorisation scheme we replicate here. 
-      All citations below have been verified against Crossref.</p>
-    </div>
-
-    <div class="note" style="margin:0 0 2rem;border-left-color:#5f7a3a">
-      <div class="mark">Which framework is live, per species (24 August 2026)</div>
-      <div>
-        <p style="margin:0 0 .7rem">All citations below remain valid — they are the ground-truth sources and
-        conceptual frameworks this project draws on. What has changed is <b>which one drives the current
-        korimako figures</b>: Hill &amp; Ji's five/six-category rule-based scheme is the live method for
-        <b>tūī</b>, but for <b>korimako</b> it has been superseded by a stage-4 classifier trained directly on
-        the Fukuzawa et al. (2020) Koe hand-labelled corpus (24 families, 0.893 test accuracy) — see the
-        Methodology tab's "Current pipeline" note. Kākā uses the Van Horik (2007) / Vaishnav (2026) call-type
-        frameworks, unchanged.</p>
-      </div>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Syllable Categorisation <span class="lit-tag tag-match">Replicated</span></h4>
-      <p>Hill &amp; Ji (2014) established six syllable categories for tūī song at Tawharanui: low-frequency, high-frequency, harmonic, 
-      trill, RMNR, and harsh/other. Harmonic syllables were the most common (~15%). Our automated pipeline captures five of six categories 
-      but finds different proportions — low-frequency dominates at 56%.</p>
-      <a class="lit-ref" href="https://doi.org/10.63172/301002sqblid">Hill, S.D. &amp; Ji, W. (2014). Notornis, 61, 54. DOI: 10.63172/301002sqblid ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Song Complexity &amp; Aggression <span class="lit-tag tag-match">Concordant</span></h4>
-      <p>Hill et al. (2017) showed that more complex tūī songs elicit stronger aggressive responses from territorial males — 
-      "fighting talk." This motivates the repertoire analysis: if song complexity varies geographically, 
-      it may signal different competitive environments.</p>
-      <a class="lit-ref" href="https://doi.org/10.1111/ibi.12542">Hill, S.D. et al. (2017). Ibis, 160(2), 257-268. DOI: 10.1111/ibi.12542 ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Automated Recognition Review <span class="lit-tag tag-match">Methodological basis</span></h4>
-      <p>Priyadarshani et al. (2018) reviewed automated birdsong recognition in complex environments — the methodological 
-      landscape our pipeline operates in. Key challenge: noise robustness. XC recordings have variable SNR, unlike controlled setups.</p>
-      <a class="lit-ref" href="https://doi.org/10.1111/jav.01447">Priyadarshani, N. et al. (2018). J. Avian Biology, 49(5). DOI: 10.1111/jav.01447 ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Microgeographic Song Variation</h4>
-      <p>Hill et al. (2015) documented microgeographic variation in tūī song within the Tawharanui population. Our dataset — 
-      spanning the entire country — enables a macro-scale version of this analysis, comparing repertoires across Auckland, Wellington, 
-      Southland, and beyond.</p>
-      <a class="lit-ref" href="#">Hill, S.D. et al. (2015). NZ J. Ecol., 39(2), 261-269 ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Chatham Island vs Mainland</h4>
-      <p>Hill et al. (2013) compared tūī vocalisations between Chatham Island and mainland populations, finding differences 
-      attributable to isolation and smaller population size. Xeno-Canto data includes offshore recordings that could extend this work.</p>
-      <a class="lit-ref" href="#">Hill, S.D. et al. (2013). Notornis, 60, 222-229 ✓</a>
-    </div>
-
-    <div class="section-label" style="margin-top:2.5rem">Korimako (Bellbird) — Anthornis melanura</div>
-    <div class="prose" style="margin-bottom:1.5rem">
-      <p>Korimako syllable classification follows the Massey University group (Brunton, Roper, Webb, Fukuzawa).
-      Their framework treats <b>syllable types</b>, not song types, as the functional units of vocal culture.
-      Citations verified against Crossref.</p>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Sexually Distinct Song Cultures <span class="lit-tag tag-match">Framework</span></h4>
-      <p>Webb et al. (2021) classified 20,700 syllables (702 types) across a six-island korimako metapopulation,
-      showing males and females have distinct song cultures sharing only 6–26% of syllable types within a site.
-      This is the classification framework and the sex-difference result our song-structure analysis builds on.</p>
-      <a class="lit-ref" href="https://doi.org/10.3389/fevo.2021.755633">Webb, W.H. et al. (2021). Frontiers in Ecology and Evolution, 9, 755633. DOI: 10.3389/fevo.2021.755633 ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Developmental Song Production <span class="lit-tag tag-match">Syllable boundary</span></h4>
-      <p>Roper et al. (2018) studied developmental changes in song production in free-living male and female
-      bellbirds. We adopt their &lt;15ms silence syllable boundary — shorter than the tūī boundary — reflecting
-      korimako-specific vocal structure.</p>
-      <a class="lit-ref" href="https://doi.org/10.1016/j.anbehav.2018.04.003">Roper, M.M. et al. (2018). Animal Behaviour, 140, 57-70. DOI: 10.1016/j.anbehav.2018.04.003 ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Koe Classification Software <span class="lit-tag tag-match">Tool + dataset + current korimako typing scheme</span></h4>
-      <p>Fukuzawa et al. (2020) introduced Koe, web-based software for classifying acoustic units, demonstrated
-      on 21,500 korimako syllables. Our data-driven song-structure analysis uses the Koe tutorial dataset
-      (2,278 songs, 21,427 hand-labelled segments) as its ground-truth source — and, as of the 24 August 2026
-      pipeline update, the 24-family label scheme from this dataset is what our stage-4 classifier predicts
-      for every korimako syllable on the live dashboard (0.893 test accuracy).</p>
-      <a class="lit-ref" href="https://doi.org/10.1111/2041-210X.13336">Fukuzawa, Y. et al. (2020). Methods in Ecology and Evolution, 11(3), 431-441. DOI: 10.1111/2041-210X.13336 ✓</a>
-    </div>
-
-    <div class="section-label" style="margin-top:2.5rem">Kākā — Nestor meridionalis</div>
-    <div class="prose" style="margin-bottom:1.5rem">
-      <p>Kākā are parrots, not songbirds — they produce calls, not songs. Two frameworks are relevant.</p>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Kākā Vocal Ethology <span class="lit-tag tag-match">Call types</span></h4>
-      <p>Van Horik, Bell &amp; Burns (2007) identified five distinctive kākā call types through 500 hours of field
-      observation and spectrographic analysis (snicker, bark, gurgle, shraak, shraak-woo). <b>Withdrawn from our
-      pipeline 2026-09-03:</b> the automated rule classifier built on this scheme produced categories that failed
-      validation against unsupervised clustering and human-listened examples, and no longer labels any call on
-      this dashboard. The citation stands for the underlying ethology.</p>
-      <a class="lit-ref" href="https://doi.org/10.1080/03014220709510093">Van Horik, J., Bell, B. &amp; Burns, K.C. (2007). New Zealand Journal of Zoology, 34(4), 337-345. DOI: 10.1080/03014220709510093 ✓</a>
-    </div>
-
-    <div class="lit-card match">
-      <h4>Partial Nocturnality &amp; Call Repertoire <span class="lit-tag tag-match">Current scheme</span></h4>
-      <p>Vaishnav, Shaw &amp; Burns (2026) describe kākā vocal behaviour including a five-call-type scheme
-      (whistle, screech, long call, croak, warble). Our annotation and template-matching tools use this newer
-      scheme, with audio templates provided by the lead author (Burns lab, VUW).</p>
-      <a class="lit-ref" href="https://doi.org/10.5751/JFO-00813-970208">Vaishnav, T., Shaw, R. &amp; Burns, K. (2026). Journal of Field Ornithology, 97(2), art8. DOI: 10.5751/JFO-00813-970208 ✓</a>
-    </div>
-
-    <div class="section-label" style="margin-top:2.5rem">What We've Done &amp; What's Next</div>
     <div class="prose">
       <p><b>✓ Full tūī analysis:</b> All 232 A-quality song recordings analysed — 36,268 syllables across 5 types (doubled from 116/17,716 this session; distribution essentially unchanged, confirming the smaller sample wasn't distorting the tūī findings).</p>
       <p><b>✓ Korimako comparison:</b> 94 A-quality recordings (doubled from 46), 13,086 syllables. Stutter still dominates but dropped from 62.8%→56.1% as click grew 19.4%→24.1% — a real shift with the larger sample, not noise.</p>
@@ -2450,18 +2623,22 @@ tr:hover td{background:var(--surface-2)}
       <p><b>Next — tūī template matching:</b> Apply the same PCA → manual-cluster → DTW-template pipeline used for
       korimako to tūī, and extend to additional species (tīeke, kōkako) and datasets (AviaNZ kiwi).</p>
     </div>
-  </div>
+        </div>
+      </details>
+    </article>
 
+    <p style="font-family:var(--mono);font-size:.78rem;color:var(--ink-faint)">Every earlier version of this page is in the
+    <a href="https://github.com/cyborg-garden/open-science/commits/main/docs/experiments/nz-birdsong/index.html">git history</a>.</p>
+  </div>
 
 </div><!-- .wrap -->
 
 <footer class="foot">
   <div class="wrap">
-    <div class="big">"The tūī's vocal repertoire is among the most complex of any passerine."</div>
-    Aotearoa Birdsong Analysis · Data: <a href="https://xeno-canto.org">Xeno-Canto</a> (API v3) · 
+    Aotearoa Birdsong · Data: <a href="https://xeno-canto.org">Xeno-Canto</a> (API v3) ·
     Analysis: <a href="https://nimbleco.ai">NimbleCo AI</a> / <a href="https://github.com/cyborg-garden/Matilde">Matilde</a><br>
-    Generated June 2026 · All citations verified via Crossref · 
-    <a href="https://github.com/cyborg-garden/open-science">Source &amp; trace on GitHub</a>
+    First published June 2026 · Citations verified via Crossref ·
+    <a href="https://github.com/cyborg-garden/open-science">Source on GitHub</a>
   </div>
 </footer>
 
@@ -2564,8 +2741,21 @@ document.querySelectorAll('.tab').forEach(tab => {
     if (tab.dataset.tab === 'vocalisation' && !window._sylInit) initSyllables();
     if (tab.dataset.tab === 'data' && !window._dataInit) initDataCharts();
     if (tab.dataset.tab === 'methods' && !window._rarefInit) initRarefaction();
+    if (tab.scrollIntoView) tab.scrollIntoView({inline:'center', block:'nearest'});
   });
 });
+
+// in-page links that open a tab (e.g. the pointers to Process)
+function gotoTab(name) {
+  const t = document.querySelector('.tab[data-tab="' + name + '"]');
+  if (!t) return;
+  t.click();
+  document.getElementById('tabs').scrollIntoView({block:'start'});
+}
+document.querySelectorAll('[data-goto]').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); gotoTab(a.dataset.goto); });
+});
+if (location.hash === '#process') gotoTab('process');
 
 // ==================== GEO SECTION FILTERS ====================
 // Standalone listener so geo chart sections filter even without map data
