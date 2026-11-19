@@ -14,3 +14,5 @@ jobs:
       - run: node scripts/build-index.mjs --check
       - name: Verify approved annotated-song provenance
         run: node scripts/verify-korimako-annotated-figure.mjs
+      - name: Verify guided-review packet integrity
+        run: node scripts/verify-korimako-guided-review.mjs
