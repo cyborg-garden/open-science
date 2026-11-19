@@ -328,6 +328,13 @@ tr:hover td{background:var(--surface-2)}
 .pipe-then{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink-faint);margin:1rem 0 .5rem}
 
+/* ============ HAND-ANNOTATED SONG EXAMPLE ============ */
+.annotated-song{margin:0 0 1.5rem;border:1px solid var(--rule);border-radius:6px;overflow:hidden;background:#fcfcf7;box-shadow:var(--shadow)}
+.annotated-song img{display:block;width:100%;height:auto}
+.annotated-song figcaption{padding:1rem 1.2rem;border-top:1px solid var(--rule);font-size:.86rem;line-height:1.55;color:var(--ink-soft);background:var(--surface)}
+.annotated-song figcaption b{color:var(--ink);font-weight:600}
+.annotated-song figcaption a{overflow-wrap:anywhere}
+
 /* ============ FOLDS & PROCESS LOG ============ */
 .fold{border:1px solid var(--rule);border-radius:6px;background:var(--surface-2);margin:.8rem 0}
 .fold>summary{cursor:pointer;padding:.85rem 1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--ink-soft)}
@@ -688,6 +695,13 @@ code{font-family:var(--mono);font-size:.85em;overflow-wrap:anywhere}
 
     <!-- BELLBIRD sub-panel -->
     <div class="voc-species-panel" id="voc-bellbird" style="display:none">
+
+      <figure class="annotated-song" id="korimako-hand-annotation-example">
+        <a href="figures/korimako_hand_annotated_song.png" target="_blank" rel="noopener" aria-label="Open the full-resolution hand-annotated korimako spectrogram">
+          <img src="figures/korimako_hand_annotated_song.webp" width="2520" height="1440" loading="eager" decoding="async" alt="Spectrogram of a 7.26-second korimako song by male WHW021. Twenty hand-labelled syllables are outlined and shaded in seven family colours, with their order numbered along the time axis.">
+        </a>
+        <figcaption><b>One song, before the model.</b> Twenty hand-labelled syllables from a korimako song by male WHW021 (7 November 2016), from the <a href="https://doi.org/10.5061/dryad.h44j0zpfg">Koe / Dryad tutorial subset</a>. Colours show the original family labels in <a href="https://doi.org/10.3389/fevo.2021.755633">Webb et al. (2021)</a>, Supplementary Data 3; shading marks the hand-annotated time spans. This is an <b>expository example</b>, not an automatic segmentation or one of the model-extracted results below. Open the image for the full-resolution figure.</figcaption>
+      </figure>
 
       <div class="card" style="border-left:4px solid var(--bellbird);background:var(--surface-2)">
         <h3 style="color:var(--bellbird);margin-top:0">Korimako at full scale: 2,137 songs</h3>
