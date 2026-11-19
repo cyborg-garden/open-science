@@ -1,0 +1,12 @@
+{
+  "n_cases": 48,
+  "kinds": {
+    "family_disagreement": 16,
+    "fine_disagreement": 16,
+    "unmatched_prediction": 16
+  },
+  "reference_groups": 48,
+  "reference_units": 112,
+  "manifest_sha256": "12f57af6028298083889e3f8c5d8f71a24923ecd08d57bc91b430e93ee914a5f",
+  "total_bytes": 76316350
+}
