@@ -1,0 +1,46 @@
+{
+  "schema": "korimako-annotated-song-provenance-v1",
+  "approval": {
+    "approver": "Jules",
+    "approved": true,
+    "scope": "Verified Dryad replacement preview, not the withdrawn song 208262 candidate",
+    "approved_utc": "2026-11-19"
+  },
+  "audio": {
+    "source": "Dryad tutorial subset",
+    "dryad_doi": "10.5061/dryad.h44j0zpfg",
+    "song_id": "WHW021_08",
+    "filename": "CUV_2016_11_07_WHW021_08_M.EX.CUV_2016_11_07_WHW021A..wav",
+    "individual": "WHW021",
+    "sex": "M",
+    "quality": "EX",
+    "record_date": "2016-11-07",
+    "sample_rate_hz": 48000,
+    "duration_seconds": 7.262083333333333,
+    "legacy_koe_wavs_directory_used": false
+  },
+  "annotation": {
+    "source": "Webb et al. 2021 Supplementary Data 3 plus packaged Dryad songinfo.json",
+    "source_doi": "10.3389/fevo.2021.755633",
+    "count": 20,
+    "dryad_intervals_equal_supplementary": true,
+    "timing_adjustment_ms": 0,
+    "family_remapping_used": false,
+    "label_families": [
+      "Stutter",
+      "Alarmy",
+      "Chortle",
+      "Flatsqueak",
+      "Peaksqueak",
+      "Cough",
+      "Pipe"
+    ]
+  },
+  "artifact": {
+    "png_sha256": "c89c85d9efa19bc99e4671b4d4345590dece882e55d2cc0a0397110af0dac379",
+    "webp_sha256": "742994ab7ed8858bfe60bffba54d56b20a63a5c7cc26709677fb9bab0f00f51b",
+    "lossless_webp_verified": true,
+    "png_pixel_dimensions": [2520, 1440]
+  },
+  "limits": "This artifact gate proves the identity and provenance of the approved public figure. It does not validate every Koe annotation or prove corpus-wide alignment."
+}

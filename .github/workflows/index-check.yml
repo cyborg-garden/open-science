@@ -12,3 +12,5 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/build-index.mjs --check
+      - name: Verify approved annotated-song provenance
+        run: node scripts/verify-korimako-annotated-figure.mjs
