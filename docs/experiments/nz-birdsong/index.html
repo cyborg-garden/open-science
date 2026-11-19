@@ -534,7 +534,7 @@ code{font-family:var(--mono);font-size:.85em;overflow-wrap:anywhere}
       because sequence grammar carries individual identity in songbirds but not in calls.</p></div>
     <div class="card">
       <ol class="pipe">
-        <li><b>1 · Field audio</b>48 kHz WAV<br>2,137 songs<br>1,066 birds</li>
+        <li><b>1 · Field audio</b>48 kHz WAV<br>2,137 songs<br>1,065 birds with syllables</li>
         <li class="learned"><b>2 · Segmentation</b>TweetyNet v2 (CNN)<br>F1 0.902 @ 50 ms<br>165-song held-out test</li>
         <li class="learned"><b>3 · Syllable typing</b>Family classifier<br>24 families + UNKNOWN<br>0.893 test accuracy</li>
         <li class="learned"><b>4 · Sequence features</b>repertoire · bigram grammar · timing<br>21,463 syllables</li>
@@ -704,10 +704,10 @@ code{font-family:var(--mono);font-size:.85em;overflow-wrap:anywhere}
       </figure>
 
       <div class="card" style="border-left:4px solid var(--bellbird);background:var(--surface-2)">
-        <h3 style="color:var(--bellbird);margin-top:0">Korimako at full scale: 2,137 songs</h3>
+        <h3 style="color:var(--bellbird);margin-top:0">Korimako at full scale: 2,136 songs</h3>
         <p style="font-size:.9rem;color:var(--ink-soft)">
           The figures below use the full Koe corpus:
-          21,463 model-extracted syllables across 2,136 songs / 454 banded birds, segmented by a CNN
+          21,463 model-extracted syllables across 2,136 songs from 1,065 birds (one of the 2,137 songs produced no syllables), segmented by a CNN
           (TweetyNet v2, F1 = 0.902 @ 50 ms on a 165-song held-out test, bird-disjoint split) and typed by a
           family classifier (0.893 test accuracy on held-out birds). Counts are <b>model-extracted</b>,
           not human-labelled. An earlier, smaller hand-labelled analysis is folded away at the bottom of this panel.</p>
@@ -2592,7 +2592,7 @@ code{font-family:var(--mono);font-size:.85em;overflow-wrap:anywhere}
     <article class="log-entry">
       <div class="when">July 2026</div>
       <h3>Tūī classifier reordered; samples doubled</h3>
-      <p>The first tūī classifier put 55% of syllables in "low-frequency" because it checked frequency before tonal quality. Checking tonal quality first brought that to 0.6%, in line with Hill. The samples were later doubled (tūī to 232 recordings, korimako to 94, kākā to 47). Tūī proportions held; korimako stutter fell from 62.8% to 56.1% and click rose from 19.4% to 24.1%.</p>
+      <p>The first tūī classifier put 55% of syllables in "low-frequency" because it checked frequency before tonal quality. Checking tonal quality first brought that to 0.6%, in line with Hill. The samples were later doubled (tūī to 232 recordings, korimako to 94, kākā to 47). The notes below give the earlier korimako sample as both 46 and 40: the analysis used 46 recordings (<code>data_v2.json</code>), while the sample-size curve was computed on 40. Tūī proportions held; korimako stutter fell from 62.8% to 56.1% and click rose from 19.4% to 24.1%.</p>
       <details class="fold">
         <summary>Original notes</summary>
         <div class="fold-body">
