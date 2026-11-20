@@ -84,8 +84,8 @@ jobs:
         env:
           SPECIES: ${{ github.event.inputs.species }}
         run: |
-          git config user.name "matilde-extrapolate-bot"
-          git config user.email "actions@github.com"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add "docs/experiments/nz-birdsong/annotation/${SPECIES}_pca_data.json"
           git diff --cached --quiet && echo "No changes to commit" && exit 0
           git commit -m "Extrapolate ${SPECIES}: DTW template-match re-classification (via cluster.html button)"

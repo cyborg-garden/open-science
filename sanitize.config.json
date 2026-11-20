@@ -31,8 +31,6 @@
   },
   "deterministic": {
     "enabled": true,
-    "allow_substrings": [
-      "actions@github.com"
-    ]
+    "allow_substrings": []
   }
 }
