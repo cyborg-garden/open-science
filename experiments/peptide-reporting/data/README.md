@@ -23,7 +23,7 @@ to other peptides.
 
 - The `author` field in `peptide_data_raw.json` has been **nulled** for every record — Reddit usernames are not published.
 - The derived files (`*_encoded`, `*_filtered`, `effects`) never contained author identifiers.
-- Post **bodies and titles are public Reddit content**, verbatim apart from contact details: email addresses, phone numbers and messaging or social handles in the posts are replaced with placeholders (`[email removed]`, `[phone removed]`, `[handle removed]`). They may occasionally contain self-disclosed details or `u/` mentions inside the text; these were not machine-rewritten. Open an issue if you find something that should be redacted.
+- Post **bodies and titles are public Reddit content**, verbatim apart from contact details and user mentions: email addresses, phone numbers, messaging or social handles and `u/` mentions in the post text are replaced with placeholders (`[email removed]`, `[phone removed]`, `[handle removed]`). Posts may occasionally contain other self-disclosed details; these were not machine-rewritten. Open an issue if you find something that should be redacted.
 
 ## Reuse
 
