@@ -1,0 +1,33 @@
+{
+  "$comment": "Sanitization gate config for open-science. The gate itself lives in cyborg-garden/swarm-map (docs/sanitization-gate.md); this file only says what a particular means here.",
+  "package_name": "open-science",
+  "package_kind": "public repository of open-science experiments, data and write-ups",
+  "sensitive_prefixes": [
+    "docs/",
+    "experiments/"
+  ],
+  "$comment_prefixes": "docs/ holds the published experiment pages and data; experiments/ holds traces and source data. Top-level *.md are always included.",
+  "semantic": {
+    "domain_noun": "private study, participant or unpublished dataset",
+    "flag_examples": [
+      "names or identifying details of human research participants, patients or annotators",
+      "unpublished collaborator names, reviewer identities, grant or ethics protocol numbers",
+      "raw agent traces that still carry a private conversation, account ID or operator instruction",
+      "contact details of a private individual: personal email, phone number, home address, messaging handle or account ID",
+      "credentials, tokens, internal hostnames, server addresses or chat/group IDs of a real deployment"
+    ],
+    "do_not_flag_examples": [
+      "the publishing organisation and its public projects: Cyborg Garden / cyborg-garden / cyborg.garden, the former names NimbleCo / NimbleCoAI / NimbleCoOrg / nimbleco.ai, this repo's own name and GitHub URLs",
+      "published papers, authors, DOIs and public dataset identifiers",
+      "the experiments' own names, methods, results and openly licensed data",
+      "credited recordists and licence attributions for openly licensed media",
+      "generic tool, API, library, model, provider and standard names, and public reference material",
+      "clearly fictional placeholders (Subject A, <case>, example.com, <host>)"
+    ],
+    "model": "moonshotai/kimi-k3"
+  },
+  "deterministic": {
+    "enabled": true,
+    "allow_substrings": []
+  }
+}
