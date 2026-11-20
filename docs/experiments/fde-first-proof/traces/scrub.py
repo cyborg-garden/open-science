@@ -8,7 +8,7 @@ IDs + the Discord link itself, keys/tokens/credential mechanics, user IDs/snowfl
 Deployment-specific names (machine hostnames, the git bot's app name) are not written in this
 file. They are read at run time from the environment and from an untracked file beside it:
 
-    SCRUB_HOSTS="build-box,build-box.local" SCRUB_GIT_BOTS="example-git-app" \\
+    SCRUB_HOSTS="example-host,example-host.local" SCRUB_GIT_BOTS="example-git-app" \\
         python3 scrub.py raw.md out.SCRUBBED.md
 
 or copy scrub.local.example.txt to scrub.local.txt (git-ignored) and list them there.

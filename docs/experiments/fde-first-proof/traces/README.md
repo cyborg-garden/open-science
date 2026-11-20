@@ -25,7 +25,7 @@ The names specific to one deployment — machine hostnames and the git bot's app
 at run time, so the script never names what it removes:
 
 ```bash
-SCRUB_HOSTS="build-box,build-box.local" SCRUB_GIT_BOTS="example-git-app" \
+SCRUB_HOSTS="example-host,example-host.local" SCRUB_GIT_BOTS="example-git-app" \
   python3 scrub.py raw-thread.md fde-lean-proof-thread.SCRUBBED.md
 ```
 

@@ -4,6 +4,6 @@
 # host     a machine name to replace with <host>; a trailing :port goes with it
 # git-bot  a GitHub App name; "<name>[bot]" is replaced with <git-bot>
 
-host build-box
-host build-box.local
+host example-host
+host example-host.local
 git-bot example-git-app
