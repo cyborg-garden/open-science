@@ -1,5 +1,5 @@
 {
-  "generated": "2026-08-11T02:10:32.267Z",
+  "generated": "2026-11-20T04:46:49.378Z",
   "window": {
     "start": "2026-08-07T00:00:00Z",
     "end": "2026-08-11T23:59:59Z"
@@ -10,7 +10,7 @@
       "result": "green",
       "label": "scaffold / semantics",
       "jobs": null,
-      "msg": "1535162495537250305",
+      "ref": "B01",
       "note": "Basic.lean green; truth tables 16/16 ground-truthed"
     },
     {
@@ -18,7 +18,7 @@
       "result": "green",
       "label": "soundness",
       "jobs": null,
-      "msg": "1535173139171123300",
+      "ref": "B02",
       "note": "0 sorries, 22 declarations, full build"
     },
     {
@@ -26,7 +26,7 @@
       "result": "red",
       "label": "refutes regression",
       "jobs": null,
-      "msg": "1535194406154403850",
+      "ref": "B03",
       "note": "2 sorries left in Saturated.refutes; owned, recovery path recorded"
     },
     {
@@ -34,7 +34,7 @@
       "result": "green",
       "label": "refutes fixed",
       "jobs": null,
-      "msg": "1535799335978139738",
+      "ref": "B04",
       "note": "canonical countermodel green after antecedent-only valuation restored"
     },
     {
@@ -42,7 +42,7 @@
       "result": "false-green",
       "label": "stale-cache green",
       "jobs": 8658,
-      "msg": "1535827359582789763",
+      "ref": "B05",
       "note": "full build \"completed\" on broken source; module-targeted build surfaced ~20 errors"
     },
     {
@@ -50,7 +50,7 @@
       "result": "green",
       "label": "completeness (module-targeted)",
       "jobs": 8657,
-      "msg": "1535852588946296883",
+      "ref": "B06",
       "note": "real re-elaboration; the verification checklist passes"
     },
     {
@@ -58,7 +58,7 @@
       "result": "green",
       "label": "completeness verified",
       "jobs": 8658,
-      "msg": "1535856013956219051",
+      "ref": "B07",
       "note": "0 sorries; #print axioms clean both directions"
     },
     {
@@ -66,7 +66,7 @@
       "result": "green",
       "label": "corollaries",
       "jobs": null,
-      "msg": "1536319714685358080",
+      "ref": "B08",
       "note": "0 sorries, 17 declarations, axioms checked per-theorem"
     },
     {
@@ -74,7 +74,7 @@
       "result": "green",
       "label": "full build (all 5 modules)",
       "jobs": 8660,
-      "msg": "1536477100557471855",
+      "ref": "B09",
       "note": "8658→8660 confirms Completeness+Corollaries in default target"
     },
     {
@@ -82,7 +82,7 @@
       "result": "red",
       "label": "mathlib restore broken",
       "jobs": null,
-      "msg": "1536491753207496895",
+      "ref": "B10",
       "note": "hardlink I/O artifact during repo prep; restored + re-verified"
     },
     {
@@ -90,7 +90,7 @@
       "result": "green",
       "label": "repo tree green",
       "jobs": 8658,
-      "msg": "1536492781827260447",
+      "ref": "B11",
       "note": "8658 jobs green from the committed state before push"
     },
     {
@@ -98,7 +98,7 @@
       "result": "green",
       "label": "post-review re-verify",
       "jobs": 8658,
-      "msg": "1536499171446755428",
+      "ref": "B12",
       "note": "rebuilt after Claude’s killed clone wiped the olean tree; 8658 jobs, EXIT=0"
     }
   ],
@@ -108,7 +108,7 @@
       "kind": "pitfall",
       "caughtBy": "self",
       "label": "refutingVal wrong for FDE",
-      "msg": "1535179524805763185",
+      "ref": "P01",
       "note": "read truth-support from succedent; reverted to clean sorry, recorded honestly"
     },
     {
@@ -116,7 +116,7 @@
       "kind": "pitfall",
       "caughtBy": "self",
       "label": "refutes valuation misdiagnosis",
-      "msg": "1535194406154403850",
+      "ref": "P02",
       "note": "mistook a tactic bug for a math bug; caught by exhaustive #eval ground truth"
     },
     {
@@ -124,7 +124,7 @@
       "kind": "walkback",
       "caughtBy": "self",
       "label": "honest-W walkback",
-      "msg": "1535832898215612458",
+      "ref": "P03",
       "note": "nearly claimed the W on stale cache; module-targeted verification caught it"
     },
     {
@@ -132,7 +132,7 @@
       "kind": "pitfall",
       "caughtBy": "self",
       "label": "replace_all corrupted 12 sites",
-      "msg": "1535832396052566117",
+      "ref": "P04",
       "note": "naive string replace clobbered antecedent/succedent perm orientations"
     },
     {
@@ -140,7 +140,7 @@
       "kind": "outage",
       "caughtBy": "self",
       "label": "tool calls misfiring",
-      "msg": "1535838329554215002",
+      "ref": "P05",
       "note": "refused to patch blind; stopped and handed off"
     },
     {
@@ -148,7 +148,7 @@
       "kind": "outage",
       "caughtBy": "self",
       "label": "tool channel degraded (recur)",
-      "msg": "1536121956414390302",
+      "ref": "P06",
       "note": "reads execute but results never arrive; refused to prove blind"
     },
     {
@@ -156,7 +156,7 @@
       "kind": "recovery",
       "caughtBy": "human",
       "label": "191 results / 10 ids diagnosed",
-      "msg": "1536141039822438511",
+      "ref": "P07",
       "note": "Juni: tool_call_id collision; assembler drops unpairable results"
     },
     {
@@ -164,7 +164,7 @@
       "kind": "pitfall",
       "caughtBy": "self",
       "label": "Or/∃ eliminate only into Prop",
-      "msg": "1536318724712177694",
+      "ref": "P08",
       "note": "three Type-valued decider architectures failed; fix = prove-in-Prop-then-lift"
     },
     {
@@ -172,7 +172,7 @@
       "kind": "pitfall",
       "caughtBy": "self",
       "label": "valid_of_perm orientation recurs",
-      "msg": "1536319163566391366",
+      "ref": "P09",
       "note": "same perm trap as completeness session, now on the decider inr side"
     },
     {
@@ -180,7 +180,7 @@
       "kind": "review",
       "caughtBy": "external",
       "label": "Rey redlines (3)",
-      "msg": "1536490277261279395",
+      "ref": "P10",
       "note": "missing-import false-W; \"constructive\" overstated; open-model scope. 2 conceded, 1 held"
     },
     {
@@ -188,7 +188,7 @@
       "kind": "review",
       "caughtBy": "external",
       "label": "Claude artifact audit",
-      "msg": "1536502968008843515",
+      "ref": "P11",
       "note": "Classical.choice attribution wrong (real error, corrected); stale headers; novelty scoped"
     }
   ],
@@ -259,5 +259,5 @@
     "messageVolume = per-day per-actor message counts from the two Lean threads; status pings excluded.",
     "cost = Hermes session telemetry (OpenRouter, Kimi K3); ESTIMATED, not provider-actual; cache-read shown separately (billed at a discount)."
   ],
-  "provenance": "Anchors hand-verified against the two Lean Discord threads; every event carries the source message id. Scrubbed traces archive: see the experiment page link."
+  "provenance": "Anchors hand-verified against the two Lean Discord threads; every event carries a stable reference key (B = build, P = process) and its timestamp; the key-to-source record is held privately by the maintainers. Scrubbed traces archive: see the experiment page link."
 }
