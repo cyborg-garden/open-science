@@ -23,7 +23,12 @@
       "credited recordists and licence attributions for openly licensed media",
       "generic tool, API, library, model, provider and standard names, and public reference material",
       "clearly fictional placeholders (Subject A, <case>, example.com, <host>)",
-      "Juni Bevensee (also written Juni), the named author and human participant of this repo's published experiments and their trace archives: her name appearing as author or participant is intentional"
+      "Juni Bevensee (also written Juni), the named author and human participant of this repo's published experiments and their trace archives: her name appearing as author or participant is intentional",
+      "Matilde, a named collaborator credited across this repo's published pages and trace archives: her first name appearing as collaborator or participant is intentional",
+      "Iris, the name of one of the publishing organisation's AI agents, and Hermes / hermes-agent / hermes_cli, the open-source agent harness the experiments run on, including its default install paths",
+      "names of businesses, vendors, brands, products and public figures mentioned inside public forum posts that an experiment quotes as research data; this covers the business name only, never a person's username, account ID, contact detail or personal website, which stay flag-worthy",
+      "Rey and Jules, collaborators credited by first name for review and annotation decisions in the published experiments: their names appearing as credited reviewers or decision makers is intentional and approved",
+      "event reference keys such as KAKA-D01 or FDE-E03, and statements that a private key-to-source record exists: they are this repo's provenance scheme, and the mapping itself is kept out of the repo"
     ],
     "model": "moonshotai/kimi-k3"
   },
