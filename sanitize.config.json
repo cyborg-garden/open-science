@@ -22,7 +22,8 @@
       "the experiments' own names, methods, results and openly licensed data",
       "credited recordists and licence attributions for openly licensed media",
       "generic tool, API, library, model, provider and standard names, and public reference material",
-      "clearly fictional placeholders (Subject A, <case>, example.com, <host>)"
+      "clearly fictional placeholders (Subject A, <case>, example.com, <host>)",
+      "Juni Bevensee (also written Juni), the named author and human participant of this repo's published experiments and their trace archives: her name appearing as author or participant is intentional"
     ],
     "model": "moonshotai/kimi-k3"
   },
