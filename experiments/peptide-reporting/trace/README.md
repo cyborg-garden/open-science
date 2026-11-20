@@ -11,7 +11,7 @@ The working session behind the [peptide-reporting study](../) — published as p
 
 ## Sanitization
 
-- **Redacted:** names (→ *Researcher* / *Collaborator*), phone numbers, UUIDs, Signal group IDs, emails, and `@handles`. The agent's own name (Matilde) is kept.
+- **Redacted:** names (→ *Researcher* / *Collaborator*), phone numbers, UUIDs, Signal group IDs, emails, and `@handles`. Server IPv4 addresses in tool output are replaced with `[ip removed]`. The agent's own name (Matilde) is kept.
 - **Excluded entirely:** four unrelated sessions (a separate paper-validation request) that have nothing to do with the peptide work.
 - **Left as-is:** Reddit `u/` references that appear inside tool output — public source data, consistent with the published dataset.
 - Generated programmatically from the agent's message store (`state.db`); the residual-PII scan over both outputs returns zero for every pattern above.

@@ -150,7 +150,7 @@ Arctic Shift works. Now let me pull a substantial batch of posts for all three p
 
 &nbsp;&nbsp;🔧 `execute_code`( {"code": "\nfrom hermes_tools import terminal\n# The Python urllib is getting 400 but curl works - probably header/encoding issue\n# Let me check the exact API params that work with curl\nresult = terminal(\"curl -sv 'https://arctic-shift.photon-reddit.com/api/posts/search?query=BPC-157&subreddit=Pe …[truncated] )
 
-<sub>↳ `execute_code` result</sub> — {"status": "success", "output": "* Host arctic-shift.photon-reddit.com:443 was resolved.\n* IPv6: 2606:4700:3037::6815:8a6, 2606:4700:3033::ac43:8bc9\n* IPv4: 172.67.139.201, 104.21.8.166\n*   Trying [2606:4700:3037::6815:8a6]:443...\n* Immediate connect fail for 2606:4700:3037::6815:8a6: Network is unreachable\n*   Trying [2606:4700:3033::ac43:8bc9]:443...\n* Immediate connect fail for 2606:4700:3033::ac43:8bc9: Net …[truncated]
+<sub>↳ `execute_code` result</sub> — {"status": "success", "output": "* Host arctic-shift.photon-reddit.com:443 was resolved.\n* IPv6: 2606:4700:3037::6815:8a6, 2606:4700:3033::ac43:8bc9\n* IPv4: [ip removed], [ip removed]\n*   Trying [2606:4700:3037::6815:8a6]:443...\n* Immediate connect fail for 2606:4700:3037::6815:8a6: Network is unreachable\n*   Trying [2606:4700:3033::ac43:8bc9]:443...\n* Immediate connect fail for 2606:4700:3033::ac43:8bc9: Net …[truncated]
 
 &nbsp;&nbsp;🔧 `execute_code`( {"code": "\nfrom hermes_tools import terminal\n# Use curl-based approach since it works, pipe to python for extraction\n# Also try without the hyphen - \"BPC157\" and \"BPC 157\" are common spellings\n\nscript = '''#!/bin/bash\nset -e\n\nOUTDIR=\"/opt/data/peptide_raw\"\nmkdir -p \"$OUTDIR\"\n\nfetc …[truncated] )
 
