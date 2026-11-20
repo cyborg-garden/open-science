@@ -2,7 +2,7 @@
 
 The unedited working session behind the [peptide-reporting study](../): every prompt, Matilde's replies, her tool calls, and her reasoning where the model exposed it. This is the *how it thought*, published alongside the result.
 
-> **Sanitization.** Names, phone numbers, UUIDs, Signal group IDs, emails and @handles are redacted. Reddit `u/` references inside research/tool output are left as-is (public source data). Four unrelated sessions (a separate paper-validation request) were excluded entirely. Generated from the agent's message store; reproducible from `state.db`.
+> **Sanitization.** Names, phone numbers, UUIDs, Signal group IDs, emails and @handles are redacted. Reddit author usernames and account IDs, Signal group and DM names, server IP addresses and a masked token in tool output are replaced with placeholders. Four unrelated sessions (a separate paper-validation request) were excluded entirely. Generated from the agent's message store; reproducible from `state.db`.
 
 *11 sessions · 642 messages · 224 tool-call turns*
 
@@ -19,15 +19,15 @@ can u tell Collaborator some of yr abilities?
 
 &nbsp;&nbsp;🔧 `send_message`( {"action": "list"} )
 
-<sub>↳ `send_message` result</sub> — {"targets": "Available messaging targets:\n\nSignal:\n  signal:Researcher  (dm)\n  signal:Matilde- Agentic Open Science (group)\n  signal:Matilde Reconcile Test (group)\n\nUse these as the \"target\" parameter when sending.\nBare platform name (e.g. \"telegram\") sends to home channel."}
+<sub>↳ `send_message` result</sub> — {"targets": "Available messaging targets:\n\nSignal:\n  signal:[dm removed]\n  signal:[group removed]\n  signal:[group removed]\n\nUse these as the \"target\" parameter when sending.\nBare platform name (e.g. \"telegram\") sends to home channel."}
 
 <sub>💭 *reasoning*</sub>
-> I don't see a direct contact for "Collaborator" in the available targets. Collaborator might be a member of one of the groups. Since we're currently in the "Matilde- Agentic Open Science" group, Collaborator is probably there. I should send a message in the current group addressing Collaborator.
+> I don't see a direct contact for "Collaborator" in the available targets. Collaborator might be a member of one of the groups. Since we're currently in the "[group removed]" group, Collaborator is probably there. I should send a message in the current group addressing Collaborator.
 
 **◆ Matilde**
-I don't see a direct chat with Collaborator in my contacts, but since we're in the Matilde- Agentic Open Science group, I'll introduce myself to her here!
+I don't see a direct chat with Collaborator in my contacts, but since we're in the [group removed] group, I'll introduce myself to her here!
 
-&nbsp;&nbsp;🔧 `send_message`( {"action": "send", "target": "signal:Matilde- Agentic Open Science", "message": "Hey Collaborator! I'm Matilde, a research assistant for scientists and scholars. Here's a taste of what I can do:\n\nCITATION & LITERATURE\n- Verify any academic citation for existence, accuracy, retraction status, and …[truncated] )
+&nbsp;&nbsp;🔧 `send_message`( {"action": "send", "target": "signal:[group removed]", "message": "Hey Collaborator! I'm Matilde, a research assistant for scientists and scholars. Here's a taste of what I can do:\n\nCITATION & LITERATURE\n- Verify any academic citation for existence, accuracy, retraction status, and …[truncated] )
 
 <sub>↳ `send_message` result</sub> — {"success": true, "platform": "signal", "chat_id": "group:[redacted]", "note": "Sent to signal home channel (chat_id: group:[redacted])"}
 
@@ -131,7 +131,7 @@ Good, lots of rich data. Let me try pulling posts via Reddit's public JSON endpo
 
 &nbsp;&nbsp;🔧 `execute_code`( {"code": "\nfrom hermes_tools import terminal\n# Try simpler params\nresult = terminal(\"curl -s 'https://arctic-shift.photon-reddit.com/api/posts/search?query=BPC-157&subreddit=Peptides&limit=5' | python3 -m json.tool | head -300\", timeout=30)\nprint(result['output'][:5000])\n"} )
 
-<sub>↳ `execute_code` result</sub> — {"status": "success", "output": "{\n    \"data\": [\n        {\n            \"all_awardings\": [],\n            \"allow_live_comments\": false,\n            \"approved_at_utc\": null,\n            \"approved_by\": null,\n            \"archived\": false,\n            \"author\": \"alxgibsn\",\n            \"author_flair_background_color\": null,\n            \"author_flair_css_class\": null,\n            \"author_flai …[truncated]
+<sub>↳ `execute_code` result</sub> — {"status": "success", "output": "{\n    \"data\": [\n        {\n            \"all_awardings\": [],\n            \"allow_live_comments\": false,\n            \"approved_at_utc\": null,\n            \"approved_by\": null,\n            \"archived\": false,\n            \"author\": \"[author removed]\",\n            \"author_flair_background_color\": null,\n            \"author_flair_css_class\": null,\n            \"author_flai …[truncated]
 
 **◆ Matilde**
 Arctic Shift works. Now let me pull a substantial batch of posts for all three peptides, including comments.
@@ -150,7 +150,7 @@ Arctic Shift works. Now let me pull a substantial batch of posts for all three p
 
 &nbsp;&nbsp;🔧 `execute_code`( {"code": "\nfrom hermes_tools import terminal\n# The Python urllib is getting 400 but curl works - probably header/encoding issue\n# Let me check the exact API params that work with curl\nresult = terminal(\"curl -sv 'https://arctic-shift.photon-reddit.com/api/posts/search?query=BPC-157&subreddit=Pe …[truncated] )
 
-<sub>↳ `execute_code` result</sub> — {"status": "success", "output": "* Host arctic-shift.photon-reddit.com:443 was resolved.\n* IPv6: 2606:4700:3037::6815:8a6, 2606:4700:3033::ac43:8bc9\n* IPv4: 172.67.139.201, 104.21.8.166\n*   Trying [2606:4700:3037::6815:8a6]:443...\n* Immediate connect fail for 2606:4700:3037::6815:8a6: Network is unreachable\n*   Trying [2606:4700:3033::ac43:8bc9]:443...\n* Immediate connect fail for 2606:4700:3033::ac43:8bc9: Net …[truncated]
+<sub>↳ `execute_code` result</sub> — {"status": "success", "output": "* Host arctic-shift.photon-reddit.com:443 was resolved.\n* IPv6: [ip removed], [ip removed]\n* IPv4: [ip removed], [ip removed]\n*   Trying [[ip removed]]:443...\n* Immediate connect fail for [ip removed]: Network is unreachable\n*   Trying [[ip removed]]:443...\n* Immediate connect fail for [ip removed]: Net …[truncated]
 
 &nbsp;&nbsp;🔧 `execute_code`( {"code": "\nfrom hermes_tools import terminal\n# Use curl-based approach since it works, pipe to python for extraction\n# Also try without the hyphen - \"BPC157\" and \"BPC 157\" are common spellings\n\nscript = '''#!/bin/bash\nset -e\n\nOUTDIR=\"/opt/data/peptide_raw\"\nmkdir -p \"$OUTDIR\"\n\nfetc …[truncated] )
 
@@ -3711,7 +3711,7 @@ Also saved the project to memory so I'll have context even before reading the ha
 
 <sub>↳ `read_file` result</sub> — {"content": "1|# Session: 2026-06-23 — Peptide Community Pharmacovigilance Dashboard (PoC)\n2|\n3|## What happened\n4|Built a complete proof-of-concept pharmacovigilance pipeline: scraped ~3K Reddit posts about experimental peptides (BPC-157, Selank, Semax), LLM-encoded them locally for effect extraction with valence, filtered for verified self-reports, compared against published literature, and produced an interacti …[truncated]
 
-<sub>↳ `terminal` result</sub> — {"output": "github.com\n  ✓ Logged in to github.com account NimbleCoAI (/opt/data/home/.config/gh/hosts.yml)\n  - Active account: true\n  - Git operations protocol: https\n  - Token: github...9mi_***********************************************************", "exit_code": 0, "error": null}
+<sub>↳ `terminal` result</sub> — {"output": "github.com\n  ✓ Logged in to github.com account NimbleCoAI (/opt/data/home/.config/gh/hosts.yml)\n  - Active account: true\n  - Git operations protocol: https\n  - Token: [token removed]", "exit_code": 0, "error": null}
 
 <sub>💭 *reasoning*</sub>
 > GitHub token is working under the NimbleCoAI account. The handoff is clear. Next steps are:  1. Publish the dashboard to GitHub Pages 2. Second reviewer pass  Let me confirm with Researcher what she wants to do first.
