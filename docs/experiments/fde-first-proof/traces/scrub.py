@@ -4,8 +4,43 @@ Applies Juni's 2026-08-11 redaction standard. Deterministic, auditable, re-runna
 KEEP: names (Juni, Matilde), human steering + funny moments, tool-call texture, tool problems.
 STRIP: ports, device names, internal links/hostnames, private-repo refs, Discord thread/channel
 IDs + the Discord link itself, keys/tokens/credential mechanics, user IDs/snowflakes, internal paths.
+
+Deployment-specific names (machine hostnames, the git bot's app name) are not written in this
+file. They are read at run time from the environment and from an untracked file beside it:
+
+    SCRUB_HOSTS="example-host,example-host.local" SCRUB_GIT_BOTS="example-git-app" \\
+        python3 scrub.py raw.md out.SCRUBBED.md
+
+or copy scrub.local.example.txt to scrub.local.txt (git-ignored) and list them there.
+The run stops if no hostname is configured, so a missing list cannot pass unnoticed;
+set SCRUB_NO_LOCAL=1 to run with the generic rules only.
 """
-import re, sys, json
+import os, re, sys, json
+from pathlib import Path
+
+LOCAL_FILE = Path(__file__).with_name('scrub.local.txt')
+ENV_VARS = {'host': 'SCRUB_HOSTS', 'git-bot': 'SCRUB_GIT_BOTS'}
+
+
+def local_terms() -> dict:
+    """Names to scrub that must stay out of the repo, longest first per kind."""
+    terms = {kind: [] for kind in ENV_VARS}
+    for kind, var in ENV_VARS.items():
+        terms[kind] += re.split(r'[,\s]+', os.environ.get(var, ''))
+    if LOCAL_FILE.exists():
+        for n, line in enumerate(LOCAL_FILE.read_text(encoding='utf8').splitlines(), 1):
+            line = line.split('#', 1)[0].strip()
+            if not line:
+                continue
+            kind, _, name = line.partition(' ')
+            if kind not in terms or not name.strip():
+                sys.exit(f'{LOCAL_FILE.name}:{n}: expected "host <name>" or "git-bot <name>"')
+            terms[kind].append(name.strip())
+    return {kind: sorted({n for n in names if n}, key=len, reverse=True)
+            for kind, names in terms.items()}
+
+
+LOCAL = local_terms()
 
 def scrub(text: str) -> str:
     t = text
@@ -27,15 +62,20 @@ def scrub(text: str) -> str:
     t = re.sub(r'oauth_token', '<token>', t)
     t = re.sub(r'git credential fill', 'git credential <helper>', t)
     t = re.sub(r'credential.helper', 'credential <helper>', t)
-    t = re.sub(r'hermes-fleet-git\[bot\]', '<git-bot>', t)
+    for bot in LOCAL['git-bot']:
+        t = re.sub(re.escape(bot) + r'\[bot\]', '<git-bot>', t)
     t = re.sub(r'hermes_cli\.github_app_token', '<github-app-token-helper>', t)
     # ports / hosts / devices
-    t = re.sub(r'junis-mac-mini(?::\d+)?', '<host>', t)
+    for host in LOCAL['host']:
+        t = re.sub(re.escape(host) + r'(?::\d+)?', '<host>', t)
     t = re.sub(r'localhost:\d+|127\.0\.0\.1:\d+', '<host:port>', t)
     t = re.sub(r':(\d{4,5})/keys', ':<port>/keys', t)
     return t
 
 def main():
+    if not LOCAL['host'] and os.environ.get('SCRUB_NO_LOCAL') != '1':
+        sys.exit('scrub.py: no hostnames to scrub. Set SCRUB_HOSTS or create scrub.local.txt '
+                 '(see scrub.local.example.txt), or set SCRUB_NO_LOCAL=1 for generic rules only.')
     src = sys.argv[1]
     dst = sys.argv[2]
     with open(src, encoding='utf8') as f:

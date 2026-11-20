@@ -18,6 +18,22 @@ scrubbed.
 - `ARCHIVE_MANIFEST.md` — what was captured, from where, when, and the redaction standard.
 - `scrub.py` — the deterministic redaction script, so the scrub is auditable and re-runnable.
 
+## Re-running the scrub
+
+`scrub.py` holds only the generic rules (paths, snowflakes, links, token mechanics, ports).
+The names specific to one deployment — machine hostnames and the git bot's app name — are read
+at run time, so the script never names what it removes:
+
+```bash
+SCRUB_HOSTS="example-host,example-host.local" SCRUB_GIT_BOTS="example-git-app" \
+  python3 scrub.py raw-thread.md fde-lean-proof-thread.SCRUBBED.md
+```
+
+Or copy `scrub.local.example.txt` to `scrub.local.txt` (git-ignored) and list them there, one
+per line. A hostname also covers a trailing `:port`. The script stops if no hostname is
+configured; `SCRUB_NO_LOCAL=1` runs the generic rules alone. Operators: keep your real list in
+`scrub.local.txt` or your shell environment, never in a tracked file.
+
 ## Provenance
 
 Captured 2026-08-11 by the Matilde agent from the Discord channel history.

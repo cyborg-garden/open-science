@@ -1,0 +1,9 @@
+# Copy to scrub.local.txt (git-ignored) and replace with your own names.
+# One entry per line: "host <name>" or "git-bot <name>". "#" starts a comment.
+#
+# host     a machine name to replace with <host>; a trailing :port goes with it
+# git-bot  a GitHub App name; "<name>[bot]" is replaced with <git-bot>
+
+host example-host
+host example-host.local
+git-bot example-git-app
